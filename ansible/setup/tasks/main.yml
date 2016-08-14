@@ -1,0 +1,114 @@
+---
+- name: Update Apt Cache
+  become: true
+  become_user: root
+  apt: update_cache=yes
+
+- name: Install python3
+  become: true
+  become_user: root
+  apt: pkg=python3 state=installed
+
+- name: Install python packages
+  become: true
+  become_user: root
+  apt: pkg={{ item }} state=installed
+  with_items:
+      - python3-setuptools
+      - python3-pip
+      - python3-dev
+      - python-virtualenv
+
+- name: Install database packages
+  become: true
+  become_user: root
+  apt: pkg={{ item }} state=installed
+  with_items:
+      - postgresql
+      - libpq-dev # Required for Ansible to interact with postgres
+      - python-psycopg2 # Required for Ansible to interact with postgres
+
+- name: Install packages for pillow
+  become: true
+  become_user: root
+  apt: pkg={{ item }} state=installed
+  with_items:
+      - libjpeg-dev
+      - zlib1g-dev
+      - libpng12-dev
+
+- name: Add vagrant user to www-data
+  become: true
+  become_user: root
+  user: name=vagrant groups=www-data
+  ignore_errors: yes #this user wont exist in live
+
+- name: Install virtualenv
+  become: true
+  become_user: root
+  pip: executable=pip3 name=virtualenv
+
+- name: Install git
+  become: true
+  become_user: root
+  apt: pkg=git state=installed
+
+- name: Allow password authentication for local socket users and allow connections other than localhost
+  become: true
+  become_user: root
+  copy: src={{ item }} dest=/etc/postgresql/9.3/main/{{ item }} force=yes
+  with_items:
+    - pg_hba.conf
+    - postgresql.conf
+  notify:
+      - Restart Postgres
+
+- name: Ensure postgres running
+  become: true
+  become_user: root
+  service: name=postgresql state=started
+
+- name: Allow password authentication for local socket users
+  become: true
+  become_user: root
+  copy: src=pg_hba.conf dest=/etc/postgresql/9.3/main/pg_hba.conf force=yes
+  notify:
+      - Restart Postgres
+
+- name: Create Database
+  become: true
+  become_user: postgres
+  # PostgreSQL will only allow users to login from the postgres account by default
+  postgresql_db: name={{ db_name }}
+
+- name: Create User
+  become: true
+  become_user: postgres
+  postgresql_user: >
+    name={{ db_user }}
+    password={{ db_password }}
+    state=present role_attr_flags=NOSUPERUSER,CREATEDB
+
+- name: Provide user with DB permissions
+  become: true
+  become_user: postgres
+  postgresql_user: user={{ db_user }} db={{ db_name }} priv=ALL
+
+- name: Add bashrc_extra file
+  become: true
+  become_user: root
+  copy: src=bashrc_extra dest=/home/vagrant/.bashrc_extra
+
+- name: Add to bashrc file
+  become: true
+  become_user: root
+  lineinfile: >
+    dest=/home/vagrant/.bashrc
+    state=present
+    backup=yes
+    line='source .bashrc_extra'
+
+- name: Give vagrant user permission for log folder
+  become: true
+  become_user: root
+  file: path={{ log_path }} state=directory mode=0777 owner=vagrant recurse=yes group=vagrant

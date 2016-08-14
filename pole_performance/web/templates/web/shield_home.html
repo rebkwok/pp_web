@@ -1,0 +1,469 @@
+{% load static %}
+{% load socialaccount %}
+{% providers_media_js %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Pole Performance Competition">
+    <link rel="shortcut icon" href="{% static 'web/images/pplogo.png' %}">
+
+    <title>Pole Performance Competition</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="{% static 'web/shield/css/bootstrap.css' %}" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="{% static 'web/shield/css/main.css' %}" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'web/shield/css/icomoon.css' %}">
+    <link href="{% static 'web/shield/css/animate-custom.css' %}" rel="stylesheet">
+
+
+    
+    <link href='http://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Raleway:400,300,700' rel='stylesheet' type='text/css'>
+    
+    <script src="{% static 'web/shield/js/jquery.min.js' %}"></script>
+	<script type="text/javascript" src="{% static 'web/shield/js/modernizr.custom.js' %}"></script>
+    
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="{% static 'web/shield/js/html5shiv.js' %}"></script>
+      <script src="{% static 'web/shield/js/respond.min.js' %}"></script>
+    <![endif]-->
+  </head>
+
+  <body data-spy="scroll" data-offset="0" data-target="#navbar-main">
+  
+  
+  	<div id="navbar-main">
+      <!-- Fixed navbar -->
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+
+		  <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+		<span class="icon-bar"></span>
+		<span class="icon-bar"></span>
+		<span class="icon-bar"></span>
+		</button>
+        <a class="navbar-brand hidden-xs hidden-sm" href="/"><img src="{% static 'web/images/pplogo_black.png' %}" height="50px" style="margin-top: -15px;"></a>
+        </div>
+        <div class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li><a href="#home" class="smoothScroll">Home</a></li>
+			<li> <a href="#about" class="smoothScroll"> About</a></li>
+			<li> <a href="#entry-info" class="smoothScroll"> Entry Information</a></li>
+			<li> <a href="#judges" class="smoothScroll"> Judges</a></li>
+			<li> <a href="#organisers" class="smoothScroll"> Organisers</a></li>
+			  <li> <a href="#gallery" class="smoothScroll"> 2016 Gallery</a></li>
+			<li> <a href="#contact" class="smoothScroll"> Contact</a></li>
+          </ul>
+        </div>
+      </div>        <!--/.nav-collapse -->
+    </div>
+    </div>
+
+
+  
+  
+		<!-- ==== HEADERWRAP ==== -->
+	    <div id="headerwrap" id="home" name="home">
+			<header class="clearfix">
+	  		 	<div><img class="img-responsive center-block" src="{% static 'web/images/header_text.png' %}" alt=""></div>
+				<br/><br/>
+				<p>Presented by</br>
+				The Watermelon Studio & Carousel Fitness</p>
+	  		</header>	    
+	    </div><!-- /headerwrap -->
+
+		<!-- ==== GREYWRAP ==== -->
+		<div id="greywrap">
+			<div class="row">
+				<div class="col-lg-4 callout">
+					<!--<span class="icon icon-eye"></span>-->
+					<h2>Dates</h2>
+					<p>To be announced</p>
+				</div><!-- col-lg-4 -->
+
+				<div class="col-lg-4 callout">
+					<!--<span class="icon icon-stack"></span>-->
+					<h2>Categories</h2>
+					<p>Beginner - Intermediate - Advanced - Professional - Doubles</p>
+				</div><!-- col-lg-4 -->
+
+				<div class="col-lg-4 callout">
+					<!--<span class="icon icon-heart"></span>-->
+					<h2>Venue</h2>
+					<p>Carnegie Hall</br>Dunfermline</p>
+				</div><!-- col-lg-4 -->	
+			</div><!-- row -->
+		</div><!-- greywrap -->
+		
+		<!-- ==== ABOUT ==== -->
+		<div class="container" id="about" name="about">
+			<div class="row white">
+			<br>
+				<h1 class="centered">ABOUT POLE PERFORMANCE</h1>
+				<hr>
+				
+				<div class="col-lg-6">
+					<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. In interdum consectetur lorem id vehicula. In sit amet magna vestibulum, fringilla nisl in, mollis nisi. Sed tincidunt vitae ex non molestie. Nulla tortor tortor, consequat quis accumsan et, porttitor ut elit. Nullam nec vulputate lorem. In tincidunt magna mi, at dapibus nisi bibendum vitae. Etiam dapibus neque magna, eu auctor lectus semper at. Aenean luctus congue dolor, vel bibendum augue ultrices vel. Proin mollis tincidunt tincidunt. Etiam dictum laoreet porta. Nulla facilisi. isis ante. Vivamus id commodo magna. Sed luctus hendrerit leo vitae venenatis.</p>
+				</div><!-- col-lg-6 -->
+				
+				<div class="col-lg-6">
+					<p>Proin odio augue, mollis a ex a, consequat sodales nisl. Aliquam convallis nulla non turpis tincidunt aliquet. Aenean sed risus nec turpis blandit finibus quis vel felis. Sed vel nibh eget augue elementum maximus ac ut nunc. Pellentesque ullamcorper massa purus, eu vehicula risus sagittis a. Aenean consequat euismod porta. In vulputate elit sit amet vehicula cursus. Ut sagittis blandit tempor. Suspendisse at nisl vel orci rutrum pretium in eu risus. Ut congue ultrices metus. In lobortis purus non diam sollicitudin vestibulum.</p>
+				</div><!-- col-lg-6 -->
+			</div><!-- row -->
+		</div><!-- container -->
+		
+		<!-- ==== SECTION DIVIDER1 -->
+		<section class="section-divider textdivider divider1">
+			<div class="container">
+				<h1>ENTRIES OPEN JANUARY 2017</h1>
+				<hr>
+				<p>Please check back for further information.</p>
+			</div><!-- container -->
+		</section><!-- section -->
+		
+		
+		<!-- ==== ENTRIES ==== -->
+		<div class="container" id="entry-info" name="entry-info">
+			<br>
+			<br>
+			<div class="row">
+				<h2 class="centered">ENTRY INFORMATION</h2>
+				<hr>
+				<br>
+				<div class="col-lg-offset-2 col-lg-8">
+					<p>In iaculis non enim ut pretium. Proin ullamcorper congue magna. Nullam cursus massa id sem consectetur, eget ornare urna dictum. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Aenean sem felis, posuere sed dolor et, pharetra rutrum odio. Nam tincidunt, augue eu posuere pulvinar, orci dolor dictum est, sed mattis erat risus vel dolor. In consectetur sodales diam et mollis. Duis tortor metus, congue at elementum at, tempus id risus. Duis quis augue elementum, molestie neque accumsan, vestibulum nibh. Donec eget volutpat dui, sed placerat ex. Nulla malesuada commodo justo, at sagittis sem maximus eget.
+					</p>
+					<p>Aliquam at accumsan eros. Etiam non hendrerit dui. Phasellus consectetur ornare turpis, vitae rutrum tortor viverra accumsan. Morbi nec odio dolor. In scelerisque diam nec tortor ullamcorper ultrices. Vestibulum vel viverra sapien. In suscipit tincidunt augue vel ultricies. Nam et diam tincidunt, feugiat metus quis, blandit ex. Maecenas gravida vulputate tincidunt. Cras varius nulla a nulla ornare hendrerit.
+					</p>
+					<div class="centered"><a href="{% url 'entries:entries_home' %}" class="btn btn-large btn-purple">Enter now</a></div>
+				</div><!-- col-lg -->
+			</div><!-- row -->
+
+		</div><!-- container -->
+  		
+
+		<!-- ==== SECTION DIVIDER2 -->
+		<section class="section-divider textdivider divider2">
+			<div class="container">
+				<h1>SOME OTHER HEADING</h1>
+				<hr>
+				<p>Some other brief sound bite here.</p>
+			</div><!-- container -->
+		</section><!-- section -->
+
+		<!-- ==== JUDGES ==== -->
+		<div class="container" id="judges" name="judges">
+		<br>
+			<div class="row white centered">
+				<h1 class="centered">JUDGES</h1>
+				<hr>
+				<br>
+				<br>
+				<div class="col-lg-3 col-md-3 col-sm-6 centered">
+					<img class="img img-circle" src="{% static 'web/images/judgeA.jpg' %}" height="120px" width="120px" alt="">
+					<br>
+					<h4><b>Judge A</b></h4>
+					<p>Brief bio of Judge A</p>
+				</div><!-- col-lg-3 -->
+				
+				<div class="col-lg-3 col-md-3 col-sm-6 centered">
+					<img class="img img-circle" src="{% static 'web/images/judgeB.jpg' %}" height="120px" width="120px" alt="">
+					<br>
+					<h4><b>Judge B</b></h4>
+					<p>Brief bio of Judge B</p>
+				</div><!-- col-lg-3 -->
+				
+				<div class="col-lg-3 col-md-3 col-sm-6 centered">
+					<img class="img img-circle" src="{% static 'web/images/judgeC.jpg' %}" height="120px" width="120px" alt="">
+					<br>
+					<h4><b>Judge C</b></h4>
+					<p>Brief bio of Judge C</p>
+				</div><!-- col-lg-3 -->
+				
+				<div class="col-lg-3 col-md-3 col-sm-6 centered">
+					<img class="img img-circle" src="{% static 'web/images/judgeD.jpg' %}" height="120px" width="120px" alt="">
+					<br>
+					<h4><b>Judge D</b></h4>
+					<p>Brief bio of Judge D</p>
+				</div><!-- col-lg-3 -->
+				
+			</div><!-- row -->
+		</div><!-- container -->
+
+		<!-- ==== ORGANISERS ==== -->
+
+	<div class="container" id="organisers" name="organisers">
+			<div class="row white">
+			<br>
+				<h1 class="centered">ORGANISERS</h1>
+				<hr>
+
+				<div class="col-lg-6">
+					<div class="col-lg-4 centered">
+						<p><img class="img" src="{% static 'web/images/watermelon_logo.png' %}" width="100px" height="auto"></p>
+					</div>
+					<div class="col-lg-8">
+						<h2 class="centered">The Watermelon Studio</h2>
+						<p>Sed condimentum metus sit amet magna tincidunt accumsan. Integer mauris turpis, viverra ut iaculis a, posuere quis est. Aenean in nunc ac dolor facilisis cursus eu non neque. Aenean sed lacus ligula. Sed in vehicula magna. Nunc euismod metus ex, vitae rhoncus ex rhoncus ac. Suspendisse euismod vulputate sodales. Morbi et aliquam ipsum. Donec interdum turpis at lorem molestie ultricies. Etiam orci magna, rutrum at lacus sit amet, aliquet sodales dui.</p>
+					</div>
+				</div><!-- col-lg-6 -->
+
+				<div class="col-lg-6">
+					<div class="col-lg-4 centered">
+						<p><img class="img" src="{% static 'web/images/carousel_logo.jpg' %}" width="100px" height="auto"></p>
+					</div>
+					<div class="col-lg-8">
+						<h2 class="centered">Carousel Fitness</h2>
+						<p>Fusce pharetra lacinia mi non iaculis. Ut congue pretium odio, eget dignissim lacus hendrerit sed. Donec cursus ut nulla id sagittis. Donec semper in metus at lacinia. Proin ut placerat leo, eu feugiat dolor. Curabitur justo ipsum, sagittis ac ultrices sit amet, ullamcorper feugiat nibh. Phasellus molestie nec nisi nec tempor. Sed id est nec ipsum tempus tempor eget non leo. </p>
+					</div>				</div><!-- col-lg-6 -->
+			</div><!-- row -->
+		</div><!-- container -->
+
+
+		<!-- ==== SECTION DIVIDER3 -->
+		<section class="section-divider textdivider divider3">
+			<div class="container">
+				<h1>SPONSORSHIP OPTIONS AVAILABLE</h1>
+				<hr>
+				<p>Contact us for details</p>
+			</div><!-- container -->
+		</section><!-- section -->
+		
+		<!-- ==== PORTFOLIO ==== -->
+		<div class="container" id="gallery" name="gallery">
+		<br>
+			<div class="row">
+				<br>
+				<h1 class="centered">2016 GALLERY</h1>
+				<hr>
+				<br>
+				<br>
+			</div><!-- /row -->
+			<div class="container">
+			<div class="row">	
+			
+				<!-- PORTFOLIO IMAGE 1 -->
+				<div class="col-md-4 ">
+			    	<div class="grid mask">
+						<a data-toggle="modal" href="#modal1">
+							<div class="gallery-box">
+							<img class="img-responsive" src="{% static 'web/images/gallery/gallery1.jpg' %}" alt="">
+							</div>
+						</a>
+			    	</div><!-- /grid-mask -->
+				</div><!-- /col -->
+				
+				
+						 <!-- MODAL SHOW THE PORTFOLIO IMAGE. -->
+						      
+						  <div class="modal fade" id="modal1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+						    <div class="modal-dialog">
+						      <div class="modal-content">
+						        <div class="modal-header">
+						          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						          <h4 class="modal-title">Pole Performance 2016</h4>
+						        </div>
+						        <div class="modal-body">
+						          <p><img class="img-responsive" src="{% static 'web/images/gallery/gallery1.jpg' %}" alt=""></p>
+						        </div>
+						      </div><!-- /.modal-content -->
+						    </div><!-- /.modal-dialog -->
+						  </div><!-- /.modal -->
+				
+				
+				<!-- PORTFOLIO IMAGE 2 -->
+				<div class="col-md-4">
+			    	<div class="grid mask">
+						<a data-toggle="modal" href="#modal2">
+							<div class="gallery-box">
+							<img class="img-responsive" src="{% static 'web/images/gallery/gallery2.jpg' %}" alt="">
+							</div>
+						</a>
+			    	</div><!-- /grid-mask -->
+				</div><!-- /col -->
+
+				<!-- MODAL SHOW THE PORTFOLIO IMAGE. -->
+
+						  <div class="modal fade" id="modal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+						    <div class="modal-dialog">
+						      <div class="modal-content">
+						        <div class="modal-header">
+						          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						          <h4 class="modal-title">Pole Performance 2016</h4>
+						        </div>
+						        <div class="modal-body">
+						          <p><img class="img-responsive" src="{% static 'web/images/gallery/gallery2.jpg' %}" alt=""></p>
+						        </div>
+						      </div><!-- /.modal-content -->
+						    </div><!-- /.modal-dialog -->
+						  </div><!-- /.modal -->
+
+
+				<!-- PORTFOLIO IMAGE 3 -->
+				<div class="col-md-4">
+			    	<div class="grid mask">
+						<a data-toggle="modal" href="#modal3">
+							<div class="gallery-box">
+							<img class="img-responsive" src="{% static 'web/images/gallery/gallery3.jpg' %}" alt="">
+							</div>
+						</a>
+			    	</div><!-- /grid-mask -->
+				</div><!-- /col -->
+			</div><!-- /row -->
+
+				<!-- MODAL SHOW THE PORTFOLIO IMAGE. -->
+
+						  <div class="modal fade" id="modal3" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+						    <div class="modal-dialog">
+						      <div class="modal-content">
+						        <div class="modal-header">
+						          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						          <h4 class="modal-title">Pole Performance 2016</h4>
+						        </div>
+						        <div class="modal-body">
+						          <p><img class="img-responsive" src="{% static 'web/images/gallery/gallery3.jpg' %}" alt=""></p>
+						        </div>
+						      </div><!-- /.modal-content -->
+						    </div><!-- /.modal-dialog -->
+						  </div><!-- /.modal -->
+
+
+				<!-- PORTFOLIO IMAGE 4 -->
+			<div class="row">	
+				<div class="col-md-4 ">
+			    	<div class="grid mask">
+						<a data-toggle="modal" href="#modal4">
+							<div class="gallery-box">
+							<img class="img-responsive" src="{% static 'web/images/gallery/gallery4.jpg' %}" alt="">
+							</div>
+						</a>
+			    	</div><!-- /grid-mask -->
+				</div><!-- /col -->
+
+
+				<!-- MODAL SHOW THE PORTFOLIO IMAGE. -->
+
+						  <div class="modal fade" id="modal4" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+						    <div class="modal-dialog">
+						      <div class="modal-content">
+						        <div class="modal-header">
+						          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						          <h4 class="modal-title">Pole Performance 2016</h4>
+						        </div>
+						        <div class="modal-body">
+						          <p><img class="img-responsive" src="{% static 'web/images/gallery/gallery4.jpg' %}" alt=""></p>
+						        </div>
+						      </div><!-- /.modal-content -->
+						    </div><!-- /.modal-dialog -->
+						  </div><!-- /.modal -->
+
+
+				<!-- PORTFOLIO IMAGE 5 -->
+				<div class="col-md-4">
+			    	<div class="grid mask">
+						<a data-toggle="modal" href="#modal5">
+							<div class="gallery-box">
+							<img class="img-responsive" src="{% static 'web/images/gallery/gallery5.jpg' %}" alt="">
+							</div>
+						</a>
+			    	</div><!-- /grid-mask -->
+				</div><!-- /col -->
+
+				<!-- MODAL SHOW THE PORTFOLIO IMAGE. -->
+
+						  <div class="modal fade" id="modal5" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+						    <div class="modal-dialog">
+						      <div class="modal-content">
+						        <div class="modal-header">
+						          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						          <h4 class="modal-title">Pole Performance 2016</h4>
+						        </div>
+						        <div class="modal-body">
+						          <p><img class="img-responsive" src="{% static 'web/images/gallery/gallery5.jpg' %}" alt=""></p>
+						        </div>
+						      </div><!-- /.modal-content -->
+						    </div><!-- /.modal-dialog -->
+						  </div><!-- /.modal -->
+
+
+				<!-- PORTFOLIO IMAGE 6 -->
+				<div class="col-md-4">
+			    	<div class="grid mask">
+						<a data-toggle="modal" href="#modal6">
+							<div class="gallery-box">
+							<img class="img-responsive" src="{% static 'web/images/gallery/gallery6.jpg' %}" alt="">
+							</div>
+						</a>
+			    	</div><!-- /grid-mask -->
+				</div><!-- /col -->
+
+				<!-- MODAL SHOW THE PORTFOLIO IMAGE. -->
+
+						  <div class="modal fade" id="modal6" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+						    <div class="modal-dialog">
+						      <div class="modal-content">
+						        <div class="modal-header">
+						          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						          <h4 class="modal-title">Pole Performance 2016</h4>
+						        </div>
+						        <div class="modal-body">
+						          <p><img class="img-responsive" src="{% static 'web/images/gallery/gallery6.jpg' %}" alt=""></p>
+						        </div>
+						      </div><!-- /.modal-content -->
+						    </div><!-- /.modal-dialog -->
+						  </div><!-- /.modal -->
+
+
+			</div><!-- /row -->
+			<br>
+			<br>
+		</div><!-- /row -->
+	</div><!-- /container -->
+
+		
+		<div class="container" id="contact" name="contact">
+			<div class="row">
+			<br>
+				<h1 class="centered">CONTACT US</h1>
+				<hr>
+				<br>
+				<div class="col-lg-4 col-lg-offset-4">
+					<p><span class="icon icon-home"></span> Address<br/>
+						<span class="icon icon-phone"></span> 0131 xxx xxxx <br/>
+						<span class="icon icon-mobile"></span> 077xx xxx xxxx <br/>
+						<span class="icon icon-envelop"></span> <a href="#"> poleperformance@hotmail.com</a> <br/>
+						<span class="icon icon-twitter"></span> <a href="#"> @poleperformance </a> <br/>
+						<span class="icon icon-facebook"></span> <a href="https://www.facebook.com/Pole-Performance-Competition-111934239163033/"> Pole Peformance Competition </a> <br/>
+					</p>
+				</div><!-- col -->
+
+
+			</div><!-- row -->
+		
+		</div><!-- container -->
+
+		<div id="footerwrap">
+			<div class="container">
+				<h6>Site developed by Becky Smith</h6>
+			</div>
+		</div>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+		
+
+	<script type="text/javascript" src="{% static 'web/shield/js/bootstrap.min.js' %}"></script>
+	<script type="text/javascript" src="{% static 'web/shield/js/retina.js' %}"></script>
+	<script type="text/javascript" src="{% static 'web/shield/js/jquery.easing.1.3.js' %}"></script>
+    <script type="text/javascript" src="{% static 'web/shield/js/smoothscroll.js' %}"></script>
+	<script type="text/javascript" src="{% static 'web/shield/js/jquery-func.js' %}"></script>
+  </body>
+</html>

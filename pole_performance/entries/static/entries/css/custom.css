@@ -1,0 +1,24 @@
+.account-menu {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    padding-left: 0 !important;
+    margin-top: 2px !important;
+    margin-left: 0 !important;
+    margin-bottom: 0 !important;
+    font-family: "Lato", sans-serif;
+}
+
+.welcome-menu {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    margin-top: 2px !important;
+    margin-bottom: 0 !important;
+    color: white;
+    font-family: "Lato", sans-serif;
+}
+
+body {
+    margin-top: 60px;
+    color: black;
+    font-family:"Lato", sans-serif;
+}

@@ -1,0 +1,4 @@
+---
+virtualenv_path: /src/pole_performance/venv
+project_root_path: /src/pole_performance
+python3_path: /usr/bin/python3.4

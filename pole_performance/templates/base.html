@@ -1,0 +1,116 @@
+{% load static %}
+{% load socialaccount %}
+{% providers_media_js %}
+{% load accounttags %}
+
+
+<!DOCTYPE html>
+<html lang="en" class="no-js" >
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<meta name="description" content="Pole Performance Competition">
+<!--[if IE]>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<![endif]-->
+<title>Pole Performance Competition</title>
+<link rel="shortcut icon" href="{% static 'web/images/pplogo.png' %}">
+<!-- BOOTSTRAP CORE CSS -->
+<link href="{% static 'web/shield/css/bootstrap.css' %}" rel="stylesheet" />
+<!-- CUSTOM CSS -->
+<link href="{% static 'web/shield/css/main.css' %}" rel="stylesheet" />
+<link rel="stylesheet" href="{% static 'web/shield/css/icomoon.css' %}">
+<link href="{% static 'web/shield/css/animate-custom.css' %}" rel="stylesheet">
+<link href="{% static 'entries/css/custom.css' %}" rel="stylesheet">
+
+<script src="{% static 'web/shield/js/jquery.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'web/shield/js/modernizr.custom.js' %}"></script>
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="{% static 'web/shield/js/html5shiv.js' %}"></script>
+      <script src="{% static 'web/shield/js/respond.min.js' %}"></script>
+    <![endif]-->
+</head>
+
+  	<div id="navbar-main">
+      <!-- Fixed navbar -->
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+
+		  <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+		<span class="icon-bar"></span>
+		<span class="icon-bar"></span>
+		<span class="icon-bar"></span>
+		</button>
+        <a class="navbar-brand hidden-xs hidden-sm" href="/"><img src="{% static 'web/images/pplogo_black.png' %}" height="50px" style="margin-top: -15px;"></a>
+        </div>
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav navbar-right">
+                {% if request.user.is_authenticated %}
+                <li class="dropdown">
+                    <div class="welcome-menu">Signed in as {{request.user|upper}}</div>
+                  <a href="#" class="account-menu dropdown-toggle active-nav-login" data-toggle="dropdown" role="button" aria-expanded="false">ACCOUNT<span class="caret"></span></a>
+                  <ul class="dropdown-menu" role="menu">
+                    <li><a href="{% url 'account_change_password' %}">Change password</a></li>
+                    <li><a href="{% url 'profile:profile' %}">Profile</a></li>
+                      {% if not request.user|has_disclaimer %}
+                        <li><a href="{% url 'disclaimer_form' %}">Disclaimer Form</a></li>
+                      {% endif %}
+                    <li><a href="{% url 'account_logout' %}">Sign Out</a></li>
+                    {% if request.user.is_staff %}
+                       <li class="active-nav"><a href="#">Admin</a></li>
+                    {% endif %}
+                  </ul>
+                </li>
+                {% else %}
+                <div class="welcome-menu">Not signed in</div>
+                <li class="active-nav-login account-menu"><a class="account-menu" href="{% url 'account_login' %}?next={{request.get_full_path}}">Sign In</a></li>
+                {% endif %}
+            </ul>
+        </div>
+      </div>        <!--/.nav-collapse -->
+    </div>
+    </div>
+
+<!--MENU SECTION END-->
+
+        {% if messages %}
+          <div class="row">
+            <div class="col-sm-12">
+                {% for message in messages %}
+                <div {% if message.tags and message.tags == 'error' %}
+                            class="message alert alert-danger"
+                     {% elif message.tags %}
+                            class="message alert alert-{{ message.tags }}"
+                     {% endif %}>
+                    {% if 'safe' in message.tags %}
+                        {{ message|safe }}
+                    {% else %}
+                        {{ message }}
+                    {% endif %}</div>
+                {% endfor %}
+            </div>
+          </div>
+        {% endif %}
+
+
+{% block content %}{% endblock content %}
+
+
+<!-- JAVASCRIPT FILES PLACED AT THE BOTTOM TO REDUCE THE LOADING TIME -->
+
+<script>
+    var pic2 = "{% static 'web/images/pp1.jpg' %}";
+</script>
+	<script type="text/javascript" src="{% static 'web/shield/js/bootstrap.min.js' %}"></script>
+	<script type="text/javascript" src="{% static 'web/shield/js/retina.js' %}"></script>
+	<script type="text/javascript" src="{% static 'web/shield/js/jquery.easing.1.3.js' %}"></script>
+    <script type="text/javascript" src="{% static 'web/shield/js/smoothscroll.js' %}"></script>
+	<script type="text/javascript" src="{% static 'web/shield/js/jquery-func.js' %}"></script>
+<!-- CUSTOM SCRIPTS -->
+
+
+</body>
+</html>

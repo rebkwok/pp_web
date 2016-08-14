@@ -1,0 +1,13 @@
+export SRV_IP="$(ip -o -f inet addr show eth1 | awk -F ' +|/' '{print $4}')"
+cd /src/pole_performance
+. /src/pole_performance/venv/bin/activate
+
+echo "Application is running at 127.0.0.1:7700"
+
+alias go="cd /src/pole_performance"
+alias venv=". /src/pole_performance/venv/bin/activate"
+alias runserver="cd /src/pole_performance
+venv
+echo 'Application is running at 127.0.0.1:7700'
+./manage.py runserver 0.0.0.0:18000"
+
