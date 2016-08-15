@@ -1,58 +1,10 @@
+{% extends 'base.html' %}
 {% load static %}
 {% load socialaccount %}
 {% providers_media_js %}
 
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Pole Performance Competition">
-    <link rel="shortcut icon" href="{% static 'web/images/pplogo.png' %}">
-
-    <title>Pole Performance Competition</title>
-
-    <!-- Bootstrap core CSS -->
-    <link href="{% static 'web/shield/css/bootstrap.css' %}" rel="stylesheet">
-
-    <!-- Custom styles for this template -->
-    <link href="{% static 'web/shield/css/main.css' %}" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'web/shield/css/icomoon.css' %}">
-    <link href="{% static 'web/shield/css/animate-custom.css' %}" rel="stylesheet">
-
-
-    
-    <link href='http://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic' rel='stylesheet' type='text/css'>
-    <link href='http://fonts.googleapis.com/css?family=Raleway:400,300,700' rel='stylesheet' type='text/css'>
-    
-    <script src="{% static 'web/shield/js/jquery.min.js' %}"></script>
-	<script type="text/javascript" src="{% static 'web/shield/js/modernizr.custom.js' %}"></script>
-    
-    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!--[if lt IE 9]>
-      <script src="{% static 'web/shield/js/html5shiv.js' %}"></script>
-      <script src="{% static 'web/shield/js/respond.min.js' %}"></script>
-    <![endif]-->
-  </head>
-
-  <body data-spy="scroll" data-offset="0" data-target="#navbar-main">
-  
-  
-  	<div id="navbar-main">
-      <!-- Fixed navbar -->
-    <div class="navbar navbar-inverse navbar-fixed-top">
-      <div class="container">
-        <div class="navbar-header">
-
-		  <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-		<span class="icon-bar"></span>
-		<span class="icon-bar"></span>
-		<span class="icon-bar"></span>
-		</button>
-        <a class="navbar-brand hidden-xs hidden-sm" href="/"><img src="{% static 'web/images/pplogo_black.png' %}" height="50px" style="margin-top: -15px;"></a>
-        </div>
-        <div class="navbar-collapse collapse">
-          <ul class="nav navbar-nav">
+{% block nav_content %}
+    <ul class="nav navbar-nav">
             <li><a href="#home" class="smoothScroll">Home</a></li>
 			<li> <a href="#about" class="smoothScroll"> About</a></li>
 			<li> <a href="#entry-info" class="smoothScroll"> Entry Information</a></li>
@@ -60,13 +12,11 @@
 			<li> <a href="#organisers" class="smoothScroll"> Organisers</a></li>
 			  <li> <a href="#gallery" class="smoothScroll"> 2016 Gallery</a></li>
 			<li> <a href="#contact" class="smoothScroll"> Contact</a></li>
-          </ul>
-        </div>
-      </div>        <!--/.nav-collapse -->
-    </div>
-    </div>
+    </ul>
+{% endblock %}
 
 
+{% block content %}
   
   
 		<!-- ==== HEADERWRAP ==== -->
@@ -449,21 +399,4 @@
 		
 		</div><!-- container -->
 
-		<div id="footerwrap">
-			<div class="container">
-				<h6>Site developed by Becky Smith</h6>
-			</div>
-		</div>
-
-    <!-- Bootstrap core JavaScript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-		
-
-	<script type="text/javascript" src="{% static 'web/shield/js/bootstrap.min.js' %}"></script>
-	<script type="text/javascript" src="{% static 'web/shield/js/retina.js' %}"></script>
-	<script type="text/javascript" src="{% static 'web/shield/js/jquery.easing.1.3.js' %}"></script>
-    <script type="text/javascript" src="{% static 'web/shield/js/smoothscroll.js' %}"></script>
-	<script type="text/javascript" src="{% static 'web/shield/js/jquery-func.js' %}"></script>
-  </body>
-</html>
+{% endblock content %}

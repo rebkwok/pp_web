@@ -5,7 +5,6 @@
     margin-top: 2px !important;
     margin-left: 0 !important;
     margin-bottom: 0 !important;
-    font-family: "Lato", sans-serif;
 }
 
 .welcome-menu {
@@ -14,11 +13,8 @@
     margin-top: 2px !important;
     margin-bottom: 0 !important;
     color: white;
-    font-family: "Lato", sans-serif;
 }
 
 body {
     margin-top: 60px;
-    color: black;
-    font-family:"Lato", sans-serif;
 }
