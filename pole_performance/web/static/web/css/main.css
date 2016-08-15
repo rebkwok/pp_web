@@ -274,7 +274,7 @@ a:after {
    ========================================================================== */
 
 #headerwrap {
-	background: url(../../images/pp1.jpg) no-repeat center center;
+	background: url(../images/pp1.jpg) no-repeat center center;
 	margin-top: -50px;
 	padding-top:120px;
 	text-align:center;
@@ -415,24 +415,20 @@ a:after {
 /* Section Dividers Backgrounds */
 
 .divider1 {
-	background-image: url('../../images/pp_divider1.jpg')
+	background-image: url('../images/pp_divider1.jpg')
 }
 
 .divider2 {
-	background-image: url('../../images/pp_divider2.jpg')
+	background-image: url('../images/pp_divider2.jpg')
 }
 
 .divider3 {
-	background-image: url('../../images/pp5.jpg');
+	background-image: url('../images/pp5.jpg');
 	margin-top: 0px;
 }
 
 .divider4 {
-	background-image: url('../../images/pp4.jpg')
-}
-
-.divider6 {
-	background-image: url('../img/bg/divider6.jpg')
+	background-image: url('../images/pp4.jpg')
 }
 
 
