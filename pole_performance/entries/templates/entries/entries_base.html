@@ -15,7 +15,7 @@
         <li><a href="{% url 'entries:entries_home' %}" class="smoothScroll">Entry Information</a></li>
         <li><a href="#" class="smoothScroll">Technical Specs</a></li>
         <li><a href="#" class="smoothScroll">Rules</a></li>
-        <li><a href="#" class="smoothScroll">My entries</a></li>
+        {% if user.is_authenticated %}<li><a href="#" class="smoothScroll">My entries</a></li>{% endif %}
     </ul>
 
     <ul class="nav navbar-nav pull-right account-nav">
