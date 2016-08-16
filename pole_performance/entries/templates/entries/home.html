@@ -1,18 +1,35 @@
 {% extends 'entries/entries_base.html' %}
 
-{% load accounttags %}
+{% load accounttags entriestags %}
 
     {% block content %}
+
+    {% entries_open as entries_open %}
+
     <div class="extra-top-margin">
-        {% if not user.is_authenticated %}
-            <div class="pull-right">To submit an entry or view your previous submission,
-                please <a href="{% url 'login' %}?next=/entries/">log in</a>.</div>
-        {% endif %}
+            {% if not user.is_authenticated %}
+                <div class="pull-right">To submit an entry or view your previous submission,
+                    please <a href="{% url 'login' %}?next=/entries/">log in</a>.</div><br/>
+            {% endif %}
+            {% if entries_open %}
+                <div class="pull-right" {% if not user.is_authenticated %} data-toggle="tooltip" data-placement="left" title="Log in to enter"{% endif %}>
+                <a {% if not user.is_authenticated %}class="btn btn-purple disabled"
+                   {% else %}class="btn btn-purple"{% endif %} href="#">ENTER NOW</a></div>
+            {% endif %}
 
-        <h1>Entries</h1>
 
-        <p> dfkjsdklfjwepo safsdf akfjaoifj </p>
+        <h1 id="entry-info">Entry Information</h1>
 
+        <p>Entry information here</p>
+
+
+        <h1 id="technical-specs">Technical Specifications</h1>
+
+         <p>Technical Specs here</p>
+
+        <h1 id="rules">Rules</h1>
+
+         <p>Rules here</p>
     </div>
     {% endblock content %}
 

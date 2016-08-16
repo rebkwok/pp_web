@@ -20,7 +20,7 @@ env = environ.Env(DEBUG=(bool, False),
                   USE_MAILCATCHER=(bool, False),
                   TRAVIS=(bool, False),
                   HEROKU=(bool, False),
-                  SEND_ALL_STUDIO_EMAILS=(bool, False)
+                  ENTRIES_OPEN=(bool, False)
                   )
 environ.Env.read_env(root('pole_performance/.env'))  # reading .env file
 
@@ -214,7 +214,6 @@ EMAIL_PORT = 587
 DEFAULT_FROM_EMAIL = 'poleperformanceweb@gmail.com'
 DEFAULT_STUDIO_EMAIL = env('DEFAULT_STUDIO_EMAIL')
 SUPPORT_EMAIL = 'rebkwok@gmail.com'
-SEND_ALL_STUDIO_EMAILS = env('SEND_ALL_STUDIO_EMAILS')
 
 
 # #####LOGGING######
@@ -303,6 +302,8 @@ if 'test' in sys.argv:  # use local cache for tests
         }
     }
 
+
+ENTRIES_OPEN = env('ENTRIES_OPEN')
 
 # if DEBUG and 'test' not in sys.argv:  # pragma: no cover
 #     ENABLE_DEBUG_TOOLBAR = True
