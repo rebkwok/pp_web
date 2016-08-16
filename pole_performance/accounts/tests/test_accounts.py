@@ -99,7 +99,7 @@ class DisclaimerFormTests(TestSetupMixin, TestCase):
         self.assertEqual(
             form.errors,
             {'age_over_18_confirmed': [
-                'You must confirm that you are over 18'
+                'You must confirm that you are 18 or over'
             ]}
         )
 
@@ -183,7 +183,7 @@ class ProfileUpdateViewTests(TestSetupMixin, TestCase):
                           first_name="Test",
                           last_name="User",
                           )
-        url = reverse('profile:update_profile')
+        url = reverse('accounts:update_profile')
         request = self.factory.post(
             url, {'username': user.username,
                   'first_name': 'Fred', 'last_name': user.last_name}
@@ -206,7 +206,7 @@ class ProfileTests(TestSetupMixin, TestCase):
         cls.user_no_disclaimer = mommy.make(User)
 
     def _get_response(self, user):
-        url = reverse('profile:profile')
+        url = reverse('accounts:profile')
         request = self.factory.get(url)
         request.user = user
         return profile(request)
@@ -254,14 +254,13 @@ class CustomLoginViewTests(TestSetupMixin, TestCase):
             {'login': self.user.username, 'password': 'password'}
         )
         self.assertEqual(resp.status_code, 302)
-        self.assertIn(reverse('profile:profile'), resp.url)
+        self.assertIn(reverse('accounts:profile'), resp.url)
 
     def test_login_from_password_change(self):
         # facebook url is modified to return to the profile page
         resp = self.client.get(
             reverse('login') + '?next=/accounts/password/change/'
         )
-
         # url is weirdly formatted one way if we run only this test and the
         # other if we run all. Not sure why yet, but it would behave correctly
         # either way
@@ -290,7 +289,7 @@ class CustomLoginViewTests(TestSetupMixin, TestCase):
         )
 
         self.assertEqual(resp.status_code, 302)
-        self.assertIn(reverse('profile:profile'), resp.url)
+        self.assertIn(reverse('accounts:profile'), resp.url)
 
         resp = self.client.post(
             reverse('login') + '?next=/accounts/password/set/',
@@ -298,7 +297,7 @@ class CustomLoginViewTests(TestSetupMixin, TestCase):
         )
 
         self.assertEqual(resp.status_code, 302)
-        self.assertIn(reverse('profile:profile'), resp.url)
+        self.assertIn(reverse('accounts:profile'), resp.url)
 
 
 class DisclaimerModelTests(TestCase):
@@ -363,7 +362,7 @@ class DisclaimerCreateViewTests(TestSetupMixin, TestCase):
         }
 
     def _get_response(self, user):
-        url = reverse('disclaimer_form')
+        url = reverse('accounts:disclaimer_form')
         session = _create_session()
         request = self.factory.get(url)
         request.session = session
@@ -374,7 +373,7 @@ class DisclaimerCreateViewTests(TestSetupMixin, TestCase):
         return view(request)
 
     def _post_response(self, user, form_data):
-        url = reverse('disclaimer_form')
+        url = reverse('accounts:disclaimer_form')
         session = _create_session()
         request = self.factory.post(url, form_data)
         request.session = session
@@ -385,7 +384,7 @@ class DisclaimerCreateViewTests(TestSetupMixin, TestCase):
         return view(request)
 
     def test_login_required(self):
-        url = reverse('disclaimer_form')
+        url = reverse('accounts:disclaimer_form')
         resp = self.client.get(url)
         redirected_url = reverse('account_login') + "?next={}".format(url)
 
@@ -412,7 +411,8 @@ class DisclaimerCreateViewTests(TestSetupMixin, TestCase):
 
 
     def test_submitting_form_without_valid_password(self):
-        self.assertEqual(OnlineDisclaimer.objects.count(), 0)
+        # setup creates 1 user with online disclaimer
+        self.assertEqual(OnlineDisclaimer.objects.count(), 1)
         self.user_no_disclaimer.set_password('test_password')
         self.user_no_disclaimer.save()
 
@@ -422,12 +422,14 @@ class DisclaimerCreateViewTests(TestSetupMixin, TestCase):
             "Password is incorrect",
             str(resp.content)
         )
+        self.assertEqual(OnlineDisclaimer.objects.count(), 1)
 
     def test_submitting_form_creates_disclaimer(self):
-        self.assertEqual(OnlineDisclaimer.objects.count(), 0)
+        # setup creates 1 user with online disclaimer
+        self.assertEqual(OnlineDisclaimer.objects.count(), 1)
         self.user_no_disclaimer.set_password('password')
         self._post_response(self.user_no_disclaimer, self.form_data)
-        self.assertEqual(OnlineDisclaimer.objects.count(), 1)
+        self.assertEqual(OnlineDisclaimer.objects.count(), 2)
 
         # user now has disclaimer and can't re-access
         resp = self._get_response(self.user_no_disclaimer)
@@ -443,7 +445,7 @@ class DisclaimerCreateViewTests(TestSetupMixin, TestCase):
         resp = self._post_response(self.user_no_disclaimer, self.form_data)
         self.assertEqual(resp.status_code, 302)
         # no new disclaimer created
-        self.assertEqual(OnlineDisclaimer.objects.count(), 1)
+        self.assertEqual(OnlineDisclaimer.objects.count(), 2)
 
 
     def test_message_shown_if_no_usable_password(self):
@@ -459,7 +461,8 @@ class DisclaimerCreateViewTests(TestSetupMixin, TestCase):
         )
 
     def test_cannot_complete_disclaimer_without_usable_password(self):
-        self.assertEqual(OnlineDisclaimer.objects.count(), 0)
+        # setup creates 1 user with online disclaimer
+        self.assertEqual(OnlineDisclaimer.objects.count(), 1)
         user = mommy.make(User)
         user.set_unusable_password()
         user.save()
@@ -469,19 +472,19 @@ class DisclaimerCreateViewTests(TestSetupMixin, TestCase):
             "No password set on account.",
             str(resp.content)
         )
-        self.assertEqual(OnlineDisclaimer.objects.count(), 0)
+        self.assertEqual(OnlineDisclaimer.objects.count(), 1)
 
         user.set_password('password')
         user.save()
         self._post_response(user, self.form_data)
-        self.assertEqual(OnlineDisclaimer.objects.count(), 1)
+        self.assertEqual(OnlineDisclaimer.objects.count(), 2)
 
 
 class DataProtectionViewTests(TestSetupMixin, TestCase):
 
     def test_get_data_protection_view(self):
         # no need to be a logged in user to access
-        resp = self.client.get(reverse('data_protection'))
+        resp = self.client.get(reverse('accounts:data_protection'))
         self.assertEqual(resp.status_code, 200)
 
 

@@ -17,23 +17,16 @@ from django.conf import settings
 from django.conf.urls import include, url
 from django.conf.urls.static import static
 from django.contrib import admin
-from accounts.views import CustomLoginView, DisclaimerCreateView, \
-    data_protection, subscribe_view
+
+from accounts.views import CustomLoginView
+
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^', include('web.urls', namespace='web')),
-    url(
-        r'^data-protection-statement/$', data_protection,
-        name='data_protection'
-    ),
     url(r'^entries/', include('entries.urls', namespace='entries')),
-    url(r'^accounts/profile/', include('accounts.urls', namespace='profile')),
     url(r'^accounts/login/$', CustomLoginView.as_view(), name='login'),
-    url(
-        r'^accounts/disclaimer/$', DisclaimerCreateView.as_view(),
-        name='disclaimer_form'
-    ),
+    url(r'^accounts/', include('accounts.urls', namespace='accounts')),
     url(r'^accounts/', include('allauth.urls')),
     url(r'^payments/ipn-paypal-notify/', include('paypal.standard.ipn.urls')),
 ]
@@ -42,3 +35,7 @@ if settings.HEROKU:
     urlpatterns += static(
         settings.STATIC_URL, document_root=settings.STATIC_ROOT
     )
+
+if settings.DEBUG:  # pragma: no cover
+    import debug_toolbar
+    urlpatterns.append(url(r'^__debug__/', include(debug_toolbar.urls)))

@@ -3,14 +3,37 @@
 import logging
 import pytz
 
+from django.core.cache import cache
 from django.db import models
 from django.contrib.auth.models import User
+from django.db.models.signals import post_delete
+from django.dispatch import receiver
 from django.utils import timezone
 
 from activitylog.models import ActivityLog
 
 
 logger = logging.getLogger(__name__)
+
+
+def disclaimer_cache_key(user):
+    return 'user_{}_has_disclaimer'.format(user.id)
+
+
+def has_disclaimer(user):
+    cache_key = disclaimer_cache_key(user)
+    # get disclaimer from cache
+    cached_disclaimer = cache.get(cache_key)
+    if cached_disclaimer:
+        cached_disclaimer = bool(cached_disclaimer)
+    else:
+        cached_disclaimer = bool(
+            OnlineDisclaimer.objects.select_related('user').filter(user=user)
+        )
+        # set cache; never expires (will only be invalidated if disclaimer is
+        # deleted - see post_delete signal)
+        cache.set(cache_key, cached_disclaimer, 0)
+    return cached_disclaimer
 
 
 # Decorator for django models that contain readonly fields.
@@ -146,6 +169,16 @@ class OnlineDisclaimer(models.Model):
             ActivityLog.objects.create(
                 log="Online disclaimer created: {}".format(self.__str__())
             )
+
+            # set cache; never expires (will only be invalidated if disclaimer
+            # is deleted - see post_delete signal)
+            cache.set(disclaimer_cache_key(self.user), True, 0)
+
         super(OnlineDisclaimer, self).save()
 
 
+@receiver(post_delete, sender=OnlineDisclaimer)
+def update_cache(sender, instance, **kwargs):
+    # set cache to False
+    if has_disclaimer(instance.user):
+        cache.set(disclaimer_cache_key(instance.user), False, 0)

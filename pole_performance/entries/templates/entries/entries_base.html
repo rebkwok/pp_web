@@ -5,19 +5,29 @@
 {% providers_media_js %}
 {% load accounttags %}
 
-{% block extra_styles %}<link href="{% static 'entries/css/custom.css' %}" rel="stylesheet">{% endblock %}
+{% block extra_styles %}
+<link href="{% static 'entries/css/custom.css' %}" rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="{% static 'entries/css/jquery.datetimepicker.css' %}"/ >
+{% endblock %}
 
 {% block nav_content %}
-    <ul class="nav navbar-nav pull-right">
+    <ul class="nav navbar-nav">
+        <li><a href="{% url 'entries:entries_home' %}" class="smoothScroll">Entry Information</a></li>
+        <li><a href="#" class="smoothScroll">Technical Specs</a></li>
+        <li><a href="#" class="smoothScroll">Rules</a></li>
+        <li><a href="#" class="smoothScroll">My entries</a></li>
+    </ul>
+
+    <ul class="nav navbar-nav pull-right account-nav">
         {% if request.user.is_authenticated %}
         <li class="dropdown">
-            <div class="welcome-menu">Signed in as {{request.user|upper}}</div>
-          <a href="#" class="account-menu dropdown-toggle active-nav-login" data-toggle="dropdown" role="button" aria-expanded="false">Account<span class="caret"></span></a>
+            <div class="welcome-menu">Signed in as {{request.user}}</div>
+          <a href="#" class="account-menu dropdown-toggle active-nav-login" data-toggle="dropdown" role="button" aria-expanded="false">My Account<span class="caret"></span></a>
           <ul class="dropdown-menu" role="menu">
             <li><a href="{% url 'account_change_password' %}">Change password</a></li>
-            <li><a href="{% url 'profile:profile' %}">Profile</a></li>
+            <li><a href="{% url 'accounts:profile' %}">Profile</a></li>
               {% if not request.user|has_disclaimer %}
-                <li><a href="{% url 'disclaimer_form' %}">Disclaimer Form</a></li>
+                <li><a href="{% url 'accounts:disclaimer_form' %}">Disclaimer Form</a></li>
               {% endif %}
             <li><a href="{% url 'account_logout' %}">Sign Out</a></li>
             {% if request.user.is_staff %}
@@ -54,4 +64,22 @@
         {% endif %}
 {% endblock messages %}
 
-{% block footer_content %}<h6>Site developed by Becky Smith</h6>{% endblock %}
+  {% block footer_content %}
+    <div id="footer">
+		<div id="footerwrap">
+			<div class="container">
+				<h6>Site developed by Becky Smith</h6>
+			</div>
+		</div>
+
+    </div>
+  {% endblock %}
+
+
+{% block extra_js %}
+<script src="http://momentjs.com/downloads/moment.min.js"></script>
+<script type="text/javascript" src="{% static 'entries/js/jquery.datetimepicker.js' %}"></script>
+<script type="text/javascript" src="{% static 'entries/js/jquery.tablesorter.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'entries/js/jquery.are-you-sure.js' %}"></script>
+<script type="text/javascript" src="{% static 'entries/js/custom.js' %}"></script>
+{% endblock %}

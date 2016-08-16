@@ -1,10 +1,10 @@
 {% extends 'account/base.html' %}
-{% load bookingtags %}
+{% load accounttags %}
 
 {% block content %}
 
 <div class="extra-top-margin container-fluid row">
-       <div class="panel panel-success">
+       <div class="panel panel-default">
 
             <div class="panel-heading">
                 <h1 class="panel-title">Health & Safety Registration and Disclaimer Form</h1>
@@ -32,13 +32,13 @@
                    {% include 'account/disclaimer_form_content.html' %}
                    <div class="col-xs-12">
                        <p>If you have any additional questions or concerns, please contact
-                        <a href="mailto:thewatermelonstudio@hotmail.com">thewatermelonstudio@hotmail.com</a>.</p>
+                        <a href="mailto:poleperformance@hotmail.com">poleperformance@hotmail.com</a>.</p>
                    </div>
 
                 {% endif %}
 
                <div class="col-xs-12">
-                   <p>View our <a href="{% url 'data_protection' %}">data protection statement.</a></p>
+                   <p>View our <a href="{% url 'accounts:data_protection' %}">data protection statement.</a></p>
                </div>
            </div>
 

@@ -6,9 +6,7 @@ from django.core.management.base import BaseCommand
 from django.conf import settings
 from django.utils.encoding import smart_str
 
-from accounts.models import OnlineDisclaimer, PrintDisclaimer
-from booking.email_helpers import send_support_email
-from activitylog.models import ActivityLog
+from accounts.models import OnlineDisclaimer
 
 
 logger = logging.getLogger(__name__)

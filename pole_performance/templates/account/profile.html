@@ -1,10 +1,10 @@
 {% extends 'account/base.html' %}
-{% load bookingtags %}
+{% load accounttags %}
 
 {% block content %}
 
 <div class="extra-top-margin container-fluid row">
-       <div class="panel panel-success">
+       <div class="panel panel-default">
             <div class="panel-heading">
                 <h1 class="panel-title">Your Profile</h1>
             </div>
@@ -22,7 +22,7 @@
                <div class="col-xs-12">
                    <div class="col-xs-3"><p><strong>Last name:</strong></p></div>
                    <div class="col-xs-6 col-sm-4 col-md-4 col-lg-3"><p>{{ user.last_name }}</p></div>
-                  <div class="col-xs-3 col-sm-5 col-md-5 col-lg-6"><p><a href="{% url 'profile:update_profile' %}">Change</a></p></div>
+                  <div class="col-xs-3 col-sm-5 col-md-5 col-lg-6"><p><a href="{% url 'accounts:update_profile' %}">Change</a></p></div>
                </div>
 
 
@@ -32,28 +32,7 @@
                     <div class="col-xs-3 col-sm-5 col-md-5 col-lg-6"><p><a href="{% url 'account_email' %}">Change</a></p></div>
                </div>
 
-
-
                <div class="col-xs-12">
-                   <div class="col-xs-3"><p><strong>Account Status:</strong></p></div>
-                   <div class="col-xs-9">
-                        <p>
-                           {% if user.is_staff %}
-                                Staff
-                           {% elif user|in_group:"instructors" %}
-                                Instructor
-                           {% elif perms.booking.is_regular_student %}
-                                Registered Student (confirmed regular student)
-                           {% else %}
-                                Registered Student
-                           {% endif %}
-                        </p>
-                   </div>
-               </div>
-
-
-                   {% if request.user.is_staff or request.user|has_booked_class %}
-                   <div class="col-xs-12">
                    <div class="col-xs-3"><p><strong>Mailing List:</strong></p></div>
                    <div class="col-xs-6 col-sm-4 col-md-4 col-lg-3">
                         <p>
@@ -64,11 +43,10 @@
                            {% endif %}
                         </p>
                    </div>
-                  <div class="col-xs-3 col-sm-5 col-md-5 col-lg-6"><p><a href="{% url 'subscribe' %}">Change</a></p></div>
-                  </div>
-                   {% endif %}
+                  <div class="col-xs-3 col-sm-5 col-md-5 col-lg-6"><p><a href="{% url 'accounts:subscribe' %}">Change</a></p></div>
+               </div>
 
-                   <div class="col-xs-12">
+               <div class="col-xs-12">
                    <div class="col-xs-3"><p><strong>Disclaimer:</strong></p></div>
                    <div class="col-xs-9">
                         <p>
@@ -79,19 +57,19 @@
                            {% endif %}
                         </p>
                    </div>
-                   </div>
+               </div>
                    {% if not disclaimer %}
                    <div class="col-xs-12">
                        <h3>DISCLAIMER</h3>
                        <p>You have not completed a disclaimer form.
                            This must be completed before attending any classes or workshops.</p>
-                       <p><a href="{% url 'disclaimer_form' %}">Complete disclaimer form now</a></p>
+                       <p><a href="{% url 'accounts:disclaimer_form' %}">Complete disclaimer form now</a></p>
                    </div>
                    {% else %}
                        <div class="col-xs-9 col-xs-offset-3">
                            <p>If you have any additional questions or concerns about the information you have provided, please contact
-                            <a href="mailto:thewatermelonstudio@hotmail.com">thewatermelonstudio@hotmail.com</a>.</p>
-                           <p>View our <a href="{% url 'data_protection' %}">data protection statement.</a></p>
+                            <a href="mailto:poleperformance@hotmail.com">poleperformance@hotmail.com</a>.</p>
+                           <p>View our <a href="{% url 'accounts:data_protection' %}">data protection statement.</a></p>
                        </div>
                    {% endif %}
                </div>

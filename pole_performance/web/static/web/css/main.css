@@ -344,10 +344,10 @@ a:after {
 #footerwrap {
 	background: #2b2b2b;
 	margin-top: 0px;
-	padding-top: 15px;
-	padding-bottom: 15px;
-	border-bottom: 1px solid #ddd;
+	padding-top: 5px;
+	padding-bottom: 5px;
 	text-align: center;
+    height: 45px;
 }
 
 #footerwrap h6 {

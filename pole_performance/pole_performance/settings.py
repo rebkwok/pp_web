@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 import dj_database_url
 import environ
 import os
+import sys
 
 root = environ.Path(__file__) - 2  # two folders back (/a/b/ - 3 = /)
 env = environ.Env(DEBUG=(bool, False),
@@ -60,6 +61,8 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.facebook',
+    'debug_toolbar',
+    'crispy_forms',
     'django_extensions',
     'paypal.standard.ipn',
     'web',
@@ -80,6 +83,14 @@ MIDDLEWARE_CLASSES = [
 ]
 
 SITE_ID = 1
+
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+        'LOCATION': '127.0.0.1:11211',
+    }
+}
 
 
 AUTHENTICATION_BACKENDS = (
@@ -116,7 +127,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [root('templates')],
-        'APP_DIRS': True,
+        # 'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
@@ -124,6 +135,11 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
+            'loaders': [
+                'apptemplates.Loader',
+                'django.template.loaders.filesystem.Loader',
+                'django.template.loaders.app_directories.Loader',
+            ]
         },
     },
 ]
@@ -276,3 +292,19 @@ if env('USE_MAILCATCHER'):  # pragma: no cover
 # DJANGO-PAYPAL
 DEFAULT_PAYPAL_EMAIL = env('DEFAULT_PAYPAL_EMAIL')
 PAYPAL_TEST = env('PAYPAL_TEST')
+
+
+if 'test' in sys.argv:  # use local cache for tests
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+            'LOCATION': 'test-cache',
+        }
+    }
+
+
+# if DEBUG and 'test' not in sys.argv:  # pragma: no cover
+#     ENABLE_DEBUG_TOOLBAR = True
+#     DEBUG_TOOLBAR_CONFIG = {
+#         "SHOW_TOOLBAR_CALLBACK": show_toolbar,
+#     }

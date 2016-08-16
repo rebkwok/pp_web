@@ -37,12 +37,17 @@
   </head>
 
   <body data-spy="scroll" data-offset="0" data-target="#navbar-main">
-  
+
+  <div id="container">
+
+      <div id="header"></div>
+
+      <div id="body">
   
   	<div id="navbar-main">
       <!-- Fixed navbar -->
     <div class="navbar navbar-inverse navbar-fixed-top">
-      <div class="container">
+      <div>
         <div class="navbar-header">
 
 		  <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -50,7 +55,7 @@
 		<span class="icon-bar"></span>
 		<span class="icon-bar"></span>
 		</button>
-        <a class="navbar-brand hidden-xs hidden-sm" href="/"><img src="{% static 'web/images/pplogo_black.png' %}" height="50px" style="margin-top: -15px;"></a>
+        <a class="navbar-brand" href="/"><img src="{% static 'web/images/pplogo_black.png' %}" height="50px" style="margin-top: -15px;"></a>
         </div>
         <div class="navbar-collapse collapse">
 
@@ -65,15 +70,18 @@
 {% block messages %}{% endblock messages %}
   
  {% block content %}{% endblock %}
-		
-		</div><!-- container -->
 
+          </div>   <!--#body -->
+
+  {% block footer_content %}
 		<div id="footerwrap">
 			<div class="container">
-				{% block footer_content %}<h6>Site developed by Becky Smith; design based on http://blacktie.co/shield/</h6>{% endblock %}
+				<h6>Site developed by Becky Smith; design based on http://blacktie.co/shield/</h6>
 			</div>
 		</div>
+  {% endblock %}
 
+ </div>   <!--#container -->
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
