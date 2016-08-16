@@ -241,7 +241,7 @@ blockquote cite:before {
 
 /* Links */
 a {
-    color: #3498db;
+    color: rgb(151, 10, 241);
     word-wrap: break-word;
 
     -webkit-transition: color 0.1s ease-in, background 0.1s ease-in;

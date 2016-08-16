@@ -104,7 +104,7 @@ div .errortext {
     box-shadow: 0 1px 2px rgba(0,0,0,0.05), inset 0px 1px 3px rgba(0,0,0,0.1);
 }
 .regular-checkbox:checked + label {
-    background-color: #d6e9c6;
+    background-color: rgba(151, 10, 241, 0.2);
     border: 1px solid #adb8c0;
     box-shadow: 0 1px 2px rgba(0,0,0,0.05), inset 0px -15px 10px -12px rgba(0,0,0,0.05), inset 15px 10px -12px rgba(255,255,255,0.1);
     color: #99a1a7;
@@ -115,7 +115,7 @@ div .errortext {
     position: absolute;
     top: -1px;
     left: 2px;
-    color: #173B0B;
+    color: rgba(0, 0, 0, .8);
 }
 
 .regular-checkbox-disabled {
@@ -154,7 +154,8 @@ input[type='radio']:before {
   border-radius:50%;
 }
 input[type='radio']:checked:before {
-  background:rgba(0, 128, 0, 0.6);
+  /*background: rgba(0, 128, 0, 0.6);*/
+  background: rgba(151, 10, 241, 0.6);
 }
 
 .extra-top-margin {

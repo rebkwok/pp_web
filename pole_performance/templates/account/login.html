@@ -12,17 +12,17 @@
 {% get_providers as socialaccount_providers %}
 
 {% if socialaccount_providers  %}
-<p>{% blocktrans with site.name as site_name %}Please <strong>sign in</strong>. Or, <a href="{{ signup_url }}"><strong>sign up</strong></a>
-for a new account.{% endblocktrans %}</p></br>
+<p>{% blocktrans with site.name as site_name %}If you don't yet have an account, <a href="{{ signup_url }}"><strong>sign up</strong></a>
+here.{% endblocktrans %}</p>
 
 <div class="socialaccount_ballot">
-    <span class="vspace"><strong>Sign in with</strong>
+    <span class="vspace"><strong>Log in with</strong>
      {% include "socialaccount/snippets/provider_list.html" with process="login" %}
     </span>
-  <p>If you have already created an account and would like to connect it with facebook, please sign in with your chosen username and password first and then go to Change Profile from the Your Accounts menu.</p>
+  <p>If you have already created an account and would like to connect it with facebook, please log in with your chosen username and password first and then go to Change Profile from the My Account menu.</p>
   </br></br>
 
-  <div class="login-or"><strong>{% trans 'Sign in with username and password:' %}</strong></div>
+  <div class="login-or"><strong>{% trans 'Log in with username and password:' %}</strong></div>
     </br>
 
 </div>
@@ -41,7 +41,7 @@ for a new account.{% endblocktrans %}</p></br>
   <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
   {% endif %}
 
-  <button class="primaryAction btn btn-success" type="submit">{% trans "Sign In" %}</button>
+  <button class="primaryAction btn btn-purple" type="submit">{% trans "Log In" %}</button>
   <p><a class="button secondaryAction" href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a></p>
 </form>
 
