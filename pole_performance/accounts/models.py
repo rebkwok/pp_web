@@ -90,6 +90,8 @@ MEDICAL_TREATMENT_TERMS = "I give permission for myself to receive medical " \
 
 BOOL_CHOICES = ((True, 'Yes'), (False, 'No'))
 
+GENDER_CHOICES = (('female', 'Female'), ('male', 'Male'))
+
 
 @has_readonly_fields
 class OnlineDisclaimer(models.Model):
@@ -104,6 +106,10 @@ class OnlineDisclaimer(models.Model):
     date_updated = models.DateTimeField(null=True, blank=True)
 
     name = models.CharField(max_length=255, verbose_name="full name")
+    gender = models.CharField(
+        max_length=20, choices=GENDER_CHOICES,
+        default='female'
+    )
     dob = models.DateField(verbose_name='date of birth')
     address = models.CharField(max_length=512)
     postcode = models.CharField(max_length=10)

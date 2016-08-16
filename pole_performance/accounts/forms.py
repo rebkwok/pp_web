@@ -5,8 +5,8 @@ from dateutil.relativedelta import relativedelta
 from django import forms
 
 from accounts import validators as account_validators
-from accounts.models import BOOL_CHOICES, OnlineDisclaimer, DISCLAIMER_TERMS, \
-    OVER_18_TERMS, MEDICAL_TREATMENT_TERMS
+from accounts.models import BOOL_CHOICES, GENDER_CHOICES, OnlineDisclaimer, \
+    DISCLAIMER_TERMS, OVER_18_TERMS, MEDICAL_TREATMENT_TERMS
 
 
 class SignupForm(forms.Form):
@@ -105,7 +105,7 @@ class DisclaimerForm(forms.ModelForm):
     class Meta:
         model = OnlineDisclaimer
         fields = (
-            'name', 'dob', 'address', 'postcode', 'home_phone', 'mobile_phone',
+            'name', 'dob', 'gender', 'address', 'postcode', 'home_phone', 'mobile_phone',
             'emergency_contact1_name', 'emergency_contact1_relationship',
             'emergency_contact1_phone', 'emergency_contact2_name',
             'emergency_contact2_relationship', 'emergency_contact2_phone',
@@ -128,6 +128,7 @@ class DisclaimerForm(forms.ModelForm):
                     },
                 format='%d %b %Y'
             ),
+            'gender': forms.RadioSelect(choices=GENDER_CHOICES),
             'postcode': forms.TextInput(
                 attrs={'class': 'form-control'}
             ),

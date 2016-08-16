@@ -33,6 +33,21 @@
             {% endif %}
        </div>
        <div class="form-group">
+           <label class="control-label col-xs-2" for="gender_id">{{ form.gender.label }}{% if form.gender.field.required %}*{% endif %}</label>
+          <div class="col-xs-10 {% if form.gender.errors %}error-info{% endif %}">
+              {% for choice in form.gender %}
+                {{ choice }}
+              {% endfor %}
+
+           </div>
+           <div class="studioadmin-help col-xs-10 col-xs-offset-2">{{ form.gender.help_text }}</div>
+            {% if form.gender.errors %}
+                <div class="col-xs-10 col-xs-offset-2">
+                    {{ form.gender.errors }}
+                </div>
+            {% endif %}
+       </div>
+       <div class="form-group">
            <label class="control-label col-xs-2" for="address_id">{{ form.address.label }}{% if form.address.field.required %}*{% endif %}</label>
            <div class="col-xs-10 {% if form.address.errors %}error-info{% endif %}">{{ form.address }}</div>
            <div class="studioadmin-help col-xs-10 col-xs-offset-2">{{ form.address.help_text }}</div>
