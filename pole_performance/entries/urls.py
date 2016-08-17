@@ -17,6 +17,6 @@ urlpatterns = [
         name='delete_entry'
     ),
     url(
-        r'^myentries/$', views.EntryListView.as_view(), name='update_entry'
+        r'^myentries/$', views.EntryListView.as_view(), name='user_entries'
     ),
 ]
