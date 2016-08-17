@@ -1,0 +1,9 @@
+{% include "account/email/do_not_reply.txt" %}
+
+Dear {{ user }},
+
+Your payment to {{ paypal_email }} has now been processed.
+
+Entry ref: {{ obj.entry_ref }}
+Payment for: {{ payemnt_type }} fee
+Invoice number: {{ invoice_id }}

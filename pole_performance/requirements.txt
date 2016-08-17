@@ -17,3 +17,4 @@ python-memcached==1.58
 django-debug-toolbar==1.4
 django-crispy-forms==1.6.0
 django-apptemplates==1.2
+shortuuid==0.4.3

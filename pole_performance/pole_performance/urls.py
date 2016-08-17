@@ -29,6 +29,7 @@ urlpatterns = [
     url(r'^accounts/', include('accounts.urls', namespace='accounts')),
     url(r'^accounts/', include('allauth.urls')),
     url(r'^payments/ipn-paypal-notify/', include('paypal.standard.ipn.urls')),
+    url(r'payments/', include('payments.urls', namespace='payments')),
 ]
 
 if settings.HEROKU:

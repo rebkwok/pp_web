@@ -69,6 +69,7 @@ INSTALLED_APPS = [
     'activitylog',
     'accounts',
     'entries',
+    'payments',
 ]
 
 MIDDLEWARE_CLASSES = [

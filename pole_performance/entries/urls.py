@@ -1,7 +1,22 @@
 from django.conf.urls import url
 
-from .views import entries_home
+from . import views
 
 urlpatterns = [
-    url(r'^$', entries_home, name='entries_home'),
+    url(r'^$', views.entries_home, name='entries_home'),
+    url(
+        r'^myentries/new/$', views.EntryCreateView.as_view(),
+        name='create_entry'
+    ),
+    url(
+        r'^myentries/(?P<ref>[\w-]+)/edit/$', views.EntryUpdateView.as_view(),
+        name='edit_entry'
+    ),
+    url(
+        r'^myentries/(?P<ref>[\w-]+)/delete/$', views.EntryDeleteView.as_view(),
+        name='delete_entry'
+    ),
+    url(
+        r'^myentries/$', views.EntryListView.as_view(), name='update_entry'
+    ),
 ]

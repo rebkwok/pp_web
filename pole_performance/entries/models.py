@@ -1,3 +1,5 @@
+import shortuuid
+
 from django.contrib.auth.models import User
 from django.db import models
 from django.utils.functional import cached_property
@@ -32,8 +34,19 @@ ENTRY_FEES = {
     'MEN': 25,
 }
 
+YEAR_CHOICES = (
+    (2017, 2017),
+    (2018, 2018),
+    (2019, 2019),
+    (2020, 2020),
+    (2021, 2021),
+)
 
 class Entry(models.Model):
+    entry_ref = models.CharField(max_length=22)
+    entry_year = models.CharField(
+        choices=YEAR_CHOICES, default=2017, max_length=4
+    )  # so we can use this system for future comp entries too
     user = models.ForeignKey(User)
     stage_name = models.CharField(max_length=255, blank=True, null=True)
     category = models.CharField(
@@ -72,18 +85,27 @@ class Entry(models.Model):
 
     date_submitted = models.DateTimeField(null=True, blank=True)
 
+    class Meta:
+        unique_together = ('entry_year', 'user', 'category')
+
     @cached_property
     def fee(self):
         return ENTRY_FEES[self.category]
 
     def __str__(self):
-        return "{} - {} - {}".format(
-            self.user.first_name, CATEGORY_CHOICES_DICT[self.category],
-            STATUS_CHOICES_DICT[self.status]
+        return "{first} {last} - {ref} - {cat} - {yr} - {status}".format(
+            first=self.user.first_name, last=self.user.last_name,
+            ref=self.entry_ref,
+            cat=CATEGORY_CHOICES_DICT[self.category],
+            yr=self.entry_year,
+            status=STATUS_CHOICES_DICT[self.status]
         )
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
+        if not self.id:
+            self.entry_ref = shortuuid.ShortUUID().random(length=22)
+
         if self.status == 'submitted' and not self.date_submitted:
             self.date_submitted = timezone.now()
         super(Entry, self).save(

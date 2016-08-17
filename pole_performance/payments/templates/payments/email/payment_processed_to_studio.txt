@@ -1,0 +1,8 @@
+User: {{ user }}
+Entry ref: {{ obj.entry_ref }}
+Payment for: {{ payemnt_type }} fee
+Invoice number: {{ invoice_id }}
+Paypal Transaction id: {{ paypal_transaction_id }}
+Paypal Email: {{ paypal_email }}
+
+{% include "account/email/do_not_reply.txt" %}
