@@ -9,16 +9,16 @@ addons:
 env: SECRET_KEY='dummy_secret' EMAIL_HOST_PASSWORD='dummy_password' DATABASE_URL=postgres://postgres@localhost/travis_ci_test DEFAULT_PAYPAL_EMAIL=dummy-email@hotmail.com PAYPAL_TEST=True DEFAULT_STUDIO_EMAIL=poleperformancetest@gmail.com LOG_FOLDER=log_folder TRAVIS=True HEROKU=False SIMPLECRYPT_PASSWORD=secret ENTRIES_OPEN=True
 
 install:
-  - pip install -r requirements.txt
+  - pip install -r pole_performance/requirements.txt
   - pip install coveralls
   - pip install psycopg2
 
 before_script:
   - psql -c 'create database travis_ci_test;' -U postgres
-  - python manage.py migrate
+  - python pole_performance/manage.py migrate
 
 script:
-  - coverage run --source=pole_performance,entries,accounts,payments --omit=../*migrations*,../*tests*,../*wsgi*,../*__init__* manage.py test
+  - coverage run --source=pole_performance/pole_performance,pole_performance/entries,pole_performance/accounts,pole_performance/payments --omit=../*migrations*,../*tests*,../*wsgi*,../*__init__* pole_performance/manage.py test
 
 after_success:
   coveralls
