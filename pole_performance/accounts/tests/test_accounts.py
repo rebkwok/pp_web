@@ -59,7 +59,8 @@ class DisclaimerFormTests(TestSetupMixin, TestCase):
 
     def setUp(self):
         self.form_data = {
-            'name': 'test', 'dob': '01 Jan 1990', 'address': '1 test st',
+            'name': 'test', 'gender': 'female',
+            'dob': '01 Jan 1990', 'address': '1 test st',
             'postcode': 'TEST1', 'home_phone': '123445', 'mobile_phone': '124566',
             'emergency_contact1_name': 'test1',
             'emergency_contact1_relationship': 'mother',
@@ -344,7 +345,8 @@ class DisclaimerCreateViewTests(TestSetupMixin, TestCase):
         self.user_no_disclaimer = mommy.make(User)
 
         self.form_data = {
-            'name': 'test', 'dob': '01 Jan 1990', 'address': '1 test st',
+            'name': 'test', 'gender': 'female',
+            'dob': '01 Jan 1990', 'address': '1 test st',
             'postcode': 'TEST1', 'home_phone': '123445', 'mobile_phone': '124566',
             'emergency_contact1_name': 'test1',
             'emergency_contact1_relationship': 'mother',

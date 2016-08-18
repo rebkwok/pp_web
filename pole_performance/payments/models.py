@@ -74,7 +74,7 @@ class PaypalEntryTransaction(models.Model):
     )
 
     def __str__(self):
-        return '{} {} payment'.format(self.invoice_id - self.payment_type)
+        return self.invoice_id
 
 
 def send_processed_payment_emails(payment_type, paypal_trans, user, obj):
@@ -130,8 +130,12 @@ def get_obj(ipn_obj):
         custom = ipn_obj.custom.split()
         payment_type = custom[0]
         entry_id = int(custom[1])
-    except IndexError:  # in case custom not included in paypal response
+    except (IndexError, ValueError):
+        # in case custom not included in paypal response or incorrect format
         raise PayPalTransactionError('Unknown object for payment')
+
+    if payment_type not in ['video', 'selected']:
+        raise PayPalTransactionError('Unknown payment type for payment')
 
     try:
         obj = Entry.objects.select_related('user').get(id=entry_id)
@@ -211,7 +215,6 @@ def payment_received(sender, **kwargs):
                 obj.selected_entry_paid = False
             else:
                 raise PayPalTransactionError('Unknown payment type for refund')
-
             obj.save()
 
             ActivityLog.objects.create(
@@ -234,7 +237,7 @@ def payment_received(sender, **kwargs):
                     )
             )
             raise PayPalTransactionError(
-                'PayPal payment returned with status PENDING for {}  payment '
+                'PayPal payment returned with status PENDING for {} payment '
                 'for entry {}; '
                 'ipn obj id {} (txn id {}).  This is usually due to an '
                 'unrecognised or unverified paypal email address.'.format(
@@ -248,48 +251,53 @@ def payment_received(sender, **kwargs):
             # duplicate trans id, correct receiver email, valid secret (if using
             # encrypted), mc_gross, mc_currency, item_name and item_number are all
             # correct
-                obj.paid = True
-                obj.save()
+            if payment_type == 'video':
+                obj.video_entry_paid = True
+            elif payment_type == 'selected':
+                obj.selected_entry_paid = True
+            else:
+                raise PayPalTransactionError('Unknown payment type for refund')
+            obj.save()
 
-                # do this AFTER saving the booking as paid; in the edge case that a
-                # user re-requests the page with the paypal button on it in between
-                # entering and the paypal transaction being saved, this prevents a
-                # second invoice number being generated
-                paypal_trans.transaction_id = ipn_obj.txn_id
-                paypal_trans.save()
+            # do this AFTER saving the entry as paid; in the edge case that a
+            # user re-requests the page with the paypal button on it in between
+            # entering and the paypal transaction being saved, this prevents a
+            # second invoice number being generated
+            paypal_trans.transaction_id = ipn_obj.txn_id
+            paypal_trans.save()
 
-                ActivityLog.objects.create(
-                    log='{} for entry id {} for user {} paid by PayPal; paypal '
-                        'id {}'.format(
-                        payment_type.title(), obj.id, obj.user.username,
-                        paypal_trans.id
-                        )
-                )
-
-                send_processed_payment_emails(
-                    payment_type, paypal_trans, obj.user, obj
-                )
-
-                if not ipn_obj.invoice:
-                    # sometimes paypal doesn't send back the invoice id -
-                    # everything should be ok but email to check
-                    ipn_obj.invoice = paypal_trans.invoice_id
-                    ipn_obj.save()
-                    send_mail(
-                        '{} No invoice number on paypal ipn for '
-                        '{} payment for entry id {}'.format(
-                            settings.ACCOUNT_EMAIL_SUBJECT_PREFIX, payment_type,
-                            obj.id
-                        ),
-                        'Please check entry and paypal records for '
-                        'paypal transaction id {}.  No invoice number on paypal'
-                        ' IPN.  Invoice number has been set to {}.'.format(
-                            ipn_obj.txn_id, paypal_trans.invoice_id
-                        ),
-                        settings.DEFAULT_FROM_EMAIL,
-                        [settings.SUPPORT_EMAIL],
-                        fail_silently=False
+            ActivityLog.objects.create(
+                log='{} for entry id {} for user {} paid by PayPal; paypal '
+                    'id {}'.format(
+                    payment_type.title(), obj.id, obj.user.username,
+                    paypal_trans.id
                     )
+            )
+
+            send_processed_payment_emails(
+                payment_type, paypal_trans, obj.user, obj
+            )
+
+            if not ipn_obj.invoice:
+                # sometimes paypal doesn't send back the invoice id -
+                # everything should be ok but email to check
+                ipn_obj.invoice = paypal_trans.invoice_id
+                ipn_obj.save()
+                send_mail(
+                    '{} No invoice number on paypal ipn for '
+                    '{} payment for entry id {}'.format(
+                        settings.ACCOUNT_EMAIL_SUBJECT_PREFIX, payment_type,
+                        obj.id
+                    ),
+                    'Please check entry and paypal records for '
+                    'paypal transaction id {}.  No invoice number on paypal'
+                    ' IPN.  Invoice number has been set to {}.'.format(
+                        ipn_obj.txn_id, paypal_trans.invoice_id
+                    ),
+                    settings.DEFAULT_FROM_EMAIL,
+                    [settings.SUPPORT_EMAIL],
+                    fail_silently=False
+                )
 
         else:  # any other status
             ActivityLog.objects.create(
@@ -386,7 +394,7 @@ def payment_not_received(sender, **kwargs):
                     settings.ACCOUNT_EMAIL_SUBJECT_PREFIX, payment_type,
                     obj.id
                 ),
-                'Please check your booking and paypal records for '
+                'Please check your entry and paypal records for '
                 'invoice # {}, paypal transaction id {}.\n\nThe exception '
                 'raised was "{}".\n\nNOTE: this error occurred during '
                 'processing of the payment_not_received signal'.format(

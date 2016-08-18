@@ -71,6 +71,7 @@ class EntryListView(LoginRequiredMixin, generic.ListView):
                     initial=get_paypal_dict(
                         host,
                         ENTRY_FEES[entry.category],  # TODO confirm fees for each stage
+                        'Video submission fee',
                         invoice_id,
                         'video {}'.format(entry.id),
                         paypal_email=settings.DEFAULT_PAYPAL_EMAIL,
@@ -86,6 +87,7 @@ class EntryListView(LoginRequiredMixin, generic.ListView):
                     initial=get_paypal_dict(
                         host,
                         ENTRY_FEES[entry.category],  # TODO confirm fees for each stage
+                        'Entry fee',
                         invoice_id,
                         'selected {}'.format(entry.id),
                         paypal_email=settings.DEFAULT_PAYPAL_EMAIL,

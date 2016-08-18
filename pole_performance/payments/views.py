@@ -38,24 +38,27 @@ def paypal_confirm_return(request):
     custom = request.POST.get('custom', '').split()
 
     if custom:
-        payment_type = custom[0]  # video or selected payment
-        entry_id = int(custom[1])
-        obj = Entry.objects.select_related('user').get(id=entry_id)
+        try:
+            payment_type = custom[0]  # video or selected payment
+            entry_id = int(custom[1])
+            obj = Entry.objects.select_related('user').get(id=entry_id)
 
-        # Possible payment statuses:
-        # Canceled_, Reversal, Completed, Denied, Expired, Failed, Pending,
-        # Processed, Refunded, Reversed, Voided
-        # NOTE: We can check for completed payment status for displaying
-        # information in the template, but we can only confirm payment if the
-        # booking or block has already been set to paid (i.e. the post from
-        # paypal has been successfully processed
-        context = {'obj': obj,
-                   'payment_type': payment_type,
-                   'payment_status': request.POST.get('payment_status'),
-                   'purchase': request.POST.get('item_name'),
-                   'sender_email': settings.DEFAULT_FROM_EMAIL,
-                   'organiser_email': settings.DEFAULT_STUDIO_EMAIL,
-                   }
+            # Possible payment statuses:
+            # Canceled_, Reversal, Completed, Denied, Expired, Failed, Pending,
+            # Processed, Refunded, Reversed, Voided
+            # NOTE: We can check for completed payment status for displaying
+            # information in the template, but we can only confirm payment if the
+            # booking or block has already been set to paid (i.e. the post from
+            # paypal has been successfully processed
+            context = {'obj': obj,
+                       'payment_type': payment_type,
+                       'payment_status': request.POST.get('payment_status'),
+                       'purchase': request.POST.get('item_name'),
+                       'sender_email': settings.DEFAULT_FROM_EMAIL,
+                       'organiser_email': settings.DEFAULT_STUDIO_EMAIL,
+                       }
+        except IndexError:
+            obj = 'unknown'
 
     if not custom or obj == 'unknown':
         context = {
