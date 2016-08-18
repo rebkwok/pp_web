@@ -31,7 +31,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     config.ssh.forward_agent = true
 
     # set up synced folders
-    config.vm.synced_folder "pole_performance", "/src/pole_performance"
+    config.vm.synced_folder ".", "/src/pole_performance"
 
     #config.vm.provider "virtualbox" do |vb|
     #  vb.gui = true

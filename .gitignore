@@ -1,5 +1,5 @@
 .vagrant/
 .idea/
 *.pyc
-pole_performance/venv
+venv
 ansible/vagrant.retry
