@@ -6,7 +6,7 @@ from activitylog.models import ActivityLog
 
 
 @receiver(post_save, sender=User)
-def event_post_save(sender, instance, created, *args, **kwargs):
+def user_post_save(sender, instance, created, *args, **kwargs):
     # Log when new user created and add to mailing list
     if created:
         ActivityLog.objects.create(

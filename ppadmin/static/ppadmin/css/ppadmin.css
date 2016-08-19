@@ -28,6 +28,11 @@
 .btn.btn-alph-filter.btn-unselected {
     background-color:dimgrey;
     color: white;
+    border: 1px solid dimgray;
+}
+.btn.btn-alph-filter.btn-unselected:hover {
+    background-color:whitesmoke;
+    color: dimgrey;
 }
 
 .table-btn, .disabled .btn .btn-success .table-btn {
@@ -37,12 +42,35 @@
 	padding-right: 0;
     font-size: 90%;
 	width: 9.2em;
-	color: #fff !important;
+	color: #fff;
     }
 
 .subscribe-btn {
     width: 5em;
+    background-color: grey;
+    border: 1px solid grey;
+}
+
+.subscribe-btn:hover, .subscribe-btn.subscribed:hover {
+    background-color: whitesmoke;
+    color: grey;
+}
+
+.subscribe-btn.subscribed {
+    background-color: green;
+    border: 1px solid green;
+}
+
+.subscribe-btn.subscribed:hover {
+    color: green;
 }
 
 .filter-btn {
     width: 11.2em;
+}
+
+.navbrandadmin {
+    color: rgb(151, 10, 241);
+    font-size: xx-large;
+    font-weight: bolder;
+}

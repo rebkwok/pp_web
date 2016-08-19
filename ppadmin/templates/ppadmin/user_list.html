@@ -12,12 +12,12 @@
             <div class="col-sm-12">
             <form action="" method="get">
                 {{ form.search }}
-                <input class="btn btn-info table-btn" type="submit" name='search_submitted' value="Search" />
-                <input class="btn btn-info table-btn" type="submit" name='reset' value="Reset" /><br/>
+                <input class="btn btn-purple table-btn" type="submit" name='search_submitted' value="Search" />
+                <input class="btn btn-purple table-btn" type="submit" name='reset' value="Reset" /><br/>
                 And/or filter by first name<br/>
                 {% for opt in filter_options %}
                     <input
-                            class="btn btn-alph-filter {% if not opt.available %}btn-disabled{% elif active_filter == opt.value %}btn-primary{% else %}btn-unselected{% endif %} "
+                            class="btn btn-alph-filter {% if not opt.available %}btn-disabled{% elif active_filter == opt.value %}btn-purple{% else %}btn-unselected{% endif %} "
                             {% if not opt.available %}disabled{% endif %}
                             type="submit"
                             name="filter"
@@ -33,12 +33,12 @@
 
         <div class="row">
             <div class="col-sm-12">
-                <div class="panel panel-success">
+                <div class="panel panel-default">
 
                     <div class="table-responsive">
                         <table class="table tablesorter" id="sortTable">
                             <thead>
-                            <tr class="success">
+                            <tr class="default">
                                 <th class="table-center">Username <span class="fa fa-sort"></span></br><span class="ppadmin-help">Click to view entries</span></th>
                                 <th class="table-center">First Name <span class="fa fa-sort"></span></th>
                                 <th class="table-center">Last Name <span class="fa fa-sort"></span></th>
@@ -88,9 +88,9 @@
 
                             </tbody>
                             <tfoot>
-                            <tr class="success">
+                            <tr class="default">
                                 <td colspan="6">
-                                    {% if search_submitted or active_filter %}
+                                    {% if search_submitted or active_filter != "All" %}
                                         Search results: returned {{ num_results }} of {{ total_users }} users
                                     {% else %}
                                         Total {{ total_users }} users

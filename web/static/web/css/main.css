@@ -645,14 +645,14 @@ a:after {
 
 .btn-purple {
 color: #fff;
-background-color: rgb(151, 10, 241);
-border: 2px solid rgb(151, 10, 241);
+background-color: rgba(151, 10, 241, 0.8);
+border: 1px solid rgba(151, 10, 241, 0.8);
 }
 
 .btn-purple:hover {
-border: 2px solid rgb(151, 10, 241);
+border: 1px solid rgba(151, 10, 241, 0.8);
 text-decoration: none;
-color: rgb(151, 10, 241);
+color: rgba(151, 10, 241, 0.8);
 background-color: transparent;
 }
 

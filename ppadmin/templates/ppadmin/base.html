@@ -6,10 +6,34 @@
     <link href="{% static 'ppadmin/css/ppadmin.css' %}" rel="stylesheet">
 {% endblock %}
 
+{% block navbrand %}{{ block.super }} <span class="navbrandadmin">ADMIN</span>{% endblock %}
 
 {% block nav_content %}
-    {{ block.super }}
-{% endblock %}
+    <ul class="nav navbar-nav">
+        <li><a href="{% url 'web:home' %}" class="smoothScroll">Home</a></li>
+        <li><a href="{% url 'ppadmin:users' %}" class="smoothScroll">Users</a></li>
+        <li><a href="#" class="smoothScroll">Entries</a></li>
+        <li><a href="{% url 'ppadmin:mailing_list' %}#rules" class="smoothScroll">Mailing List</a></li>
+        <li><a href="{% url 'ppadmin:activitylog' %}#tc" class="smoothScroll">Activity Log</a></li>
+    </ul>
+
+    <ul class="nav navbar-nav pull-right account-nav">
+        {% if request.user.is_authenticated %}
+        <li class="dropdown">
+            <div class="welcome-menu">Logged in as {{request.user}}</div>
+          <a href="#" class="account-menu dropdown-toggle active-nav-login" data-toggle="dropdown" role="button" aria-expanded="false">My Account<span class="caret"></span></a>
+          <ul class="dropdown-menu" role="menu">
+            <li><a href="{% url 'account_change_password' %}">Change password</a></li>
+            <li><a href="{% url 'accounts:profile' %}">Profile</a></li>
+            <li><a href="{% url 'account_logout' %}">Sign Out</a></li>
+          </ul>
+        </li>
+        {% else %}
+        <div class="welcome-menu">Not logged in</div>
+        <li class="active-nav-login account-menu"><a class="account-menu" href="{% url 'account_login' %}?next={{request.get_full_path}}">Log In</a></li>
+        {% endif %}
+    </ul>
+{% endblock nav_content %}
 
 {% block extra_js %}
     {{ block.super }}

@@ -78,7 +78,6 @@ class UserListView(LoginRequiredMixin,  StaffUserMixin,  ListView):
 
     def get_context_data(self):
         context = super(UserListView,  self).get_context_data()
-        context['sidenav_selection'] = 'users'
         context['search_submitted'] = self.request.GET.get('search_submitted')
         context['active_filter'] = self.request.GET.get('filter',  'All')
         search_text = self.request.GET.get('search',  '')
@@ -92,9 +91,7 @@ class UserListView(LoginRequiredMixin,  StaffUserMixin,  ListView):
 
         if reset:
             search_text = ''
-        form = UserListSearchForm(
-            initial={
-                'search': search_text})
+        form = UserListSearchForm(initial={'search': search_text})
         context['form'] = form
         context['num_results'] = num_results
         context['total_users'] = total_users
