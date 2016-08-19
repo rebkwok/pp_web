@@ -1,0 +1,48 @@
+.ppadmin-tbl {
+    padding-top: 5px; !important;
+    padding-bottom: 5px; !important;
+    white-space: nowrap;
+    font-size: small;
+	vertical-align: middle; !important;
+
+}
+
+.ppadmin-help {
+    font-size: smaller;
+    font-style: italic;
+    font-weight: normal;
+}
+
+.ppadmincbox-help {
+    font-size: smaller;
+    font-style: italic;
+    vertical-align: top;
+}
+
+.btn.btn-alph-filter {
+    padding-left: 4px;
+    padding-right: 4px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+}
+.btn.btn-alph-filter.btn-unselected {
+    background-color:dimgrey;
+    color: white;
+}
+
+.table-btn, .disabled .btn .btn-success .table-btn {
+    padding-top: 0;
+    padding-bottom: 0;
+	padding-left: 0;
+	padding-right: 0;
+    font-size: 90%;
+	width: 9.2em;
+	color: #fff !important;
+    }
+
+.subscribe-btn {
+    width: 5em;
+}
+
+.filter-btn {
+    width: 11.2em;

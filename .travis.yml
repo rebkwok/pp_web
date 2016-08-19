@@ -18,7 +18,7 @@ before_script:
   - python manage.py migrate
 
 script:
-  - coverage run --source=pole_performance,entries,accounts,payments --omit=../*migrations*,../*tests*,../*wsgi*,../*__init__* manage.py test
+  - coverage run --source=pole_performance,entries,accounts,payments,ppadmin --omit=../*migrations*,../*tests*,../*wsgi*,../*__init__* manage.py test
 
 after_success:
   coveralls

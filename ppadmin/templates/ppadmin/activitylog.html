@@ -1,0 +1,90 @@
+{% extends "ppadmin/base.html" %}
+{% load static %}
+{% load ppadmintags %}
+
+{% block bodytag %}<body data-spy="scroll" data-offset="0" data-target="#navbar-main" onload="startTime()">{% endblock %}
+{% block content %}
+
+    <div class="container-fluid row">
+        <span class="small pull-right" id="show-clock"></span>
+        <h2>Activity Log</h2>
+
+        <div class=row>
+            <div class="col-sm-12">
+            <form action="" method="get">
+                <div>{{ form.hide_empty_cronjobs }}
+                <label for="hide_empty_cronjobs_id"></label>
+                <span class='ppadmincbox-help'> Hide notifications for automatic jobs where no action was required</span></div>
+                {{ form.search }} {{ form.search_date }}
+                <input class="btn btn-info table-btn" type="submit" name='search_submitted' value="Search" />
+                <input class="btn btn-info table-btn" type="submit" name='reset' value="Reset" />
+            </form>
+        </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="panel panel-default">
+
+                    <div class="table-responsive">
+                        <table class="table tablesorter" id="sortTable">
+                            <thead>
+                            <tr class="default">
+                                <th>Timestamp</th>
+                                <th>Log</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+
+                            {% for log in logs %}
+                                <tr>
+                                    <td class="ppadmin-tbl">{{ log.timestamp|formatted_uk_date }}:{{ log.timestamp|date:"s" }}</td>
+                                    <td class="ppadmin-tbl">{{ log.log }}</td>
+                                </tr>
+                            {% endfor %}
+
+                            {% if not logs %}
+                                <tr>
+                                    <td colspan="2">No logs found</td>
+                                </tr>
+                            {% endif %}
+
+                            {% if is_paginated %}
+                            <tr>
+                                <td class="ppadmin-tbl" colspan="2">
+
+                                        <div class="pagination">
+                                            {% if page_obj.has_previous %}
+                                                <a href="?{{ request.GET.urlencode }}&page={{ page_obj.previous_page_number }}">Previous</a>
+                                            {% else %}
+                                                <a class="disabled" disabled=disabled href="#">Previous</a>
+                                            {% endif %}
+                                            <span class="page-current">
+                                                --  Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }} --
+                                            </span>
+                                            {% if page_obj.has_next %}
+                                                <a href="?{{ request.GET.urlencode }}&page={{ page_obj.next_page_number }}">Next</a>
+                                            {% else %}
+                                                <a class="disabled" href="#">Next</a>
+                                            {% endif %}
+                                        </div>
+                                </td>
+                            </tr>
+                            {% endif %}
+
+                            </tbody>
+                        </table>
+
+
+                    </div>
+                </div>
+            </div>
+         </div>
+
+    </div>
+
+{% endblock content %}
+
+{% block extra_js %}
+    <script src="{% static 'ppadmin/js/clock.js' %}"></script>
+{% endblock %}

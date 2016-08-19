@@ -32,7 +32,7 @@
               {% endif %}
             <li><a href="{% url 'account_logout' %}">Sign Out</a></li>
             {% if request.user.is_staff %}
-               <li class="active-nav"><a href="#">Admin</a></li>
+               <li class="active-nav"><a href="{% url 'ppadmin:users' %}">Admin</a></li>
             {% endif %}
           </ul>
         </li>

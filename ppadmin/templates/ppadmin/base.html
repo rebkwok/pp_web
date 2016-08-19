@@ -1,0 +1,17 @@
+{% extends "entries/entries_base.html" %}
+{% load static %}
+
+{% block extra_styles %}
+    {{ block.super }}
+    <link href="{% static 'ppadmin/css/ppadmin.css' %}" rel="stylesheet">
+{% endblock %}
+
+
+{% block nav_content %}
+    {{ block.super }}
+{% endblock %}
+
+{% block extra_js %}
+    {{ block.super }}
+    <script type="text/javascript" src="{% static 'ppadmin/js/clock.js' %}"></script>
+{% endblock %}

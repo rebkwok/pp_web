@@ -70,6 +70,7 @@ INSTALLED_APPS = [
     'accounts',
     'entries',
     'payments',
+    'ppadmin'
 ]
 
 MIDDLEWARE_CLASSES = [
