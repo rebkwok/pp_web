@@ -11,10 +11,10 @@ from django.utils.safestring import mark_safe
 
 from braces.views import LoginRequiredMixin
 
-from allauth.account.views import LoginView
+from allauth.account.views import LoginView, SignupView
 
 from accounts.forms import DisclaimerForm
-from accounts.models import disclaimer_cache_key, has_disclaimer
+from accounts.models import has_disclaimer
 from activitylog.models import ActivityLog
 
 
@@ -51,6 +51,19 @@ class CustomLoginView(LoginView):
             ret = reverse('accounts:profile')
 
         return ret
+
+
+class CustomSignUpView(SignupView):
+
+    def get_context_data(self, **kwargs):
+        # add the username to the form if passed in queryparams from login form
+        context = super(CustomSignUpView, self).get_context_data(**kwargs)
+        username = self.request.GET.get('username', None)
+        if username is not None:
+            form = context['form']
+            form.fields['username'].initial = username
+            context['form'] = form
+        return context
 
 
 class DisclaimerCreateView(LoginRequiredMixin, CreateView):

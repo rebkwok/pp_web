@@ -7,6 +7,7 @@ from model_mommy import mommy
 
 from django.conf import settings
 from django.core import management, mail
+from django.core.cache import cache
 from django.test import TestCase, override_settings
 from django.contrib.auth.models import User, Group
 from django.contrib.messages.storage.fallback import FallbackStorage
@@ -202,32 +203,56 @@ class ProfileTests(TestSetupMixin, TestCase):
     def setUpTestData(cls):
         super(ProfileTests, cls).setUpTestData()
         Group.objects.get_or_create(name='instructors')
-        cls.user_with_online_disclaimer = mommy.make(User)
+        cls.user_with_online_disclaimer = User.objects.create_user(
+            username='test_disc', password='test'
+        )
         mommy.make(OnlineDisclaimer, user=cls.user_with_online_disclaimer)
-        cls.user_no_disclaimer = mommy.make(User)
-
-    def _get_response(self, user):
-        url = reverse('accounts:profile')
-        request = self.factory.get(url)
-        request.user = user
-        return profile(request)
+        cls.user_no_disclaimer = User.objects.create_user(
+            username='test_no_disc', password='test'
+        )
+        cls.url = reverse('accounts:profile')
 
     def test_profile_view(self):
-        resp = self._get_response(self.user)
+        self.client.login(username=self.user.username, password='test')
+        resp = self.client.get(self.url)
         self.assertEquals(resp.status_code, 200)
 
+    def test_cache(self):
+        self.assertIsNone(
+            cache.get('user_{}_has_disclaimer'.format(
+                self.user_with_online_disclaimer.id)
+            )
+        )
+        self.client.login(
+            username=self.user_with_online_disclaimer.username, password='test'
+        )
+        resp = self.client.get(self.url)
+        self.assertEquals(resp.status_code, 200)
+        self.assertTrue(
+            cache.get('user_{}_has_disclaimer'.format(
+                self.user_with_online_disclaimer.id)
+            )
+        )
+
     def test_profile_view_shows_disclaimer_info(self):
-        resp = self._get_response(self.user)
+        self.client.login(username=self.user, password='test')
+        resp = self.client.get(self.url)
         self.assertIn("Completed", str(resp.content))
         self.assertNotIn("Not completed", str(resp.content))
         self.assertNotIn("/accounts/disclaimer", str(resp.content))
 
-        resp = self._get_response(self.user_with_online_disclaimer)
+        self.client.login(
+            username=self.user_with_online_disclaimer.username, password='test'
+        )
+        resp = self.client.get(self.url)
         self.assertIn("Completed", str(resp.content))
         self.assertNotIn("Not completed", str(resp.content))
         self.assertNotIn("/accounts/disclaimer", str(resp.content))
 
-        resp = self._get_response(self.user_no_disclaimer)
+        self.client.login(
+            username=self.user_no_disclaimer.username, password='test'
+        )
+        resp = self.client.get(self.url)
         self.assertIn("Not completed", str(resp.content))
         self.assertIn("/accounts/disclaimer", str(resp.content))
 
@@ -301,6 +326,25 @@ class CustomLoginViewTests(TestSetupMixin, TestCase):
         self.assertIn(reverse('accounts:profile'), resp.url)
 
 
+class CustomSignUpViewTests(TestSetupMixin, TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.url = reverse('account_signup')
+        super(CustomSignUpViewTests, cls).setUpTestData()
+
+    def test_get_signup_view(self):
+        resp = self.client.get(self.url)
+        self.assertEqual(resp.status_code, 200)
+        self.assertIsNone(resp.context_data['form'].fields['username'].initial)
+
+    def test_get_signup_view_with_username(self):
+        resp = self.client.get(self.url + "?username=test")
+        self.assertEqual(
+            resp.context_data['form'].fields['username'].initial, 'test'
+        )
+
+
 class DisclaimerModelTests(TestCase):
 
     def test_online_disclaimer_str(self,):
@@ -341,8 +385,15 @@ class DisclaimerModelTests(TestCase):
 
 class DisclaimerCreateViewTests(TestSetupMixin, TestCase):
 
+    @classmethod
+    def setUpTestData(cls):
+        super(DisclaimerCreateViewTests, cls).setUpTestData()
+        cls.url = reverse('accounts:disclaimer_form')
+
     def setUp(self):
-        self.user_no_disclaimer = mommy.make(User)
+        self.user_no_disclaimer = User.objects.create_user(
+            username='user_no_disc', password='password'
+        )
 
         self.form_data = {
             'name': 'test', 'gender': 'female',
@@ -386,15 +437,15 @@ class DisclaimerCreateViewTests(TestSetupMixin, TestCase):
         return view(request)
 
     def test_login_required(self):
-        url = reverse('accounts:disclaimer_form')
-        resp = self.client.get(url)
-        redirected_url = reverse('account_login') + "?next={}".format(url)
+        resp = self.client.get(self.url)
+        redirected_url = reverse('account_login') + "?next={}".format(self.url)
 
         self.assertEqual(resp.status_code, 302)
         self.assertIn(redirected_url, resp.url)
 
     def test_shows_msg_if_already_has_disclaimer(self):
-        resp = self._get_response(self.user)
+        self.client.login(username=self.user.username, password='test')
+        resp = self.client.get(self.url)
         self.assertEqual(resp.status_code, 200)
 
         self.assertIn(
@@ -419,22 +470,24 @@ class DisclaimerCreateViewTests(TestSetupMixin, TestCase):
         self.user_no_disclaimer.save()
 
         self.assertTrue(self.user_no_disclaimer.has_usable_password())
-        resp = self._post_response(self.user_no_disclaimer, self.form_data)
-        self.assertIn(
-            "Password is incorrect",
-            str(resp.content)
+
+        self.client.login(
+            username=self.user_no_disclaimer.username, password='test_password'
         )
+        self.client.post(self.url, self.form_data)
         self.assertEqual(OnlineDisclaimer.objects.count(), 1)
 
     def test_submitting_form_creates_disclaimer(self):
         # setup creates 1 user with online disclaimer
         self.assertEqual(OnlineDisclaimer.objects.count(), 1)
-        self.user_no_disclaimer.set_password('password')
-        self._post_response(self.user_no_disclaimer, self.form_data)
+        self.client.login(
+            username=self.user_no_disclaimer.username, password='password'
+        )
+        self.client.post(self.url, self.form_data)
         self.assertEqual(OnlineDisclaimer.objects.count(), 2)
 
         # user now has disclaimer and can't re-access
-        resp = self._get_response(self.user_no_disclaimer)
+        resp = self.client.get(self.url)
         self.assertEqual(resp.status_code, 200)
 
         self.assertIn(
@@ -444,11 +497,10 @@ class DisclaimerCreateViewTests(TestSetupMixin, TestCase):
         self.assertNotIn("Submit", str(resp.rendered_content))
 
         # posting same data again redirects to form
-        resp = self._post_response(self.user_no_disclaimer, self.form_data)
+        resp = self.client.post(self.url, self.form_data)
         self.assertEqual(resp.status_code, 302)
         # no new disclaimer created
         self.assertEqual(OnlineDisclaimer.objects.count(), 2)
-
 
     def test_message_shown_if_no_usable_password(self):
         user = mommy.make(User)
@@ -463,7 +515,6 @@ class DisclaimerCreateViewTests(TestSetupMixin, TestCase):
         )
 
     def test_cannot_complete_disclaimer_without_usable_password(self):
-        # setup creates 1 user with online disclaimer
         self.assertEqual(OnlineDisclaimer.objects.count(), 1)
         user = mommy.make(User)
         user.set_unusable_password()
@@ -720,3 +771,51 @@ class ImportDisclaimersTests(TestCase):
         self.assertTrue(test_1_disclaimer.terms_accepted)
         self.assertIsNotNone(test_1_disclaimer.over_18_statement)
         self.assertTrue(test_1_disclaimer.age_over_18_confirmed)
+
+
+class MailingListSubscribeViewTests(TestSetupMixin, TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        super(MailingListSubscribeViewTests, cls).setUpTestData()
+        cls.subscribed = mommy.make(Group, name='subscribed')
+        cls.url = reverse('accounts:subscribe')
+
+    def test_login_required(self):
+        resp = self.client.get(self.url)
+        self.assertEqual(resp.status_code, 302)
+        self.assertIn(
+            resp.url, reverse('login') + '?next=/accounts/mailing-list/'
+        )
+
+        self.client.login(username=self.user.username, password='test')
+        resp = self.client.get(self.url)
+        self.assertEqual(resp.status_code, 200)
+
+    def test_get_shows_correct_subscription_status(self):
+        self.client.login(username=self.user.username, password='test')
+        resp = self.client.get(self.url)
+        self.assertIn(
+            "You are not currently subscribed to the mailing list.",
+            resp.rendered_content
+        )
+
+        self.subscribed.user_set.add(self.user)
+        resp = self.client.get(self.url)
+        self.assertIn(
+            "You are currently subscribed to the mailing list.  "
+            "Please click below if you would like to unsubscribe.",
+            resp.rendered_content
+        )
+
+    def test_can_change_subscription(self):
+        self.subscribed = Group.objects.get(name='subscribed')
+        self.client.login(username=self.user.username, password='test')
+        self.assertNotIn(self.subscribed, self.user.groups.all())
+
+        self.client.post(self.url, {'subscribe': 'Subscribe'})
+        self.assertIn(self.subscribed, self.user.groups.all())
+
+        self.client.post(self.url, {'unsubscribe': 'Unsubscribe'})
+        self.assertNotIn(self.subscribed, self.user.groups.all())
+

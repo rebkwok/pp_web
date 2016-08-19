@@ -11,7 +11,9 @@ from accounts.models import BOOL_CHOICES, GENDER_CHOICES, OnlineDisclaimer, \
 
 class SignupForm(forms.Form):
     first_name = forms.CharField(max_length=30, label='First name')
-    first_name.widget.attrs.update({'placeholder': 'First name'})
+    first_name.widget.attrs.update(
+        {'placeholder': 'First name', 'autofocus': 'autofocus'}
+    )
     last_name = forms.CharField(max_length=30, label='Last name')
     last_name.widget.attrs.update({'placeholder': 'Last name'})
 

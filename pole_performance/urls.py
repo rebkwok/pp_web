@@ -18,7 +18,7 @@ from django.conf.urls import include, url
 from django.conf.urls.static import static
 from django.contrib import admin
 
-from accounts.views import CustomLoginView
+from accounts.views import CustomLoginView, CustomSignUpView
 
 
 urlpatterns = [
@@ -26,13 +26,14 @@ urlpatterns = [
     url(r'^', include('web.urls', namespace='web')),
     url(r'^entries/', include('entries.urls', namespace='entries')),
     url(r'^accounts/login/$', CustomLoginView.as_view(), name='login'),
+    url(r'^accounts/signup/$', CustomSignUpView.as_view(), name='account_signup'),
     url(r'^accounts/', include('accounts.urls', namespace='accounts')),
     url(r'^accounts/', include('allauth.urls')),
     url(r'^payments/ipn-paypal-notify/', include('paypal.standard.ipn.urls')),
     url(r'payments/', include('payments.urls', namespace='payments')),
 ]
 
-if settings.HEROKU:
+if settings.HEROKU:  # pragma: no cover
     urlpatterns += static(
         settings.STATIC_URL, document_root=settings.STATIC_ROOT
     )

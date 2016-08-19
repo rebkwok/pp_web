@@ -32,7 +32,7 @@ def has_disclaimer(user):
         )
         # set cache; never expires (will only be invalidated if disclaimer is
         # deleted - see post_delete signal)
-        cache.set(cache_key, cached_disclaimer, 0)
+        cache.set(cache_key, cached_disclaimer, None)
     return cached_disclaimer
 
 
