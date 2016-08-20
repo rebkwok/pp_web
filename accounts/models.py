@@ -181,10 +181,3 @@ class OnlineDisclaimer(models.Model):
             cache.set(disclaimer_cache_key(self.user), True, 0)
 
         super(OnlineDisclaimer, self).save()
-
-
-@receiver(post_delete, sender=OnlineDisclaimer)
-def update_cache(sender, instance, **kwargs):
-    # set cache to False
-    if has_disclaimer(instance.user):
-        cache.set(disclaimer_cache_key(instance.user), False, 0)

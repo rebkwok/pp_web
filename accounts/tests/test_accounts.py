@@ -234,6 +234,16 @@ class ProfileTests(TestSetupMixin, TestCase):
             )
         )
 
+        # deleting disclaimer updates cache
+        OnlineDisclaimer.objects.get(
+            user=self.user_with_online_disclaimer
+        ).delete()
+        self.assertFalse(
+            cache.get('user_{}_has_disclaimer'.format(
+                self.user_with_online_disclaimer.id)
+            )
+        )
+
     def test_profile_view_shows_disclaimer_info(self):
         self.client.login(username=self.user, password='test')
         resp = self.client.get(self.url)
