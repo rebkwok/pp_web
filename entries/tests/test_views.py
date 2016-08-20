@@ -1,10 +1,32 @@
 from model_mommy import mommy
 
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.core.urlresolvers import reverse
 
-from .helpers import TestSetupLoginRequiredMixin
+from .helpers import TestSetupMixin, TestSetupLoginRequiredMixin
 from ..models import Entry
+
+
+class EntryHomeTests(TestSetupMixin, TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        super(EntryHomeTests, cls).setUpTestData()
+        cls.url = reverse('entries:entries_home')
+
+    def test_can_get_without_login(self):
+        resp = self.client.get(self.url)
+        self. assertEqual(resp.status_code, 200)
+
+    @override_settings(ENTRIES_OPEN=True)
+    def test_entries_open(self):
+        resp = self.client.get(self.url)
+        self.assertIn('ENTER NOW', str(resp.content))
+
+    @override_settings(ENTRIES_OPEN=False)
+    def test_entries_open(self):
+        resp = self.client.get(self.url)
+        self.assertNotIn('ENTER NOW', str(resp.content))
 
 
 class EntryListViewTests(TestSetupLoginRequiredMixin, TestCase):
@@ -234,6 +256,11 @@ class EntryDeleteViewTests(TestSetupLoginRequiredMixin, TestCase):
         cls.entry = mommy.make(Entry, user=cls.user)
         cls.url = reverse('entries:delete_entry', args=(cls.entry.entry_ref,))
 
+    def test_get_context(self):
+        self.client.login(username=self.user.username, password='test')
+        resp = self.client.get(self.url)
+        self.assertEqual(resp.context_data['action'], 'delete')
+
     def test_delete(self):
         self.assertEqual(Entry.objects.count(), 1)
         self.client.login(username=self.user.username, password='test')
@@ -259,6 +286,11 @@ class EntryWithdrawViewTests(TestSetupLoginRequiredMixin, TestCase):
         cls.url = reverse(
             'entries:withdraw_entry', args=(cls.entry.entry_ref,)
         )
+
+    def test_get_context(self):
+        self.client.login(username=self.user.username, password='test')
+        resp = self.client.get(self.url)
+        self.assertEqual(resp.context_data['action'], 'withdraw')
 
     def test_withdraw(self):
         self.client.login(username=self.user.username, password='test')

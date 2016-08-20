@@ -7,7 +7,7 @@ from django.core.urlresolvers import reverse
 from django.utils import timezone
 
 from .helpers import TestSetupMixin
-from ..models import Entry
+from ..models import Entry, ENTRY_FEES
 
 
 class EntryModelTests(TestSetupMixin, TestCase):
@@ -37,3 +37,7 @@ class EntryModelTests(TestSetupMixin, TestCase):
         entry.status = 'submitted'
         entry.save()
         self.assertEqual(entry.date_submitted, mock_now)
+
+    def test_fee_property(self):
+        entry = mommy.make(Entry, user=self.user, category='INT')
+        self.assertEqual(entry.fee, ENTRY_FEES[entry.category])
