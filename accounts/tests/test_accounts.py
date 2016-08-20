@@ -778,8 +778,9 @@ class MailingListSubscribeViewTests(TestSetupMixin, TestCase):
     @classmethod
     def setUpTestData(cls):
         super(MailingListSubscribeViewTests, cls).setUpTestData()
-        cls.subscribed = mommy.make(Group, name='subscribed')
         cls.url = reverse('accounts:subscribe')
+        # group is created when user is saved and user is added to group
+        cls.group = Group.objects.get(name='subscribed')
 
     def test_login_required(self):
         resp = self.client.get(self.url)
@@ -794,28 +795,31 @@ class MailingListSubscribeViewTests(TestSetupMixin, TestCase):
 
     def test_get_shows_correct_subscription_status(self):
         self.client.login(username=self.user.username, password='test')
-        resp = self.client.get(self.url)
-        self.assertIn(
-            "You are not currently subscribed to the mailing list.",
-            resp.rendered_content
-        )
 
-        self.subscribed.user_set.add(self.user)
         resp = self.client.get(self.url)
         self.assertIn(
             "You are currently subscribed to the mailing list.  "
             "Please click below if you would like to unsubscribe.",
             resp.rendered_content
         )
+        # remove user from group
+        self.group.user_set.remove(self.user)
+        resp = self.client.get(self.url)
+        self.assertIn(
+            "You are not currently subscribed to the mailing list.",
+            resp.rendered_content
+        )
 
     def test_can_change_subscription(self):
         self.subscribed = Group.objects.get(name='subscribed')
         self.client.login(username=self.user.username, password='test')
+        self.assertIn(self.subscribed, self.user.groups.all())
+
+        self.client.post(self.url, {'unsubscribe': 'Unsubscribe'})
         self.assertNotIn(self.subscribed, self.user.groups.all())
 
         self.client.post(self.url, {'subscribe': 'Subscribe'})
         self.assertIn(self.subscribed, self.user.groups.all())
 
-        self.client.post(self.url, {'unsubscribe': 'Unsubscribe'})
-        self.assertNotIn(self.subscribed, self.user.groups.all())
+
 
