@@ -22,6 +22,7 @@ class TestSetupMixin(object):
         set_up_fb()
         cls.factory = RequestFactory()
         cls.user = User.objects.create_user(
+            first_name='Test', last_name='User',
             username='test', email='test@test.com', password='test'
         )
         mommy.make(OnlineDisclaimer, user=cls.user)
