@@ -14,7 +14,7 @@ def user_post_save(sender, instance, created, *args, **kwargs):
                     instance.first_name, instance.last_name, instance.username
             )
         )
-        group = Group.objects.get_or_create(name='subscribed')
+        group, _ = Group.objects.get_or_create(name='subscribed')
         group.user_set.add(instance)
         ActivityLog.objects.create(
             log='New user {} added to mailing list'.format(instance.username)
