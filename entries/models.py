@@ -9,7 +9,6 @@ from django.utils import timezone
 STATUS_CHOICES = (
     ('in_progress', 'In Progress'),
     ('submitted', 'Submitted'),
-    ('withdrawn', 'Withdrawn'),
     ('selected', 'Selected'),
     ('rejected', 'Unsuccessful')
 )
@@ -56,6 +55,8 @@ class Entry(models.Model):
     status = models.CharField(
         choices=STATUS_CHOICES, default='in_progress', max_length=20
     )
+    # keep withdrawn as boolean so we can track last status before withdrawing
+    withdrawn = models.BooleanField(default=False)
 
     song = models.CharField(
         max_length=255, blank=True, null=True,

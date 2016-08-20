@@ -17,5 +17,7 @@ def format_category(category):
 
 
 @register.filter
-def format_status(status):
-    return STATUS_CHOICES_DICT[status]
+def format_status(entry):
+    if entry.withdrawn:
+        return "Withdrawn"
+    return STATUS_CHOICES_DICT[entry.status]

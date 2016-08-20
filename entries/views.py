@@ -64,39 +64,41 @@ class EntryListView(LoginRequiredMixin, generic.ListView):
         for entry in self.object_list:
             paypal_video_form = None
             paypal_selected_form = None
-            if entry.status == 'submitted' and not entry.video_entry_paid:
-                # ONLY DO THIS IF PAYPAL BUTTON NEEDED
-                invoice_id = create_entry_paypal_transaction(
-                    self.request.user, entry, 'video').invoice_id
+            if not entry.withdrawn:
                 host = 'http://{}'.format(self.request.META.get('HTTP_HOST'))
-                paypal_video_form = PayPalPaymentsListForm(
-                    initial=get_paypal_dict(
-                        host,
-                        ENTRY_FEES[entry.category],  # TODO confirm fees for each stage
-                        'Video submission fee',
-                        invoice_id,
-                        'video {}'.format(entry.id),
-                        paypal_email=settings.DEFAULT_PAYPAL_EMAIL,
+                if entry.status == 'submitted' and not entry.video_entry_paid:
+                    # ONLY DO THIS IF PAYPAL BUTTON NEEDED
+                    invoice_id = create_entry_paypal_transaction(
+                        self.request.user, entry, 'video').invoice_id
+                    paypal_video_form = PayPalPaymentsListForm(
+                        initial=get_paypal_dict(
+                            host,
+                            ENTRY_FEES[entry.category],  # TODO confirm fees for each stage
+                            'Video submission fee',
+                            invoice_id,
+                            'video {}'.format(entry.id),
+                            paypal_email=settings.DEFAULT_PAYPAL_EMAIL,
+                        )
                     )
-                )
 
-            if entry.status == 'selected' and not entry.selected_entry_paid:
-                # ONLY DO THIS IF PAYPAL BUTTON NEEDED
-                invoice_id = create_entry_paypal_transaction(
-                    self.request.user, entry, 'selected').invoice_id
-                host = 'http://{}'.format(self.request.META.get('HTTP_HOST'))
-                paypal_selected_form = PayPalPaymentsListForm(
-                    initial=get_paypal_dict(
-                        host,
-                        ENTRY_FEES[entry.category],  # TODO confirm fees for each stage
-                        'Entry fee',
-                        invoice_id,
-                        'selected {}'.format(entry.id),
-                        paypal_email=settings.DEFAULT_PAYPAL_EMAIL,
+                if entry.status == 'selected' and not \
+                        entry.selected_entry_paid:
+                    # ONLY DO THIS IF PAYPAL BUTTON NEEDED
+                    invoice_id = create_entry_paypal_transaction(
+                        self.request.user, entry, 'selected').invoice_id
+                    paypal_selected_form = PayPalPaymentsListForm(
+                        initial=get_paypal_dict(
+                            host,
+                            ENTRY_FEES[entry.category],  # TODO confirm fees for each stage
+                            'Entry fee',
+                            invoice_id,
+                            'selected {}'.format(entry.id),
+                            paypal_email=settings.DEFAULT_PAYPAL_EMAIL,
+                        )
                     )
-                )
 
-            can_delete = True if entry.status == 'in_progress' else False
+            can_delete = True if entry.status == 'in_progress' \
+                and not entry.withdrawn else False
 
             entrydict = {
                 'instance': entry,
@@ -159,7 +161,7 @@ class EntryUpdateView(LoginRequiredMixin, EntryMixin, generic.UpdateView):
 class EntryDeleteView(LoginRequiredMixin, generic.DeleteView):
     model = Entry
     success_message = 'Entry has been deleted'
-    template_name = 'entries/delete_entry.html'
+    template_name = 'entries/delete_withdraw_entry.html'
     context_object_name = 'entry'
 
     def get_success_url(self):
@@ -169,6 +171,39 @@ class EntryDeleteView(LoginRequiredMixin, generic.DeleteView):
         ref = self.kwargs.get('ref')
         return get_object_or_404(Entry, entry_ref=ref)
 
+    def get_context_data(self, **kwargs):
+        context = super(EntryDeleteView, self).get_context_data(**kwargs)
+        context['action'] = 'delete'
+        return context
+
     def delete(self, request, *args, **kwargs):
         messages.success(request, 'Your entry was deleted')
         return super(EntryDeleteView, self).delete(request, *args, **kwargs)
+
+
+class EntryWithdrawView(LoginRequiredMixin, generic.UpdateView):
+    """
+    An update view for withdrawing from a category
+    """
+    model = Entry
+    template_name = 'entries/delete_withdraw_entry.html'
+    success_message = 'Your entry has been withdrawn'
+    fields = ('id',)
+
+    def get_object(self, queryset=None):
+        ref = self.kwargs.get('ref')
+        return get_object_or_404(Entry, entry_ref=ref)
+
+    def get_context_data(self, **kwargs):
+        context = super(EntryWithdrawView, self).get_context_data(**kwargs)
+        context['action'] = 'withdraw'
+        return context
+
+    def form_valid(self, form):
+        entry = form.save(commit=False)
+        entry.withdrawn = True
+        entry.save()
+
+        messages.success(self.request, self.success_message)
+
+        return HttpResponseRedirect(reverse('entries:user_entries'))

@@ -1,0 +1,22 @@
+{% extends "entries/entries_base.html" %}
+{% load static %}
+{% load entriestags %}
+
+{% block content %}
+    <div class="container-fluid">
+    <h1>{{ action|title }} Entry</h1>
+        <div>
+            <h3>You are about to {{ action }} your entry for the {{ entry.category|format_category }} category</h3>
+            <h4>Are you sure?</h4>
+            {% if action == 'withdraw' %}
+            <p>No refunds will be given for video submission or entry fees.  If you change your mind you will
+               need to contact the organizers to request to reopen your entry.
+            </p>
+            {% endif %}
+        <form action="" method="post">{% csrf_token %}
+            <input class="btn btn-danger" type="submit" name={{ action }} value="{{ action|title }} entry" />
+            <a href="{% url 'entries:user_entries' %}"><div class="btn btn-warning">Back</div></a>
+        </form>
+    </div>
+    </div>
+{% endblock content %}

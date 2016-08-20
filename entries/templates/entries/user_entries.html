@@ -14,32 +14,46 @@
             <div class="col-sm-12">
                 <div class="panel panel-default">
                     <div class="table-responsive">
-                        <table class="table">
+                        <table class="table entry-table">
                             <tr class="default">
                                 <th>Category</th>
                                 <th>Status</th>
                                 <th>Video submission</br>fee paid</th>
                                 <th>Selected entry</br>fee paid</th>
+                                <th>Song choice</br>completed</th>
                                 <th> </th>
 
                             </tr>
                             {% for entry in entries %}
-                                <tr {% if entry.instance.status = "withdrawn" %}class='expired'{% endif %}>
+                                <tr {% if entry.instance.withdrawn %}class='withdrawn'{% endif %}>
                                     <td>{{ entry.instance.category|format_category }}</td>
-                                    <td>{{ entry.instance.status|format_status }}</td>
+                                    <td>{{ entry.instance|format_status }}</td>
                                     <td>
                                         {% if entry.instance.video_entry_paid %}<span class="fa fa-check"></span>
-                                        {% elif entry.instance.paypal_video_form %}{% include 'payments/video_payment.html' %}
+                                        {% elif entry.paypal_video_form %}{% include 'payments/video_payment.html' %}
                                         {% else %}<span class="fa fa-times"></span>{% endif %}
                                     </td>
                                     <td>
                                         {% if entry.instance.selected_entry_paid %}<span class="fa fa-check"></span>
-                                        {% elif entry.instance.paypal_selected_form %}{% include 'payments/selected_payment.html' %}
+                                        {% elif entry.paypal_selected_form %}{% include 'payments/selected_payment.html' %}
                                         {% else %}<span class="fa fa-times"></span>{% endif %}
                                     </td>
                                     <td>
-                                        <a class="btn table-btn btn-purple" href="{% url 'entries:edit_entry' entry.instance.entry_ref %}">Edit</a>
-                                        {% if entry.can_delete %}<a class="btn table-btn btn-danger" href="{% url 'entries:delete_entry' entry.instance.entry_ref %}">Delete</a>{% endif %}
+                                        {% if entry.instance.song %}<span class="fa fa-check"></span>
+                                        {% else %}<span class="fa fa-times"></span>{% endif %}
+                                    </td>
+                                    <td>
+                                        {% if not entry.instance.withdrawn %}
+                                            <a class="btn table-btn btn-purple" href="{% url 'entries:edit_entry' entry.instance.entry_ref %}">Edit</a>
+                                            {% if entry.can_delete %}
+                                                <a class="btn table-btn btn-danger" href="{% url 'entries:delete_entry' entry.instance.entry_ref %}">Delete</a>
+                                            {% else %}
+                                                <a class="btn table-btn btn-warning" href="{% url 'entries:withdraw_entry' entry.instance.entry_ref %}">Withdraw</a>
+                                            {% endif %}
+                                        {% else %}
+                                            <span class="helptext">Contact organizers if you wish to reopen this entry</span>
+                                        {% endif %}
+                                    </td>
                                     </td>
                                 </tr>
                             {% endfor %}

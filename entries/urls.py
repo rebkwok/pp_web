@@ -13,8 +13,14 @@ urlpatterns = [
         name='edit_entry'
     ),
     url(
-        r'^myentries/(?P<ref>[\w-]+)/delete/$', views.EntryDeleteView.as_view(),
+        r'^myentries/(?P<ref>[\w-]+)/delete/$',
+        views.EntryDeleteView.as_view(),
         name='delete_entry'
+    ),
+    url(
+        r'^myentries/(?P<ref>[\w-]+)/withdraw/$',
+        views.EntryWithdrawView.as_view(),
+        name='withdraw_entry'
     ),
     url(
         r'^myentries/$', views.EntryListView.as_view(), name='user_entries'

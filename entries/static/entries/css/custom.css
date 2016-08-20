@@ -178,10 +178,25 @@ input[type='radio']:checked:before {
 	padding-left: 0;
 	padding-right: 0;
     font-size: 90%;
-	width: 5em;
+	width: 6em;
 	color: #fff;
     }
 
 .submitted-entry-field {
     font-weight: bold;
+}
+
+.entry-table {
+    font-size: 90%;
+}
+
+.paypal-table-btn {
+    padding-top: 0;
+    margin-top: 0;
+    margin-bottom: -15px;
+    height: 85%;
+    }
+
+tr.withdrawn {
+    color: lightgrey;
 }

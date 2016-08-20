@@ -22,5 +22,5 @@ class PayPalFormTests(TestCase):
                         'video {}'.format(entry.id),
                     )
         )
-        self.assertIn('Buy it Now', form.render())
+        self.assertIn('Paypal', form.render())
 
