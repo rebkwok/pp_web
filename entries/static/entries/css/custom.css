@@ -64,6 +64,10 @@ body {
     padding-top: 20px;
 }
 
+.vspace-below {
+    padding-bottom: 20px;
+}
+
 .error-info > input, .error-info > .regular-checkbox + label {
     border: 1px solid red;
     background-color: rgba(255, 0, 0, 0.1);
@@ -82,7 +86,7 @@ div .errortext {
     margin-top: 0;
 }
 
-.disclaimer-form .control-label, .disclaimer-form, label {
+.disclaimer-form .control-label, .disclaimer-form label {
     font-size: small;
 }
 
@@ -98,7 +102,7 @@ div .errortext {
     border-radius: 3px;
     display: inline-block;
     position: relative;
-    vertical-align: top;
+    vertical-align: middle;
 }
 .regular-checkbox + label:active, .regular-checkbox:checked + label:active {
     box-shadow: 0 1px 2px rgba(0,0,0,0.05), inset 0px 1px 3px rgba(0,0,0,0.1);
@@ -160,4 +164,24 @@ input[type='radio']:checked:before {
 
 .extra-top-margin {
     padding-top: 15px;
+}
+
+.helptext {
+    font-size: small;
+    font-style: italic;
+}
+
+
+.table-btn {
+    padding-top: 0;
+    padding-bottom: 0;
+	padding-left: 0;
+	padding-right: 0;
+    font-size: 90%;
+	width: 5em;
+	color: #fff;
+    }
+
+.submitted-entry-field {
+    font-weight: bold;
 }

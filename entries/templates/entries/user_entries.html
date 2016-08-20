@@ -1,56 +1,62 @@
 {% extends "entries/entries_base.html" %}
 {% load static %}
-{% load entriestags %}
+{% load entriestags accounttags %}
 
 {% block content %}
 
 
-<div class="container-fluid row">
-    {% if entries %}
-    <div class="row">
-        <div class="col-sm-12">
-            <div class="panel panel-default">
-                <div class="table-responsive">
-                    <table class="table">
-                        <tr class="success">
-                            <th> </th>
-                            <th>Category</th>
-                            <th>Status</th>
-                            <th>Video submission fee</th>
-                            <th>Selected entry fee</th>
-                            <th> </th>
+<div class="container-fluid row extra-top-margin">
+    <h1>Entries</h1>
+    {% if user|has_disclaimer %}
 
-                        </tr>
-                        {% for entry in entries %}
-                            <tr {% if entry.instance.status == 'withdrawn' %}class='expired'{% endif %}>
-                                <td>{{ entry.category }}</td>
-                                <td>{{ entry.status }}</td>
-                                <td>
-                                    {% if entry.video_entry_paid %}<span class="fa fa-check"></span>
-                                    {% elif entry.paypal_video_form %}{% include 'payments/video_payment.html' %}
-                                    {% else %}<span class="fa fa-times"></span>{% endif %}
-                                </td>
-                                <td>
-                                    {% if entry.selected_entry_paid %}<span class="fa fa-check"></span>
-                                    {% elif entry.paypal_selected_form %}{% include 'payments/selected_payment.html' %}
-                                    {% else %}<span class="fa fa-times"></span>{% endif %}
-                                </td>
-                                <td>
-                                    <a class="btn btn-purple" href="#">Edit</a>
-                                    {% if entry.can_delete %}<a class="btn btn-danger" href="#">Delete</a>{% endif %}
-                                </td>
+        {% if entries %}
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="panel panel-default">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <tr class="default">
+                                <th>Category</th>
+                                <th>Status</th>
+                                <th>Video submission</br>fee paid</th>
+                                <th>Selected entry</br>fee paid</th>
+                                <th> </th>
+
                             </tr>
-                        {% endfor %}
-                    </table>
-                </div>
+                            {% for entry in entries %}
+                                <tr {% if entry.instance.status = "withdrawn" %}class='expired'{% endif %}>
+                                    <td>{{ entry.instance.category|format_category }}</td>
+                                    <td>{{ entry.instance.status|format_status }}</td>
+                                    <td>
+                                        {% if entry.instance.video_entry_paid %}<span class="fa fa-check"></span>
+                                        {% elif entry.instance.paypal_video_form %}{% include 'payments/video_payment.html' %}
+                                        {% else %}<span class="fa fa-times"></span>{% endif %}
+                                    </td>
+                                    <td>
+                                        {% if entry.instance.selected_entry_paid %}<span class="fa fa-check"></span>
+                                        {% elif entry.instance.paypal_selected_form %}{% include 'payments/selected_payment.html' %}
+                                        {% else %}<span class="fa fa-times"></span>{% endif %}
+                                    </td>
+                                    <td>
+                                        <a class="btn table-btn btn-purple" href="{% url 'entries:edit_entry' entry.instance.entry_ref %}">Edit</a>
+                                        {% if entry.can_delete %}<a class="btn table-btn btn-danger" href="{% url 'entries:delete_entry' entry.instance.entry_ref %}">Delete</a>{% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
+            </div>
+            </div>
         </div>
-        </div>
-    </div>
+        {% else %}
+            <p>You do not have any entries yet.</p>
+        {% endif %}
+
     {% else %}
-        <p>You do not have any open entries.</p>
+    <p>Please <a href="{% url 'accounts:disclaimer_form' %}">complete a disclaimer</a> before beginning the entry process.</p>
     {% endif %}
 
-    <p><a class="btn btn-purple" href="#">Start new entry</a></p>
+    <p><a class="btn btn-purple {% if not user|has_disclaimer %}disabled{% endif %}" href="{% url 'entries:create_entry' %}">Start new entry</a></p>
 
 </div>
 

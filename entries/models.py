@@ -35,17 +35,18 @@ ENTRY_FEES = {
 }
 
 YEAR_CHOICES = (
-    (2017, 2017),
-    (2018, 2018),
-    (2019, 2019),
-    (2020, 2020),
-    (2021, 2021),
+    ('2017', '2017'),
+    ('2018', '2018'),
+    ('2019', '2019'),
+    ('2020', '2020'),
+    ('2021', '2021'),
 )
+
 
 class Entry(models.Model):
     entry_ref = models.CharField(max_length=22)
     entry_year = models.CharField(
-        choices=YEAR_CHOICES, default=2017, max_length=4
+        choices=YEAR_CHOICES, default='2017', max_length=4
     )  # so we can use this system for future comp entries too
     user = models.ForeignKey(User)
     stage_name = models.CharField(max_length=255, blank=True, null=True)
@@ -59,12 +60,13 @@ class Entry(models.Model):
     song = models.CharField(
         max_length=255, blank=True, null=True,
         help_text='Can be submitted later')
-    video_url = models.URLField()
+    video_url = models.URLField(blank=True, null=True)
     biography = models.TextField(
         verbose_name='Short bio',
         help_text='How long have you been poling? Previous titles? Why you '
                   'have entered? Any relevant information about yourself? '
-                  'How would you describe your style?'
+                  'How would you describe your style?',
+        blank=True, null=True
     )
 
     # for doubles entry
@@ -87,6 +89,7 @@ class Entry(models.Model):
 
     class Meta:
         unique_together = ('entry_year', 'user', 'category')
+        verbose_name_plural = 'entries'
 
     @cached_property
     def fee(self):

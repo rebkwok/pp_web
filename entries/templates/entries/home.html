@@ -14,7 +14,7 @@
             {% if entries_open %}
                 <div class="pull-right" {% if not user.is_authenticated %} data-toggle="tooltip" data-placement="left" title="Log in to enter"{% endif %}>
                 <a {% if not user.is_authenticated %}class="btn btn-purple disabled"
-                   {% else %}class="btn btn-purple"{% endif %} href="#">ENTER NOW</a></div>
+                   {% else %}class="btn btn-purple"{% endif %} href="{% url 'entries:user_entries' %}">ENTER NOW</a></div>
             {% endif %}
 
 

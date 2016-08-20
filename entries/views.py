@@ -1,6 +1,7 @@
 from django.conf import settings
+from django.contrib import messages
 from django.core.urlresolvers import reverse
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, HttpResponseRedirect, render
 from django.views import generic
 
 from braces.views import LoginRequiredMixin
@@ -8,6 +9,7 @@ from braces.views import LoginRequiredMixin
 from payments.forms import PayPalPaymentsListForm
 from payments.models import create_entry_paypal_transaction
 
+from .forms import EntryCreateUpdateForm
 from .models import Entry, ENTRY_FEES
 
 
@@ -107,13 +109,66 @@ class EntryListView(LoginRequiredMixin, generic.ListView):
         return context
 
 
-class EntryCreateView(LoginRequiredMixin, generic.CreateView):
-    model = Entry
+class EntryMixin(object):
+
+    def form_valid(self, form):
+        entry = form.save(commit=False)
+        entry.user = self.request.user
+
+        if self.request.POST.get('save', None):
+            action = 'saved'
+        elif self.request.POST.get('submit', None):
+            action = 'submitted'
+
+        if entry.status == 'in_progress' and 'submit' in self.request.POST:
+            entry.status = 'submitted'
+        entry.save()
+
+        messages.success(self.request, self.success_message.format(action))
+
+        return HttpResponseRedirect(self.get_success_url())
+
+    def get_form_kwargs(self):
+        kwargs = super(EntryMixin, self).get_form_kwargs()
+        kwargs.update({'user': self.request.user})
+        return kwargs
+
+    def get_success_url(self):
+        return reverse('entries:user_entries')
 
 
-class EntryUpdateView(LoginRequiredMixin, generic.UpdateView):
+class EntryCreateView(LoginRequiredMixin, EntryMixin, generic.CreateView):
     model = Entry
+    template_name = 'entries/entry_create_update.html'
+    form_class = EntryCreateUpdateForm
+    success_message = 'Your entry has been {}'
+
+
+class EntryUpdateView(LoginRequiredMixin, EntryMixin, generic.UpdateView):
+
+    model = Entry
+    template_name = 'entries/entry_create_update.html'
+    form_class = EntryCreateUpdateForm
+    success_message = 'Your entry has been {}'
+
+    def get_object(self, queryset=None):
+        ref = self.kwargs.get('ref')
+        return get_object_or_404(Entry, entry_ref=ref)
 
 
 class EntryDeleteView(LoginRequiredMixin, generic.DeleteView):
     model = Entry
+    success_message = 'Entry has been deleted'
+    template_name = 'entries/delete_entry.html'
+    context_object_name = 'entry'
+
+    def get_success_url(self):
+        return reverse('entries:user_entries')
+    
+    def get_object(self, queryset=None):
+        ref = self.kwargs.get('ref')
+        return get_object_or_404(Entry, entry_ref=ref)
+
+    def delete(self, request, *args, **kwargs):
+        messages.success(request, 'Your entry was deleted')
+        return super(EntryDeleteView, self).delete(request, *args, **kwargs)
