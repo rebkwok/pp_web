@@ -10,6 +10,8 @@ from django.shortcuts import get_object_or_404
 from django.views.generic import UpdateView, DeleteView
 from django.utils import timezone
 
+from braces.views import LoginRequiredMixin
+
 from accounts.models import OnlineDisclaimer
 
 from ppadmin.forms import AdminDisclaimerForm
@@ -34,7 +36,7 @@ def user_disclaimer(request, encoded_user_id):
     )
 
 
-class DisclaimerUpdateView(StaffUserMixin, UpdateView):
+class DisclaimerUpdateView(LoginRequiredMixin, StaffUserMixin, UpdateView):
 
     model = OnlineDisclaimer
     form_class = AdminDisclaimerForm
@@ -93,7 +95,7 @@ class DisclaimerUpdateView(StaffUserMixin, UpdateView):
         return reverse('ppadmin:users')
 
 
-class DisclaimerDeleteView(StaffUserMixin, DeleteView):
+class DisclaimerDeleteView(LoginRequiredMixin, StaffUserMixin, DeleteView):
 
     model = OnlineDisclaimer
     fields = '__all__'

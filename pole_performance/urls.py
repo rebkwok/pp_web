@@ -19,6 +19,7 @@ from django.conf.urls.static import static
 from django.contrib import admin
 
 from accounts.views import CustomLoginView, CustomSignUpView
+from entries.views import permission_denied
 
 
 urlpatterns = [
@@ -31,6 +32,7 @@ urlpatterns = [
     url(r'^accounts/', include('allauth.urls')),
     url(r'^payments/ipn-paypal-notify/', include('paypal.standard.ipn.urls')),
     url(r'payments/', include('payments.urls', namespace='payments')),
+    url(r'^not-available/$', permission_denied, name='permission_denied'),
     url(r'ppadmin/', include('ppadmin.urls', namespace='ppadmin')),
 ]
 

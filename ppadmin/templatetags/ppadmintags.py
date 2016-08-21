@@ -3,7 +3,7 @@ import pytz
 from django import template
 from django.utils.safestring import mark_safe
 
-from ppadmin.utils import int_str, chaffify
+from ..utils import int_str, chaffify
 
 
 register = template.Library()

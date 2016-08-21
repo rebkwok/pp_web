@@ -27,23 +27,16 @@ class ActivityLogListView(LoginRequiredMixin, StaffUserMixin, ListView):
 
     def get_queryset(self):
 
-        empty_text = []  # TODO if required
-        queryset = ActivityLog.objects.exclude(
-            log__in=empty_text
-        ).order_by('-timestamp')
+        queryset = ActivityLog.objects.all().order_by('-timestamp')
 
         reset = self.request.GET.get('reset')
         search_submitted = self.request.GET.get('search_submitted')
         search_text = self.request.GET.get('search')
         search_date = self.request.GET.get('search_date')
-        hide_empty_cronjobs = self.request.GET.get('hide_empty_cronjobs')
 
-        if reset or (not (search_text or search_date) and hide_empty_cronjobs) \
+        if reset or not (search_text or search_date) \
                 or (not reset and not search_submitted):
             return queryset
-
-        if not hide_empty_cronjobs:
-            queryset = ActivityLog.objects.all().order_by('-timestamp')
 
         if search_date:
             try:
@@ -53,7 +46,8 @@ class ActivityLogListView(LoginRequiredMixin, StaffUserMixin, ListView):
                     hour=23, minute=59, second=59, microsecond=999999
                 )
                 queryset = queryset.filter(
-                    Q(timestamp__gte=start_datetime) & Q(timestamp__lte=end_datetime)
+                    Q(timestamp__gte=start_datetime) &
+                    Q(timestamp__lte=end_datetime)
                 ).order_by('-timestamp')
             except ValueError:
                 messages.error(
@@ -74,11 +68,6 @@ class ActivityLogListView(LoginRequiredMixin, StaffUserMixin, ListView):
     def get_context_data(self):
         context = super(ActivityLogListView, self).get_context_data()
         context['sidenav_selection'] = 'activitylog'
-
-        search_submitted =  self.request.GET.get('search_submitted')
-        hide_empty_cronjobs = self.request.GET.get('hide_empty_cronjobs') \
-        if search_submitted else 'on'
-
         search_text = self.request.GET.get('search', '')
         search_date = self.request.GET.get('search_date', None)
         reset = self.request.GET.get('reset')
@@ -89,7 +78,6 @@ class ActivityLogListView(LoginRequiredMixin, StaffUserMixin, ListView):
         form = ActivityLogSearchForm(
             initial={
                 'search': search_text, 'search_date': search_date,
-                'hide_empty_cronjobs': hide_empty_cronjobs
             })
         context['form'] = form
 

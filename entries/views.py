@@ -43,6 +43,10 @@ def get_paypal_dict(
     return paypal_dict
 
 
+def permission_denied(request):
+    return render(request, 'entries/permission_denied.html')
+
+
 def entries_home(request):
     return render(request, 'entries/home.html')
 
