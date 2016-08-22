@@ -56,6 +56,13 @@ class TestSetupStaffLoginRequiredMixin(TestSetupMixin):
         self.assertEqual(resp.status_code, 302)
         self.assertIn(redirected_url, resp.url)
 
+        # test we get the permission denied page properly
+        resp = self.client.get(self.url, follow=True)
+        self.assertEqual(resp.status_code, 200)
+        self.assertIn(
+            'The page you requested is not available', str(resp.content)
+        )
+
         self.client.login(username=self.staff_user.username, password='test')
         resp = self.client.get(self.url)
         self.assertEqual(resp.status_code, 200)

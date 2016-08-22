@@ -1,14 +1,6 @@
 from django import forms
-from django.core.validators import URLValidator
 
 from .models import Entry, CATEGORY_CHOICES
-
-
-class PresubmissionURLValidator(URLValidator):
-
-    def __call__(self, value):
-        if value == "http://":
-            return value
 
 
 class EntryCreateUpdateForm(forms.ModelForm):
@@ -22,7 +14,6 @@ class EntryCreateUpdateForm(forms.ModelForm):
             initial="http://",
             widget=forms.TextInput(attrs={'class': "form-control"}),
             required=False,
-            validators=[PresubmissionURLValidator]
         )
 
         # only list the current category (for editing saved entries) and
