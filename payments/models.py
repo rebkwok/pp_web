@@ -41,15 +41,6 @@ def create_entry_paypal_transaction(user, entry, payment_type):
         counter = '001'
 
     invoice_id = id_string + counter
-    existing_inv = PaypalEntryTransaction.objects.filter(
-        invoice_id=invoice_id
-    )
-    if existing_inv:
-        # in case we already have the same invoice id for a different
-        # entry (the check for existing above checked for this exact
-        # combination of invoice id and entry)
-        random_prefix = random.randrange(100, 999)
-        invoice_id = id_string + str(random_prefix) + counter
 
     pbt = PaypalEntryTransaction.objects.create(
         invoice_id=invoice_id, entry=entry, payment_type=payment_type
@@ -135,7 +126,7 @@ def get_obj(ipn_obj):
         raise PayPalTransactionError('Unknown object for payment')
 
     if payment_type not in ['video', 'selected']:
-        raise PayPalTransactionError('Unknown payment type for payment')
+        raise PayPalTransactionError('Unknown payment type %s' % payment_type)
 
     try:
         obj = Entry.objects.select_related('user').get(id=entry_id)
@@ -152,12 +143,12 @@ def get_obj(ipn_obj):
             user=obj.user, entry=obj, payment_type=payment_type
         )
     elif paypal_trans.count() > 1:
-        # we may have two pp transactions created if user changed their
-        # username between entering and paying (invoice_id is created and
-        # retrieved using username)
+        # Unlikely we'll have 2 paypal trans created, since invoice_id is
+        # created and retrieved using entry_ref which is randomly generated,
+        # but just in case
         if ipn_obj.invoice:
             paypal_trans = PaypalEntryTransaction\
-                .objects.seletct_related('entry', 'user').get(
+                .objects.select_related('entry').get(
                 entry=obj, invoice_id=ipn_obj.invoice,
                 payment_type=payment_type
             )
@@ -201,7 +192,7 @@ def payment_received(sender, **kwargs):
     paypal_trans = obj_dict['paypal_trans']
 
     try:
-        if  ipn_obj.receiver_email != settings.DEFAULT_PAYPAL_EMAIL:
+        if ipn_obj.receiver_email != settings.DEFAULT_PAYPAL_EMAIL:
             ipn_obj.set_flag(
                 "Invalid receiver_email (%s)" % ipn_obj.receiver_email
             )
@@ -213,8 +204,6 @@ def payment_received(sender, **kwargs):
                 obj.video_entry_paid = False
             elif payment_type == 'selected':
                 obj.selected_entry_paid = False
-            else:
-                raise PayPalTransactionError('Unknown payment type for refund')
             obj.save()
 
             ActivityLog.objects.create(
@@ -255,8 +244,6 @@ def payment_received(sender, **kwargs):
                 obj.video_entry_paid = True
             elif payment_type == 'selected':
                 obj.selected_entry_paid = True
-            else:
-                raise PayPalTransactionError('Unknown payment type for refund')
             obj.save()
 
             # do this AFTER saving the entry as paid; in the edge case that a

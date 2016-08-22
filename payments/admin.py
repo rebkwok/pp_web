@@ -24,7 +24,7 @@ class UserFilter(admin.SimpleListFilter):
 
     def queryset(self, request, queryset):
         if self.value():
-            return queryset.filter(booking__user__id=self.value())
+            return queryset.filter(entry__user__id=self.value())
         return queryset
 
 

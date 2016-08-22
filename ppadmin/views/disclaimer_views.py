@@ -27,8 +27,11 @@ logger = logging.getLogger(__name__)
 @login_required
 @staff_required
 def user_disclaimer(request, encoded_user_id):
-    user_id = dechaffify(str_int(encoded_user_id))
-    disclaimer = OnlineDisclaimer.objects.get(user__id=user_id)
+    try:
+        user_id = dechaffify(str_int(encoded_user_id))
+    except ValueError:
+        user_id = None
+    disclaimer = get_object_or_404(OnlineDisclaimer, user__id=user_id)
     ctx = {'disclaimer': disclaimer, 'encoded_user_id': encoded_user_id}
 
     return TemplateResponse(

@@ -327,6 +327,22 @@ class MailingListViewTests(TestSetupStaffLoginRequiredMixin, TestCase):
         cls.url = reverse('ppadmin:mailing_list')
 
 
+    def test_unsubscribe(self):
+        subscribed = Group.objects.get(name='subscribed')
+
+        self.assertIn(subscribed, self.user.groups.all())
+        self.client.login(username=self.staff_user.username, password='test')
+        resp = self.client.get(
+            reverse('ppadmin:unsubscribe', args=[self.user.id])
+        )
+
+        # redirects back to mailing list
+        self.assertEqual(resp.status_code, 302)
+        self.assertEqual(resp.url, self.url)
+        self.user.refresh_from_db()
+        self.assertNotIn(subscribed, self.user.groups.all())
+
+
 class UserDisclaimerViewTests(TestSetupStaffLoginRequiredMixin, TestCase):
     @classmethod
     def setUpTestData(cls):
@@ -335,6 +351,17 @@ class UserDisclaimerViewTests(TestSetupStaffLoginRequiredMixin, TestCase):
             'ppadmin:user_disclaimer',
             args=[int_str(chaffify(cls.user.id))]
         )
+
+    def test_get_with_invalid_encoded_user_id(self):
+        """
+        Invalid user id raises Value error when decoding; return 404
+        """
+        self.client.login(username=self.staff_user.username, password='test')
+        resp = self.client.post(
+            reverse('ppadmin:user_disclaimer', args=['foo'])
+        )
+        self.assertEqual(resp.status_code, 404)
+
 
 class DisclaimerUpdateViewTests(TestSetupStaffLoginRequiredMixin, TestCase):
 

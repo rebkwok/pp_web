@@ -111,7 +111,7 @@ class PaypalSignalsTests(TestCase):
     def test_paypal_notify_url_with_unknown_obj_type(self):
         self.assertFalse(PayPalIPN.objects.exists())
         resp = self.paypal_post(
-            {'charset': b(CHARSET), 'custom': b'other 1', 'txn_id': 'test'}
+            {'charset': b(CHARSET), 'custom': b'other 1', 'txn_id': b'test'}
         )
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(PayPalIPN.objects.count(), 1)
@@ -131,7 +131,7 @@ class PaypalSignalsTests(TestCase):
             'PayPal sent an invalid transaction notification while '
             'attempting to process payment;.\n\nThe flag '
             'info was "{}"\n\nAn additional error was raised: {}'.format(
-                ppipn.flag_info, 'Unknown payment type for payment'
+                ppipn.flag_info, 'Unknown payment type other'
             )
         )
 
@@ -160,7 +160,6 @@ class PaypalSignalsTests(TestCase):
                 ppipn.flag_info, 'Entry with id 1 does not exist'
             )
         )
-
 
     @patch('paypal.standard.ipn.models.PayPalIPN._postback')
     def test_paypal_notify_url_with_complete_status(self, mock_postback):
@@ -367,6 +366,74 @@ class PaypalSignalsTests(TestCase):
         self.assertEqual(len(mail.outbox), 2)
 
     @patch('paypal.standard.ipn.models.PayPalIPN._postback')
+    def test_paypal_notify_url_with_duplicate_trans_object(self, mock_postback):
+        mock_postback.return_value = b"VERIFIED"
+        entry = mommy.make(Entry, category='BEG')
+        entry1 = mommy.make(Entry, category='INT')
+        # create 2 paypal trans objects and make they for the same object
+        pptrans = create_entry_paypal_transaction(entry.user, entry, 'video')
+        pptrans1 = create_entry_paypal_transaction(entry.user, entry1, 'video')
+        pptrans1.entry = entry
+        pptrans1.save()
+
+        self.assertEqual(PayPalIPN.objects.count(), 0)
+        self.assertEqual(PaypalEntryTransaction.objects.count(), 2)
+
+        params = dict(IPN_POST_PARAMS)
+        params.update(
+            {
+                'custom': b('video {}'.format(entry.id)),
+                'invoice': b('{}'.format(pptrans.invoice_id))
+            }
+        )
+        resp = self.paypal_post(params)
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(PayPalIPN.objects.count(), 1)
+        ppipn = PayPalIPN.objects.first()
+        self.assertFalse(ppipn.flag)
+        self.assertEqual(ppipn.flag_info, '')
+
+        self.assertEqual(PaypalEntryTransaction.objects.count(), 2)
+        entry.refresh_from_db()
+        self.assertTrue(entry.video_entry_paid)
+        # 1 emails sent, to user only
+        self.assertEqual(len(mail.outbox), 1)
+
+    @patch('paypal.standard.ipn.models.PayPalIPN._postback')
+    def test_paypal_notify_url_duplicate_trans_not_invoice(self, mock_postback):
+        mock_postback.return_value = b"VERIFIED"
+        entry = mommy.make(Entry, category='BEG')
+        entry1 = mommy.make(Entry, category='INT')
+        # create 2 paypal trans objects and make they for the same object
+        pptrans = create_entry_paypal_transaction(entry.user, entry, 'video')
+        pptrans1 = create_entry_paypal_transaction(entry.user, entry1, 'video')
+        pptrans1.entry = entry
+        pptrans1.save()
+
+        self.assertEqual(PayPalIPN.objects.count(), 0)
+        self.assertEqual(PaypalEntryTransaction.objects.count(), 2)
+
+        params = dict(IPN_POST_PARAMS)
+        params.update(
+            {
+                'custom': b('video {}'.format(entry.id)),
+                'invoice': b''
+            }
+        )
+        resp = self.paypal_post(params)
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(PayPalIPN.objects.count(), 1)
+        ppipn = PayPalIPN.objects.first()
+        self.assertFalse(ppipn.flag)
+        self.assertEqual(ppipn.flag_info, '')
+
+        self.assertEqual(PaypalEntryTransaction.objects.count(), 2)
+        entry.refresh_from_db()
+        self.assertTrue(entry.video_entry_paid)
+        # 2 emails sent, to user and support because there is no inv
+        self.assertEqual(len(mail.outbox), 2)
+
+    @patch('paypal.standard.ipn.models.PayPalIPN._postback')
     def test_paypal_notify_url_with_refunded_status(self, mock_postback):
         """
         when a paypal payment is refunded, it looks like it posts back to the
@@ -384,6 +451,37 @@ class PaypalSignalsTests(TestCase):
         params.update(
             {
                 'custom': b('video {}'.format(entry.id)),
+                'invoice': b(pptrans.invoice_id),
+                'payment_status': b'Refunded'
+            }
+        )
+        self.paypal_post(params)
+        entry.refresh_from_db()
+        self.assertFalse(entry.video_entry_paid)
+
+        self.assertEqual(len(mail.outbox), 1,)
+
+        # emails sent to support
+        self.assertEqual(mail.outbox[0].to, [settings.SUPPORT_EMAIL])
+
+    @patch('paypal.standard.ipn.models.PayPalIPN._postback')
+    def test_paypal_notify_url_for_selected_with_refunded(self, mock_postback):
+        """
+        when a paypal payment is refunded, it looks like it posts back to the
+        notify url again (since the PayPalIPN is updated).  Test that we can
+        identify and process refunded payments.
+        """
+        mock_postback.return_value = b"VERIFIED"
+        entry = mommy.make(Entry)
+        pptrans = create_entry_paypal_transaction(entry.user, entry, 'selected')
+        pptrans.transaction_id = "test_trans_id"
+        pptrans.save()
+
+        self.assertFalse(PayPalIPN.objects.exists())
+        params = dict(IPN_POST_PARAMS)
+        params.update(
+            {
+                'custom': b('selected {}'.format(entry.id)),
                 'invoice': b(pptrans.invoice_id),
                 'payment_status': b'Refunded'
             }

@@ -20,7 +20,7 @@ class TestHelpers(TestCase):
         # str returns invoice id
         self.assertEqual(str(ppt), ppt.invoice_id)
 
-    def test_try_to_create_existing_booking_transaction(self):
+    def test_try_to_create_existing_entry_transaction(self):
         user = mommy.make(User)
         entry = mommy.make(Entry)
         ppt = create_entry_paypal_transaction(user, entry, 'video')

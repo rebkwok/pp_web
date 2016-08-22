@@ -68,3 +68,32 @@ class PaymentsAdminFiltersTests(TestCase):
                 (self.user.id, 'Foo Bar (foob)')
             ]
         )
+
+    def test_paypal_booking_user_filter(self):
+
+        userfilter = admin.UserFilter(
+            None, {}, PaypalEntryTransaction, admin.PaypalEntryTransactionAdmin
+        )
+        result = userfilter.queryset(
+            None, PaypalEntryTransaction.objects.all()
+        )
+        # with no filter parameters, return all
+        self.assertEqual(PaypalEntryTransaction.objects.count(), 2)
+        self.assertEqual(result.count(), 2)
+        self.assertEqual(
+            [ppbt.id for ppbt in result],
+            [ppbt.id for ppbt in PaypalEntryTransaction.objects.all()]
+        )
+
+        userfilter = admin.UserFilter(
+            None, {'user': self.user.id}, PaypalEntryTransaction,
+            admin.PaypalEntryTransactionAdmin
+        )
+        result = userfilter.queryset(
+            None, PaypalEntryTransaction.objects.all()
+        )
+        self.assertEqual(PaypalEntryTransaction.objects.count(), 2)
+        self.assertEqual(result.count(), 1)
+        self.assertEqual(
+            result[0], PaypalEntryTransaction.objects.get(entry__user=self.user)
+        )
