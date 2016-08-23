@@ -18,9 +18,9 @@ CATEGORY_CHOICES = (
     ('BEG', 'Beginner'),
     ('INT', 'Intermediate'),
     ('ADV', 'Advanced'),
-    ('DOU', 'Doubles'),
     ('PRO', 'Professional'),
-    ('MEN', 'Mens')
+    ('DOU', 'Doubles'),
+    ('MEN', 'Mens'),
 )
 CATEGORY_CHOICES_DICT = dict(CATEGORY_CHOICES)
 
@@ -60,7 +60,7 @@ class Entry(models.Model):
 
     song = models.CharField(
         max_length=255, blank=True, null=True,
-        help_text='Can be submitted later')
+        help_text='Not required for initial entry submission')
     video_url = models.URLField(blank=True, null=True)
     biography = models.TextField(
         verbose_name='Short bio',

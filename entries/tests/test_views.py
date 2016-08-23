@@ -152,7 +152,7 @@ class EntryCreateViewTests(TestSetupLoginRequiredMixin, TestCase):
     def setUp(self):
         self.post_data = {
             'category': 'BEG',
-            'save': 'Save'
+            'saved': 'Save'
         }
 
     def test_create_entry_and_save(self):
@@ -169,8 +169,8 @@ class EntryCreateViewTests(TestSetupLoginRequiredMixin, TestCase):
         self.assertFalse(Entry.objects.exists())
         self.client.login(username=self.user.username, password='test')
         data = self.post_data.copy()
-        del data['save']
-        data.update({'submit': 'Submit'})
+        del data['saved']
+        data.update({'submitted': 'Submit'})
         resp = self.client.post(self.url, data)
 
         form = resp.context_data['form']
@@ -194,6 +194,50 @@ class EntryCreateViewTests(TestSetupLoginRequiredMixin, TestCase):
         # status has been changed from in_progress to submitted
         self.assertEqual(Entry.objects.first().status, 'submitted')
 
+    def test_change_category(self):
+        """
+        Changing the category resubmits the form without 'saved' or
+        'submitted' in the POST and redirect back to the new entry form view
+        with the initial data set
+        """
+        self.assertFalse(Entry.objects.exists())
+        self.client.login(username=self.user.username, password='test')
+        data = {'category': 'INT', 'biography': 'about me'}
+
+        resp = self.client.post(self.url, data)
+        self.assertEqual(resp.status_code, 302)
+        self.assertEqual(resp.url, reverse('entries:create_entry'))
+
+        resp = self.client.post(self.url, data, follow=True)
+        self.assertEqual(
+            resp.context_data['form'].initial,
+            {'category': 'INT', 'biography': 'about me'}
+        )
+        self.assertFalse(Entry.objects.exists())
+
+    def test_initial_set_from_session_data(self):
+        """
+        If category is changed on a new entry form, the form data is stored
+        on the session and added to the form's initial data on the redirected
+        get
+        """
+        self.assertFalse(Entry.objects.exists())
+        self.client.login(username=self.user.username, password='test')
+        session = self.client.session
+        session['form_data'] = {'category': 'ADV', 'biography': 'foo'}
+        session.save()
+
+        self.assertIsNotNone(self.client.session.get('form_data'))
+
+        resp = self.client.get(self.url)
+        self.assertEqual(
+            resp.context_data['form'].initial,
+            {'category': 'ADV', 'biography': 'foo'}
+        )
+
+        # form data has been removed from session
+        self.assertIsNone(self.client.session.get('form_data'))
+
 
 class EntryUpdateViewTests(TestSetupLoginRequiredMixin, TestCase):
 
@@ -206,7 +250,7 @@ class EntryUpdateViewTests(TestSetupLoginRequiredMixin, TestCase):
     def setUp(self):
         self.post_data = {
             'category': 'BEG',
-            'save': 'Save'
+            'saved': 'Save'
         }
 
     def test_upate_entry_and_save(self):
@@ -224,8 +268,8 @@ class EntryUpdateViewTests(TestSetupLoginRequiredMixin, TestCase):
         """
         self.client.login(username=self.user.username, password='test')
         data = self.post_data.copy()
-        del data['save']
-        data.update({'submit': 'Submit'})
+        del data['saved']
+        data.update({'submitted': 'Submit'})
         resp = self.client.post(self.url, data)
 
         form = resp.context_data['form']
@@ -246,6 +290,25 @@ class EntryUpdateViewTests(TestSetupLoginRequiredMixin, TestCase):
         self.entry.refresh_from_db()
         # status has been changed from in_progress to submitted
         self.assertEqual(self.entry.status, 'submitted')
+
+
+    def test_change_category(self):
+        """
+        Changing the category resubmits the form without 'saved' or
+        'submitted' in the POST, saves the entry and redirects back to the
+        edit entry form view
+        """
+        self.client.login(username=self.user.username, password='test')
+        data = {'category': 'INT', 'biography': 'about me'}
+
+        resp = self.client.post(self.url, data)
+        self.assertEqual(resp.status_code, 302)
+        self.assertEqual(resp.url, self.url)
+
+        self.entry.refresh_from_db()
+        self.assertEqual(self.entry.category, 'INT')
+        self.assertEqual(self.entry.biography, 'about me')
+        self.assertEqual(self.entry.status, 'in_progress')
 
 
 class EntryDeleteViewTests(TestSetupLoginRequiredMixin, TestCase):

@@ -12,10 +12,10 @@ class EntryCreateUpdateFormTests(TestSetupMixin, TestCase):
     def test_save_form_valid(self):
         data = {
             'category': 'BEG',
-            'save': 'Save'
+            'saved': 'Save'
         }
 
-        form = EntryCreateUpdateForm(data, user=self.user)
+        form = EntryCreateUpdateForm(data, user=self.user, initial_data={})
         self.assertTrue(form.is_valid())
 
     def test_save_form_valid_video_url(self):
@@ -25,19 +25,19 @@ class EntryCreateUpdateFormTests(TestSetupMixin, TestCase):
         data = {
             'category': 'BEG',
             'video_url': 'http://',
-            'save': 'Save'
+            'saved': 'Save'
         }
 
-        form = EntryCreateUpdateForm(data, user=self.user)
+        form = EntryCreateUpdateForm(data, user=self.user, initial_data={})
         self.assertTrue(form.is_valid())
 
     def test_submit_form_valid(self):
         data = {
             'category': 'BEG',
-            'submit': 'Submit'
+            'submitted': 'Submit'
         }
 
-        form = EntryCreateUpdateForm(data, user=self.user)
+        form = EntryCreateUpdateForm(data, user=self.user, initial_data={})
         self.assertFalse(form.is_valid())
         self.assertEqual(
             form.errors,
@@ -53,7 +53,7 @@ class EntryCreateUpdateFormTests(TestSetupMixin, TestCase):
                 'biography': 'About me'
             }
         )
-        form = EntryCreateUpdateForm(data, user=self.user)
+        form = EntryCreateUpdateForm(data, user=self.user, initial_data={})
         self.assertTrue(form.is_valid())
 
     def test_submit_form_valid_video_url(self):
@@ -64,17 +64,17 @@ class EntryCreateUpdateFormTests(TestSetupMixin, TestCase):
             'category': 'BEG',
             'video_url': 'http://',
             'biography': 'About me',
-            'submit': 'Submit'
+            'submitted': 'Submit'
         }
 
-        form = EntryCreateUpdateForm(data, user=self.user)
+        form = EntryCreateUpdateForm(data, user=self.user, initial_data={})
         self.assertFalse(form.is_valid())
         self.assertEqual(
             form.errors['video_url'], ['Enter a valid URL.']
         )
 
         data.update(video_url='http://foo.com')
-        form = EntryCreateUpdateForm(data, user=self.user)
+        form = EntryCreateUpdateForm(data, user=self.user, initial_data={})
         self.assertTrue(form.is_valid())
 
     def test_submit_doubles_category_form_valid(self):
@@ -85,9 +85,9 @@ class EntryCreateUpdateFormTests(TestSetupMixin, TestCase):
             'category': 'DOU',
             'video_url': 'http://foo.com',
             'biography': 'About me',
-            'submit': 'Submit'
+            'submitted': 'Submit'
         }
-        form = EntryCreateUpdateForm(data, user=self.user)
+        form = EntryCreateUpdateForm(data, user=self.user, initial_data={})
         self.assertFalse(form.is_valid())
         self.assertEqual(
             form.errors,
@@ -97,9 +97,15 @@ class EntryCreateUpdateFormTests(TestSetupMixin, TestCase):
             }
         )
 
+    def test_category_initial(self):
+        form = EntryCreateUpdateForm(
+            user=self.user, initial_data={'category': 'INT'}
+        )
+        self.assertEqual(form.initial, {'category': 'INT'})
+
     def test_category_choices_excludes_already_entered(self):
         mommy.make(Entry, user=self.user, category='BEG')
-        form = EntryCreateUpdateForm(user=self.user)
+        form = EntryCreateUpdateForm(user=self.user, initial_data={})
         cat = form.fields['category']
 
         cat_choices = list(CATEGORY_CHOICES)
@@ -107,15 +113,19 @@ class EntryCreateUpdateFormTests(TestSetupMixin, TestCase):
         self.assertEqual(cat.widget.choices, cat_choices)
 
     def test_category_choices_includes_already_entered_for_updates(self):
-        entry = mommy.make(Entry, user=self.user, category='BEG')
-        form = EntryCreateUpdateForm(instance=entry, user=self.user)
+        entry = mommy.make(Entry, user=self.user)
+        form = EntryCreateUpdateForm(
+            instance=entry, user=self.user, initial_data={}
+        )
         cat = form.fields['category']
 
         self.assertEqual(cat.widget.choices, list(CATEGORY_CHOICES))
 
     def test_category_and_video_url_hidden_for_submitted(self):
         entry = mommy.make(Entry, user=self.user, status='submitted')
-        form = EntryCreateUpdateForm(instance=entry, user=self.user)
+        form = EntryCreateUpdateForm(
+            instance=entry, user=self.user, initial_data={}
+        )
         self.assertEqual(
             form.fields['category'].widget.attrs['class'], 'hide'
         )

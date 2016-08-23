@@ -16,20 +16,33 @@
         <div class="errorlist">Please correct the errors below</div>
     {% endif %}
 
-    <form class="dirty-check entry-form" action="" method="post">
+    <form id="entryform" class="entry-form" action="" method="post">
     {% csrf_token %}
     <div class="row">
     {% for field in form %}
 
         <!---  DOUBLES CHECK FOR UPDATING --->
-        {% if form.instance.id and form.instance.category != 'DOU' and field.name == 'partner_name' %}
-        <span class="hide">{{ field }}</span>
-        {% elif form.instance.id and form.instance.category != 'DOU' and field.name == 'partner_email' %}
-        <span class="hide">{{ field }}</span>
+        {%  if field.name == 'partner_name' or field.name == 'partner_email' %}
+            {% if form.instance.id and form.instance.category != 'DOU' %}
+                <span class="hide">{{ field }}</span>
+            {% elif form.hide_doubles %}
+                <span class="hide">{{ field }}</span>
+            {% else %}
+                <div class="form-group" id="{{ field.name }}_group_id">
+                    <label class="control-label col-xs-2" for="id_{{ field.name }}">{{ field.label }}{% if field.field.required %}*{% endif %}</label>
+                    <div class="col-xs-10 {% if form.name.errors %}error-info{% endif %}">{{ field }}</div>
+                    <div class="helptext col-xs-10 col-xs-offset-2">{{ field.help_text }}</div>
+                    {% if field.errors %}
+                        <div class="col-xs-10 col-xs-offset-2">
+                            {{ field.errors }}
+                        </div>
+                    {% endif %}
+                </div>
+            {% endif %}
         {% else %}
 
         <div class="form-group" id="{{ field.name }}_group_id">
-            <label class="control-label col-xs-2" for="{{ field.name }}_id">{{ field.label }}{% if field.field.required %}*{% endif %}</label>
+            <label class="control-label col-xs-2" for="id_{{ field.name }}">{{ field.label }}{% if field.field.required %}*{% endif %}</label>
             <div class="col-xs-10 {% if form.name.errors %}error-info{% endif %}">
                 {% if form.already_submitted %}  <!---  CATEGORY AND VIDEO URL DISABLED FOR UPDATING --->
                     {% if field.name == 'category' %}
@@ -54,14 +67,13 @@
     </div>
         <div class="col-xs-12 vspace vspace-below">
             {% if not form.already_submitted %}
-            <br>Click Save to save your data without submitting your entry yet.</br>
-            Click Submit to submit your entry.  Please note that
-            category and video URL cannot be edited after submission.
+            <br>Click Save to save your data without submitting your entry yet. Click Submit to submit your entry.</br>
+                Please note that category and video URL cannot be edited after submission.
             <strong>Please check you have entered your video URL correctly!</strong>
             </p>
-            <input class="btn btn-purple" name='save' type="submit" value="Save for later" />
+            <input class="btn btn-purple" name='saved' type="submit" value="Save for later" />
             {% endif %}
-            <input class="btn btn-purple" name='submit' type="submit" value="Submit" />
+            <input class="btn btn-purple" name='submitted' type="submit" value="Submit" />
         </div>
 
     </form>

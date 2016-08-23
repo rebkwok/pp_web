@@ -7,6 +7,8 @@ class EntryCreateUpdateForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user')
+        initial_data = kwargs.pop('initial_data')
+        kwargs['initial'] = initial_data
         super(EntryCreateUpdateForm, self).__init__(*args, **kwargs)
 
         self.fields['video_url'] = forms.CharField(
@@ -40,9 +42,13 @@ class EntryCreateUpdateForm(forms.ModelForm):
             self.fields['category'].widget.attrs.update({'class': 'hide'})
             self.fields['video_url'].widget.attrs.update({'class': 'hide'})
 
+        if not self.instance.id and cat_choices[0][0] != 'DOU' \
+                and self.fields['category'].initial != 'DOU':
+                self.hide_doubles = True
+
     def clean_video_url(self):
         video_url = self.cleaned_data['video_url']
-        if video_url == 'http://' and 'save' in self.data:
+        if video_url == 'http://' and 'submitted' not in self.data:
             return ''
         return video_url
 
@@ -50,7 +56,7 @@ class EntryCreateUpdateForm(forms.ModelForm):
         super(EntryCreateUpdateForm, self).clean()
         # make sure all fields except stage name and song choice are completed
         # for submitted entries
-        if 'submit' in self.data:
+        if 'submitted' in self.data:
             required_fields = ['category', 'video_url', 'biography']
             for field in required_fields:
                 field_data = self.cleaned_data.get(field)
@@ -78,7 +84,9 @@ class EntryCreateUpdateForm(forms.ModelForm):
                 attrs={'class': "form-control"}
             ),
             'category': forms.Select(
-                attrs={'class': "form-control"}
+                attrs={
+                    'class': "form-control", 'onchange': "entryform.submit();"
+                }
             ),
             'song': forms.TextInput(
                 attrs={'class': "form-control"}

@@ -1,7 +1,9 @@
 from django.conf import settings
+from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.urlresolvers import reverse
-from django.shortcuts import get_object_or_404, HttpResponseRedirect, render
+from django.shortcuts import get_object_or_404, HttpResponseRedirect, render, \
+    render_to_response
 from django.views import generic
 
 from braces.views import LoginRequiredMixin
@@ -121,13 +123,26 @@ class EntryMixin(object):
         entry = form.save(commit=False)
         entry.user = self.request.user
 
-        if self.request.POST.get('save', None):
-            action = 'saved'
-        elif self.request.POST.get('submit', None):
+        if self.request.POST.get('submitted', None):
             action = 'submitted'
+        elif self.request.POST.get('saved', None):
+            action = 'saved'
+        else:
+            action = 'cat_changed'
 
-        if entry.status == 'in_progress' and 'submit' in self.request.POST:
+        if action == 'cat_changed':
+            if entry.id:
+                entry.save()
+                return HttpResponseRedirect(
+                    reverse('entries:edit_entry', args=[entry.entry_ref])
+                )
+            else:
+                self.request.session['form_data'] = self.request.POST
+                return HttpResponseRedirect(reverse('entries:create_entry'))
+
+        if entry.status == 'in_progress' and action == 'submitted':
             entry.status = 'submitted'
+            # TODO redirect to payment page for video fee if first submission
         entry.save()
 
         messages.success(self.request, self.success_message.format(action))
@@ -137,6 +152,10 @@ class EntryMixin(object):
     def get_form_kwargs(self):
         kwargs = super(EntryMixin, self).get_form_kwargs()
         kwargs.update({'user': self.request.user})
+        initial_data = self.request.session.get('form_data', {})
+        if initial_data:
+            del self.request.session['form_data']
+        kwargs.update({'initial_data': initial_data})
         return kwargs
 
     def get_success_url(self):
