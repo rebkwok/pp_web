@@ -48,7 +48,7 @@ IPN_POST_PARAMS = {
     "payment_fee": b"",
     "receiver_id": b"258DLEHY2BDK6",
     "txn_type": b"web_accept",
-    "item_name": "Video submission fee",
+    "item_name": "Video submission fee for Beginner category",
     "mc_currency": b"GBP",
     "item_number": b"",
     "residence_country": "GB",

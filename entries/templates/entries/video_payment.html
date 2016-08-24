@@ -5,20 +5,25 @@
 {% block content %}
 
 <div class="extra-top-margin container-fluid row">
-       <div class="panel panel-default">
-            <div class="panel-heading">
-                <h1 class="panel-title">Video submission fee for {{ entry.category|format_category }} category</h1>
-            </div>
-
-            <div class="panel-body">
-                <p>Your entry has been submitted.</p>
-                <p>Entry Fee: {{ fee }}</p>
-                <p>Click below to be transferred to paypal to make your payment for the video entry fee.</p>
-                {% include 'payments/payment.html' %}
-
-            </div>
+   <div class="panel panel-default">
+        <div class="panel-heading">
+            <h1 class="panel-title">Video submission fee for {{ entry.category|format_category }} category</h1>
         </div>
-
+        <div class="panel-body">
+            {% if paypalform %}
+                <p>Thank you for your entry.  To complete your sumission, please click below to be transferred to paypal
+                    to pay the video entry fee. </p>
+                <p>Entry Fee: £ {{ fee }}</p>
+                {% include 'payments/payment.html' %}
+            {% elif already_paid %}
+                <p>The fee for this entry has already been paid.</p>
+            {% elif in_progress %}
+                <p>This entry is still in progress. Please submit it before paying the fee.</p>
+            {% elif withdrawn %}
+                <p>This entry has been withdrawn.</p>
+            {% endif %}
+        </div>
+    </div>
 </div>
 
 {% endblock content %}

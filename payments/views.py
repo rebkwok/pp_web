@@ -16,7 +16,7 @@ def view_that_asks_for_money(request):
     paypal_dict = {
         "business": settings.DEFAULT_PAYPAL_EMAIL,
         "amount": "10.00",
-        "item_name": "Watermeloon Class",
+        "item_name": "Video submission fee for Beginner category",
         "invoice": "unique-invoice-id",
         "currency_code": "GBP",
         "notify_url": reverse('paypal-ipn'),

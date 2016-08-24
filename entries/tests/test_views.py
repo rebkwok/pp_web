@@ -6,6 +6,8 @@ from django.core.urlresolvers import reverse
 from .helpers import TestSetupMixin, TestSetupLoginRequiredMixin
 from ..models import Entry
 
+from payments.models import PaypalEntryTransaction
+
 
 class EntryHomeTests(TestSetupMixin, TestCase):
 
@@ -194,6 +196,37 @@ class EntryCreateViewTests(TestSetupLoginRequiredMixin, TestCase):
         # status has been changed from in_progress to submitted
         self.assertEqual(Entry.objects.first().status, 'submitted')
 
+    def test_save_redirects_to_entries_list(self):
+        self.assertFalse(Entry.objects.exists())
+        self.client.login(username=self.user.username, password='test')
+
+        resp = self.client.post(self.url, self.post_data)
+        self.assertEqual(resp.status_code, 302)
+        self.assertEqual(Entry.objects.count(), 1)
+        self.assertEqual( resp.url, reverse('entries:user_entries'))
+
+    def test_first_submission_redirects_to_payment_view(self):
+        self.assertFalse(Entry.objects.exists())
+        self.client.login(username=self.user.username, password='test')
+        data = self.post_data.copy()
+        del data['saved']
+        data.update({
+            'submitted': 'Submit',
+            'video_url': 'http://foo.com',
+            'biography': 'About me'
+        })
+        resp = self.client.post(self.url, data)
+
+        self.assertEqual(resp.status_code, 302)
+        self.assertEqual(Entry.objects.count(), 1)
+        self.assertEqual(
+            resp.url,
+            reverse(
+                'entries:video_payment',
+                args=[Entry.objects.first().entry_ref]
+            )
+        )
+
     def test_change_category(self):
         """
         Changing the category resubmits the form without 'saved' or
@@ -364,3 +397,92 @@ class EntryWithdrawViewTests(TestSetupLoginRequiredMixin, TestCase):
         self.entry.refresh_from_db()
         self.assertEqual(self.entry.status, 'submitted')
         self.assertTrue(self.entry.withdrawn)
+
+
+class VideoPaymentViewTests(TestSetupLoginRequiredMixin, TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        super(VideoPaymentViewTests, cls).setUpTestData()
+        cls.entry = mommy.make(Entry, user=cls.user, status='submitted')
+        cls.url = reverse(
+            'entries:video_payment', args=(cls.entry.entry_ref,)
+        )
+
+    def setUp(self):
+        self.entry1 =  mommy.make(
+            Entry, user=self.user, category='INT', status='in_progress'
+        )
+        self.url1 = reverse(
+            'entries:video_payment', args=(self.entry1.entry_ref,)
+        )
+
+    def login(self):
+        self.client.login(username=self.user.username, password='test')
+
+    def test_entry_not_yet_submitted(self):
+        self.login()
+        resp = self.client.get(self.url1)
+        self.assertEqual(resp.status_code, 200)
+        self.assertNotIn('paypalform', resp.context_data)
+        self.assertIn(
+            'This entry is still in progress. Please submit it before paying '
+            'the fee.',
+            resp.rendered_content
+        )
+
+    def test_entry_withdrawn(self):
+        self.entry1.status = 'withdrawn'
+        self.entry1.save()
+
+        self.login()
+        resp = self.client.get(self.url1)
+        self.assertEqual(resp.status_code, 200)
+        self.assertNotIn('paypalform', resp.context_data)
+        self.assertIn(
+            'This entry has been withdrawn.',
+            resp.rendered_content
+        )
+
+    def test_entry_already_paid(self):
+        self.entry1.video_entry_paid = True
+        self.entry1.save()
+
+        self.login()
+        resp = self.client.get(self.url1)
+        self.assertEqual(resp.status_code, 200)
+        self.assertNotIn('paypalform', resp.context_data)
+        self.assertIn(
+            'The fee for this entry has already been paid.',
+            resp.rendered_content
+        )
+
+    def test_renders_correct_paypal_dict_info(self):
+        self.login()
+        self.assertFalse(PaypalEntryTransaction.objects.exists())
+        resp = self.client.get(self.url)
+
+        # PaypalEntryTransaction is created by the view
+        self.assertEqual(PaypalEntryTransaction.objects.count(), 1)
+        pptrans = PaypalEntryTransaction.objects.first()
+        first_invoice_id = pptrans.invoice_id
+
+        self.assertIn('paypalform', resp.context_data)
+        paypalform_data = resp.context_data['paypalform'].initial
+
+
+        self.assertEqual(paypalform_data['invoice'], pptrans.invoice_id)
+        self.assertEqual(
+            paypalform_data['custom'], 'video {}'.format(self.entry.id)
+        )
+        self.assertEqual(
+            paypalform_data['item_name'],
+            'Video submission fee for Beginner category'
+        )
+
+        # getting the view again doesn't create a new pptrans or update inv id
+        resp = self.client.get(self.url)
+        self.assertEqual(PaypalEntryTransaction.objects.count(), 1)
+        pptrans1 = PaypalEntryTransaction.objects.first()
+        self.assertEqual(pptrans.id, pptrans1.id)
+        self.assertEqual(first_invoice_id, pptrans1.invoice_id)
