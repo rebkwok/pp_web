@@ -1,0 +1,24 @@
+{% extends "entries/entries_base.html" %}
+{% load static %}
+{% load entriestags %}
+
+{% block content %}
+
+<div class="extra-top-margin container-fluid row">
+       <div class="panel panel-default">
+            <div class="panel-heading">
+                <h1 class="panel-title">Video submission fee for {{ entry.category|format_category }} category</h1>
+            </div>
+
+            <div class="panel-body">
+                <p>Your entry has been submitted.</p>
+                <p>Entry Fee: {{ fee }}</p>
+                <p>Click below to be transferred to paypal to make your payment for the video entry fee.</p>
+                {% include 'payments/payment.html' %}
+
+            </div>
+        </div>
+
+</div>
+
+{% endblock content %}

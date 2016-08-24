@@ -13,6 +13,11 @@ urlpatterns = [
         name='edit_entry'
     ),
     url(
+        r'^myentries/(?P<ref>[\w-]+)/payment/$',
+        views.entry_video_payment,
+        name='video_payment'
+    ),
+    url(
         r'^myentries/(?P<ref>[\w-]+)/delete/$',
         views.EntryDeleteView.as_view(),
         name='delete_entry'

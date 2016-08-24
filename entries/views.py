@@ -2,13 +2,15 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.urlresolvers import reverse
-from django.shortcuts import get_object_or_404, HttpResponseRedirect, render, \
-    render_to_response
+from django.shortcuts import get_object_or_404, HttpResponseRedirect, \
+    render, render_to_response
+
+from django.template.response import TemplateResponse
 from django.views import generic
 
 from braces.views import LoginRequiredMixin
 
-from payments.forms import PayPalPaymentsListForm
+from payments.forms import PayPalPaymentsListForm, PayPalPaymentsVideoForm
 from payments.models import create_entry_paypal_transaction
 
 from .forms import EntryCreateUpdateForm
@@ -142,11 +144,18 @@ class EntryMixin(object):
 
         if entry.status == 'in_progress' and action == 'submitted':
             entry.status = 'submitted'
-            # TODO redirect to payment page for video fee if first submission
+            first_submission = True
+        else:
+            first_submission = False
+
         entry.save()
 
         messages.success(self.request, self.success_message.format(action))
 
+        if first_submission:
+            return HttpResponseRedirect(
+                reverse('entries:video_payment', args=[entry.entry_ref])
+            )
         return HttpResponseRedirect(self.get_success_url())
 
     def get_form_kwargs(self):
@@ -230,3 +239,34 @@ class EntryWithdrawView(LoginRequiredMixin, generic.UpdateView):
         messages.success(self.request, self.success_message)
 
         return HttpResponseRedirect(reverse('entries:user_entries'))
+
+
+@login_required
+def entry_video_payment(request, ref):
+
+    entry = get_object_or_404(Entry, entry_ref=ref)
+    template_name = 'entries/video_payment.html'
+
+    # TODO Check entry submitted, not withdrawn, not already paid
+
+    host = 'http://{}'.format(request.META.get('HTTP_HOST'))
+    invoice_id = create_entry_paypal_transaction(
+        request.user, entry, 'video').invoice_id
+    paypalform = PayPalPaymentsVideoForm(
+        initial=get_paypal_dict(
+            host,
+            ENTRY_FEES[entry.category],  # TODO confirm fees for each stage
+            'Video submission fee',
+            invoice_id,
+            'video {}'.format(entry.id),
+            paypal_email=settings.DEFAULT_PAYPAL_EMAIL,
+        )
+    )
+
+    context = {
+        'entry': entry, 'paypalform': paypalform,
+        'fee': ENTRY_FEES[entry.category]
+    }
+
+    return TemplateResponse(request, template_name, context)
+
