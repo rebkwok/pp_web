@@ -1,5 +1,6 @@
 {% extends 'entries/entries_base.html' %}
 {% load entriestags accounttags %}
+{% load static %}
 
 {% block content %}
 <div class="container-fluid">
@@ -23,47 +24,66 @@
 
         <!---  DOUBLES CHECK FOR UPDATING --->
         {%  if field.name == 'partner_name' or field.name == 'partner_email' %}
-            {% if form.instance.id and form.instance.category != 'DOU' %}
-                <span class="hide">{{ field }}</span>
-            {% elif form.hide_doubles %}
-                <span class="hide">{{ field }}</span>
-            {% else %}
-                <div class="form-group" id="{{ field.name }}_group_id">
-                    <label class="control-label col-xs-2" for="id_{{ field.name }}">{{ field.label }}{% if field.field.required %}*{% endif %}</label>
-                    <div class="col-xs-10 {% if form.name.errors %}error-info{% endif %}">{{ field }}</div>
-                    <div class="helptext col-xs-10 col-xs-offset-2">{{ field.help_text }}</div>
+            {% if form.show_doubles %}
+                <div class="form-group col-xs-12">
+                    <label class="control-label col-sm-2 col-xs-12" for="id_{{ field.name }}">{{ field.label }}{% if field.field.required %}*{% endif %}</label>
+                    <div class="col-sm-10 col-xs-12 {% if field.errors %}error-info{% endif %}">{{ field }}</div>
+                    <div class="col-sm-10 col-sm-offset-2 col-xs-12 helptext">{{ field.help_text }}</div>
                     {% if field.errors %}
-                        <div class="col-xs-10 col-xs-offset-2">
+                        <div class="col-sm-10 col-sm-offset-2 col-xs-12">
                             {{ field.errors }}
                         </div>
                     {% endif %}
                 </div>
+            {% else %}
+                <span class="hide">{{ field }}</span>
             {% endif %}
         {% else %}
 
-        <div class="form-group" id="{{ field.name }}_group_id">
-            <label class="control-label col-xs-2" for="id_{{ field.name }}">{{ field.label }}{% if field.field.required %}*{% endif %}</label>
-            <div class="col-xs-10 {% if form.name.errors %}error-info{% endif %}">
+        <div class="form-group col-xs-12">
+            <label class="control-label col-sm-2" for="id_{{ field.name }}">{{ field.label }}{% if field.field.required %}*{% endif %}</label>
+            <div class="col-sm-10 col-xs-12 {% if field.errors %}error-info{% endif %}">
                 {% if form.already_submitted %}  <!---  CATEGORY AND VIDEO URL DISABLED FOR UPDATING --->
                     {% if field.name == 'category' %}
-                        <span class="submitted-entry-field">{{ form.instance.category | format_category }}</span>
+                        <span class="submitted-entry-field col-sm-10">{{ form.instance.category | format_category }}</span>
+                        <span class="hide">{{ field }}</span>
                     {% elif field.name == 'video_url' %}
-                        <span class="submitted-entry-field">
+                        <span class="submitted-entry-field col-sm-10 ">
                             <a href="{{ form.instance.video_url }}">{{ form.instance.video_url }}</a>
                         </span>
+                        <span class="hide">{{ field }}</span>
+                    {% else %}  <!---  ENDIF CATEGORY AND VIDEO URL DISABLED FOR UPDATING --->
+                        {{ field }}
                     {% endif %}
-                {% endif %}  <!---  ENDIF CATEGORY AND VIDEO URL DISABLED FOR UPDATING --->
-                {{ field }}</div>
-            <div class="helptext col-xs-10 col-xs-offset-2">{{ field.help_text }}</div>
+                {% else %}
+                    {{ field }}
+                {% endif %}
+            <span class="helptext col-sm-10 col-xs-12">{{ field.help_text }}</span>
+            </div>
             {% if field.errors %}
-                <div class="col-xs-10 col-xs-offset-2">
+                <div class="col-sm-10 col-sm-offset-2 col-xs-12">
                     {{ field.errors }}
                 </div>
             {% endif %}
         </div>
 
-        {% endif %} <!---  ENDIF DOUBLES CHECK FOR UPDATING --->
+        {% endif %}
     {% endfor %}
+
+     <!---  DOUBLES PARTNER INFO --->
+    {% if form.show_doubles %}
+    <div class="container-fluid">
+        <div id="check_partner_status" class="btn btn-primary table-btn check-partner-btn col-sm-2 col-sm-offset-2">
+            Check partner status
+        </div>
+
+        <div class="col-sm-10 col-sm-offset-2 col-xs-12 partner_info vspace">
+            {% include "entries/includes/partner_check.txt" %}
+        </div>
+    </div>
+    {% endif %}
+
+
     </div>
         <div class="col-xs-12 vspace vspace-below">
             {% if not form.already_submitted %}
@@ -80,4 +100,11 @@
 
 {% endif %}
 </div>
+{% endblock %}
+
+
+{% block extra_js %}
+    {{ block.super }}
+   <script type='text/javascript' src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+   <script type='text/javascript' src="{% static 'entries/js/check_partner_ajax.js' %}"></script>
 {% endblock %}

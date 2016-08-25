@@ -1,7 +1,5 @@
 {% extends 'base.html' %}
 {% load static %}
-{% load socialaccount %}
-{% providers_media_js %}
 
 {% block nav_content %}
     <ul class="nav navbar-nav">
@@ -406,7 +404,7 @@
 					<p><span class="icon icon-home"></span> Address<br/>
 						<span class="icon icon-phone"></span> 0131 xxx xxxx <br/>
 						<span class="icon icon-mobile"></span> 077xx xxx xxxx <br/>
-						<span class="icon icon-envelop"></span> <a href="#"> poleperformance@hotmail.com</a> <br/>
+						<span class="icon icon-envelop"></span> <a href="#">{{ pp_email }}</a> <br/>
 						<span class="icon icon-twitter"></span> <a href="#"> @poleperformance </a> <br/>
 						<span class="icon icon-facebook"></span> <a href="https://www.facebook.com/Pole-Performance-Competition-111934239163033/"> Pole Peformance Competition </a> <br/>
 					</p>

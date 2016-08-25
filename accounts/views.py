@@ -1,7 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import Group
 from django.contrib import messages
-from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render, HttpResponseRedirect, get_object_or_404
 from django.views.generic import UpdateView, CreateView
 from django.contrib.auth.models import User
@@ -13,8 +12,8 @@ from braces.views import LoginRequiredMixin
 
 from allauth.account.views import LoginView, SignupView
 
-from accounts.forms import DisclaimerForm
-from accounts.models import has_disclaimer
+from accounts.forms import DisclaimerForm, ProfileForm
+from accounts.models import has_disclaimer, UserProfile
 from activitylog.models import ActivityLog
 
 
@@ -27,13 +26,25 @@ class ProfileUpdateView(LoginRequiredMixin, UpdateView):
 
     model = User
     template_name = 'account/update_profile.html'
-    fields = ('username', 'first_name', 'last_name',)
+    form_class = ProfileForm
 
     def get_object(self):
         return get_object_or_404(
             User, username=self.request.user.username,
             email=self.request.user.email
         )
+
+    def form_valid(self, form):
+        user = form.save()
+        profile_data = form.cleaned_data.copy()
+        # delete the fields that are on the User model
+        del profile_data['first_name']
+        del profile_data['last_name']
+        del profile_data['username']
+        UserProfile.objects.update_or_create(
+            user=user, **profile_data
+        )
+        return HttpResponseRedirect(self.get_success_url())
 
     def get_success_url(self):
         return reverse('accounts:profile')

@@ -1,7 +1,6 @@
 from model_mommy import mommy
 
 from django.contrib.auth.models import User
-from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse
 from django.test import RequestFactory
 from django.utils.html import strip_tags
@@ -9,17 +8,10 @@ from django.utils.html import strip_tags
 from accounts.models import OnlineDisclaimer
 
 
-def set_up_fb():
-    fbapp = mommy.make_recipe('entries.fb_app')
-    site = Site.objects.get_current()
-    fbapp.sites.add(site.id)
-
-
 class TestSetupMixin(object):
 
     @classmethod
     def setUpTestData(cls):
-        set_up_fb()
         cls.factory = RequestFactory()
         cls.user = User.objects.create_user(
             first_name='Test', last_name='User',
@@ -28,7 +20,8 @@ class TestSetupMixin(object):
         mommy.make(OnlineDisclaimer, user=cls.user)
 
         cls.user_no_disclaimer = User.objects.create_user(
-            username='test_no_disc', email='test@test.com', password='test'
+            username='test_no_disc', email='test_no_disc@test.com',
+            password='test'
         )
         cls.url = None  # test class needs to define this
 

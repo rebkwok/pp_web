@@ -13,6 +13,10 @@ urlpatterns = [
         name='edit_entry'
     ),
     url(
+        r'^myentries/(?P<ref>[\w-]+)/selected/edit/$',
+        views.SelectedEntryUpdateView.as_view(), name='edit_selected_entry'
+    ),
+    url(
         r'^myentries/(?P<ref>[\w-]+)/payment/$',
         views.entry_video_payment,
         name='video_payment'
@@ -26,6 +30,10 @@ urlpatterns = [
         r'^myentries/(?P<ref>[\w-]+)/withdraw/$',
         views.EntryWithdrawView.as_view(),
         name='withdraw_entry'
+    ),
+    url(
+        r'^myentries/check_partner/$', views.check_partner,
+        name='check_partner'
     ),
     url(
         r'^myentries/$', views.EntryListView.as_view(), name='user_entries'

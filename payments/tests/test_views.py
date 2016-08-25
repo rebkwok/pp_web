@@ -6,14 +6,12 @@ from django.test import TestCase
 from paypal.standard.ipn.models import PayPalIPN
 
 from entries.models import Entry
-from entries.tests.helpers import set_up_fb
 
 
 class TestViews(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        set_up_fb()
         cls.url = reverse('payments:paypal_confirm')
 
     def test_confirm_return(self):

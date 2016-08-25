@@ -1,5 +1,6 @@
 import shortuuid
 
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
 from django.utils.functional import cached_property
@@ -10,6 +11,7 @@ STATUS_CHOICES = (
     ('in_progress', 'In Progress'),
     ('submitted', 'Submitted'),
     ('selected', 'Selected'),
+    ('selected_confirmed', 'Selected - confirmed'),
     ('rejected', 'Unsuccessful')
 )
 STATUS_CHOICES_DICT = dict(STATUS_CHOICES)
@@ -45,7 +47,7 @@ YEAR_CHOICES = (
 class Entry(models.Model):
     entry_ref = models.CharField(max_length=22)
     entry_year = models.CharField(
-        choices=YEAR_CHOICES, default='2017', max_length=4
+        choices=YEAR_CHOICES, default=settings.CURRENT_ENTRY_YEAR, max_length=4
     )  # so we can use this system for future comp entries too
     user = models.ForeignKey(User)
     stage_name = models.CharField(max_length=255, blank=True, null=True)
@@ -58,9 +60,7 @@ class Entry(models.Model):
     # keep withdrawn as boolean so we can track last status before withdrawing
     withdrawn = models.BooleanField(default=False)
 
-    song = models.CharField(
-        max_length=255, blank=True, null=True,
-        help_text='Not required for initial entry submission')
+    song = models.CharField(max_length=255, blank=True, null=True)
     video_url = models.URLField(blank=True, null=True)
     biography = models.TextField(
         verbose_name='Short bio',
@@ -73,13 +73,14 @@ class Entry(models.Model):
     # for doubles entry
     partner_name = models.CharField(
         max_length=255, blank=True, null=True,
-        verbose_name='Doubles partner name'
+
     )
     partner_email = models.EmailField(
-        blank=True, null=True, verbose_name='Doubles partner email',
+        blank=True, null=True,
         help_text='Ensure this is the email your doubles partner has used '
-                  'for their account. We will use it to ensure disclaimer '
-                  'information has been received for your partner also.'
+                  'for their account. We will use it to ensure registration '
+                  'and waiver information has been received for your partner '
+                  'also.'
     )
 
     # payment
@@ -87,6 +88,11 @@ class Entry(models.Model):
     selected_entry_paid = models.BooleanField(default=False)
 
     date_submitted = models.DateTimeField(null=True, blank=True)
+
+    # selection flags
+    notified = models.BooleanField(default=False)
+    notified_date = models.DateTimeField(null=True, blank=True)
+    reminder_sent = models.BooleanField(default=False)
 
     class Meta:
         unique_together = ('entry_year', 'user', 'category')

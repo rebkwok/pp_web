@@ -1,0 +1,17 @@
+{% if check %}
+    <div class='partner-info-box'>
+    <div class='partner-info-text'>
+    {% if partner_already_entered %}
+    <span class='fail'>
+        <strong>!!!</br>
+        A user with this email address has already entered the Doubles category.  Only one entry should
+        be submitted per doubles.  You will not be able to submit this entry form.  Please have your partner complete the entry form on his/her account.</strong></span>
+    {% elif email %}
+        <strong>Doubles partner registered:</strong> {% if partner %}<span class='success'>Yes</span>{% else %}<span class='fail'>No</span>{% endif %}</br>
+        <strong>Waiver completed:</strong> {% if partner_waiver %}<span class='success'>Yes</span>{% else %}<span class='fail'>No</span>{% endif %}
+   {% else %}
+        No partner email provided
+   {% endif %}
+    </div>
+    </div>
+{% endif %}

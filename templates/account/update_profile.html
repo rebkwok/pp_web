@@ -1,6 +1,5 @@
 {% extends 'account/base.html' %}
 {% load static %}
-{% load socialaccount %}
 
 {% block content %}
 
@@ -12,23 +11,34 @@
             </div>
            <div class="panel-body">
                 <form action="" method="post">{% csrf_token %}
-                    {{ form.as_p}}
+                    {% csrf_token %}
+                      {{ form.non_field_errors }}
+                        <div class="row">
+                            {% for field in form %}
+                            {% if field.name == 'confirmation_key' %}
+                                <span class="hide">{{ field }}</span>
+                            {% else %}
+                                <div class="form-group">
+                                   <label class="control-label col-xs-2" for="name_id">{{ field.label }}{% if field.field.required %}*{% endif %}</label>
+                                   <div class="col-xs-9 {% if form.field.errors %}error-info{% endif %}">{{ field }}</div>
+                                   <div class="studioadmin-help col-xs-9 col-xs-offset-2">{{ field.help_text }}</div>
+                                    {% if field.errors %}
+                                        <div class="col-xs-9 col-xs-offset-2">
+                                            {{ field.errors }}
+                                        </div>
+                                    {% endif %}
+                               </div>
+                            {% endif %}
+                            {% endfor %}
+                        </div>
+
                     <input class="btn btn-purple" type="submit" value="Update" />
                     <a href="{% url 'accounts:profile' %}"><div class="btn btn-warning">Cancel</div></a>
                 </form>
                 </br>
 
-
-
                <div>
-                    <h4>Connect a third-party account:</h4>
-                    <div style="list-style-type: none;">
-                       {% include "socialaccount/snippets/provider_list.html" with process="connect" %}
-                    </div>
-                </div><br>
-
-               <div>
-                     <h4>Mailing list</h4>
+                     <label>Mailing list</label>
                     <p class="active-nav-login"><a href="{% url 'accounts:subscribe' %}">Subscribe/unsubscribe</a> to mailing list</p>
                  </div>
 

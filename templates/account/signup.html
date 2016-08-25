@@ -2,24 +2,12 @@
 
 {% load i18n %}
 
-{% load socialaccount %}
 {% block head_title %}{% trans "Signup" %}{% endblock %}
 
 {% block content %}
 <h1>{% trans "Sign Up" %}</h1>
 
 <p>Already have an account? Then please <a href="{{ login_url }}">log in</a>.</p></br>
-
-{% get_providers as socialaccount_providers %}
-
-{% if socialaccount_providers  %}
-<div class="socialaccount_ballot">
-    <strong>Sign up with</strong>
-  <div class="socialaccount_providers" style="list-style-type: none;">
-     {% include "socialaccount/snippets/provider_list.html" with process="login" %}
-  </div></br></br></br>
-</div>
-{% endif %}
 
 <p>Or sign up using the form below</p>
 
@@ -33,10 +21,10 @@
         {% else %}
             <div class="form-group">
                <label class="control-label col-xs-2" for="name_id">{{ field.label }}{% if field.field.required %}*{% endif %}</label>
-               <div class="col-xs-10 {% if form.field.errors %}error-info{% endif %}">{{ field }}</div>
-               <div class="studioadmin-help col-xs-10 col-xs-offset-2">{{ field.help_text }}</div>
+               <div class="col-xs-9 {% if form.field.errors %}error-info{% endif %}">{{ field }}</div>
+               <div class="studioadmin-help col-xs-9 col-xs-offset-2">{{ field.help_text }}</div>
                 {% if field.errors %}
-                    <div class="col-xs-10 col-xs-offset-2">
+                    <div class="col-xs-9 col-xs-offset-2">
                         {{ field.errors }}
                     </div>
                 {% endif %}

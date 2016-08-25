@@ -200,3 +200,26 @@ input[type='radio']:checked:before {
 tr.withdrawn {
     color: lightgrey;
 }
+
+.check-partner-btn {
+    width: 10.5em;
+    font-size: 80%;
+}
+span.success{
+    color: green;
+    font-weight: bold;
+}
+
+span.fail{
+    color: red;
+    font-weight: bold;
+}
+
+div.partner-info-box {
+    background-color: rgba(0, 125, 255, .2);
+    border: solid 1px rgba(0, 125, 255, 1);
+}
+
+div.partner-info-box > .partner-info-text {
+    padding-left: 10px;
+}

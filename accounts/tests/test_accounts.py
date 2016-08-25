@@ -27,35 +27,6 @@ from accounts.views import ProfileUpdateView, profile, DisclaimerCreateView
 from .helpers import _create_session, TestSetupMixin
 
 
-class SignUpFormTests(TestSetupMixin, TestCase):
-
-    def test_signup_form(self):
-        form_data = {'first_name': 'Test',
-                     'last_name': 'User'}
-        form = SignupForm(data=form_data)
-        self.assertTrue(form.is_valid())
-
-    def test_signup_form_with_invalid_data(self):
-        # first_name must have 30 characters or fewer
-        form_data = {'first_name': 'abcdefghijklmnopqrstuvwxyz12345',
-                     'last_name': 'User'}
-        form = SignupForm(data=form_data)
-        self.assertFalse(form.is_valid())
-
-    def test_user_assigned_from_request(self):
-        user = mommy.make(User)
-        url = reverse('account_signup')
-        request = self.factory.get(url)
-        request.user = user
-        form_data = {'first_name': 'New',
-                     'last_name': 'Name'}
-        form = SignupForm(data=form_data)
-        self.assertTrue(form.is_valid())
-        form.signup(request, user)
-        self.assertEquals('New', user.first_name)
-        self.assertEquals('Name', user.last_name)
-
-
 class DisclaimerFormTests(TestSetupMixin, TestCase):
 
     def setUp(self):
@@ -187,12 +158,16 @@ class ProfileUpdateViewTests(TestSetupMixin, TestCase):
                           )
         url = reverse('accounts:update_profile')
         request = self.factory.post(
-            url, {'username': user.username,
-                  'first_name': 'Fred', 'last_name': user.last_name}
+            url, {
+                'username': user.username,
+                'first_name': 'Fred', 'last_name': user.last_name,
+                'address': '1 test street', 'postcode': 'FOO', 'phone': '1224',
+                'dob': '01 Jan 1990'
+            }
         )
         request.user = user
         view = ProfileUpdateView.as_view()
-        resp = view(request)
+        view(request)
         updated_user = User.objects.get(username="test_user")
         self.assertEquals(updated_user.first_name, "Fred")
 
@@ -293,30 +268,6 @@ class CustomLoginViewTests(TestSetupMixin, TestCase):
         self.assertIn(reverse('accounts:profile'), resp.url)
 
     def test_login_from_password_change(self):
-        # facebook url is modified to return to the profile page
-        resp = self.client.get(
-            reverse('login') + '?next=/accounts/password/change/'
-        )
-        # url is weirdly formatted one way if we run only this test and the
-        # other if we run all. Not sure why yet, but it would behave correctly
-        # either way
-        self.assertTrue(
-            'href="/accounts/facebook/login/?process=login'
-            '&next=%2Faccounts%2Fprofile"' in resp.rendered_content or
-            'href="/accounts/facebook/login/?next=%2Faccounts%2Fprofile'
-            '&process=login"' in resp.rendered_content
-        )
-
-        resp = self.client.get(
-            reverse('login') + '?next=/accounts/password/set/'
-        )
-        self.assertTrue(
-            'href="/accounts/facebook/login/?process=login'
-            '&next=%2Faccounts%2Fprofile"' in resp.rendered_content or
-            'href="/accounts/facebook/login/?next=%2Faccounts%2Fprofile'
-            '&process=login"' in resp.rendered_content
-        )
-
         # post with login username and password overrides next in request
         # params to return to profile
         resp = self.client.post(
@@ -343,6 +294,16 @@ class CustomSignUpViewTests(TestSetupMixin, TestCase):
         cls.url = reverse('account_signup')
         super(CustomSignUpViewTests, cls).setUpTestData()
 
+        cls.form_data = {
+            'first_name': 'Test',
+             'last_name': 'User',
+             'email': 'test_user@test.com',
+             'dob': '01 Jan 1990', 'address': '1 test st',
+             'postcode': 'TEST1', 'phone': '123445',
+             'username': 'testuser', 'email': 'testuser@test.com',
+             'password1': 'testuser', 'password2': 'testuser'
+         }
+
     def test_get_signup_view(self):
         resp = self.client.get(self.url)
         self.assertEqual(resp.status_code, 200)
@@ -353,6 +314,24 @@ class CustomSignUpViewTests(TestSetupMixin, TestCase):
         self.assertEqual(
             resp.context_data['form'].fields['username'].initial, 'test'
         )
+
+    def test_post_signup_form_creates_user_profile(self):
+        self.assertFalse(User.objects.filter(username='testuser').exists())
+        self.client.post(self.url, self.form_data)
+        self.assertTrue(User.objects.filter(username='testuser').exists())
+        user = User.objects.get(username='testuser')
+        self.assertEqual(user.profile.address, "1 test st")
+        self.assertEqual(user.profile.phone, "123445")
+
+    def test_signup_form_with_invalid_data(self):
+        # first_name must have 30 characters or fewer
+        form_data = self.form_data.copy()
+        form_data.update({
+            'first_name': 'abcdefghijklmnopqrstuvwxyz12345',
+        })
+        resp = self.client.post(self.url, form_data)
+        form = resp.context_data['form']
+        self.assertFalse(form.is_valid())
 
 
 class DisclaimerModelTests(TestCase):

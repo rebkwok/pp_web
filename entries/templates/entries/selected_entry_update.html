@@ -1,0 +1,121 @@
+{% extends 'entries/entries_base.html' %}
+{% load entriestags accounttags %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid">
+    <h1>Updating Selected Entry for category: {{ form.instance.category|format_category }}</h1>
+
+    {% if form.errors %}
+        <div class="errorlist">Please correct the errors below</div>
+    {% endif %}
+
+    <form id="entryform" class="entry-form" action="" method="post">
+    {% csrf_token %}
+    <div class="row">
+        <!---  STAGE NAME --->
+        <div class="form-group col-xs-12">
+            <label class="control-label col-sm-2 col-xs-12" for="id_stage_name">{{ form.stage_name.label }}{% if form.stage_name.field.required %}*{% endif %}</label>
+            <div class="col-sm-10 col-xs-12 {% if form.stage_name.errors %}error-info{% endif %}">{{ form.stage_name }}</div>
+            <div class="col-sm-10 col-sm-offset-2 col-xs-12 helptext">{{ form.stage_name.help_text }}</div>
+            {% if form.stage_name.errors %}
+                <div class="col-sm-10 col-sm-offset-2 col-xs-12">
+                    {{ form.stage_name.errors }}
+                </div>
+            {% endif %}
+        </div>
+
+        <!---  CATEGORY --->
+        <div class="form-group col-xs-12">
+            <label class="control-label col-sm-2 col-xs-12">Category</label>
+            <div class="col-sm-10 col-xs-12 submitted-entry-field">{{ form.instance.category|format_category }}</div>
+        </div>
+
+        <!---  VIDEO URL --->
+        <div class="form-group col-xs-12">
+            <label class="control-label col-sm-2 col-xs-12">Video URL</label>
+            <div class="col-sm-10 col-xs-12 submitted-entry-field"><a href="{{ form.instance.video_url }}">{{ form.instance.video_url }}</a></div>
+        </div>
+
+        <!---  SONG --->
+        <div class="form-group col-xs-12">
+            <label class="control-label col-sm-2 col-xs-12" for="id_song">{{ form.song.label }}{% if form.song.field.required %}*{% endif %}</label>
+            <div class="col-sm-10 col-xs-12 {% if form.song.errors %}error-info{% endif %}">{{ form.song }}</div>
+            <div class="col-sm-10 col-sm-offset-2 col-xs-12 helptext">{{ form.song.help_text }}</div>
+            {% if form.song.errors %}
+                <div class="col-sm-10 col-sm-offset-2 col-xs-12">
+                    {{ form.song.errors }}
+                </div>
+            {% endif %}
+        </div>
+
+        <!---  BIOGRAPHY --->
+        <div class="form-group col-xs-12">
+            <label class="control-label col-sm-2 col-xs-12" for="id_biography">{{ form.biography.label }}{% if form.biography.field.required %}*{% endif %}</label>
+            <div class="col-sm-10 col-xs-12 {% if form.biography.errors %}error-info{% endif %}">{{ form.biography }}</div>
+            <div class="col-sm-10 col-sm-offset-2 col-xs-12 helptext">{{ form.biography.help_text }}</div>
+            {% if form.biography.errors %}
+                <div class="col-sm-10 col-sm-offset-2 col-xs-12">
+                    {{ form.biography.errors }}
+                </div>
+            {% endif %}
+        </div>
+
+        <!---  DOUBLES --->
+        {% if form.show_doubles %}
+            <div class="form-group col-xs-12">
+                <label class="control-label col-sm-2 col-xs-12" for="id_partner_name">{{ form.partner_name.label }}{% if form.partner_name.field.required %}*{% endif %}</label>
+                <div class="col-sm-10 col-xs-12 {% if form.partner_name.errors %}error-info{% endif %}">{{ form.partner_name }}</div>
+                <div class="col-sm-10 col-sm-offset-2 col-xs-12 helptext">{{ form.partner_name.help_text }}</div>
+                {% if form.partner_name.errors %}
+                    <div class="col-sm-10 col-sm-offset-2 col-xs-12">
+                        {{ form.partner_name.errors }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="form-group col-xs-12">
+                <label class="control-label col-sm-2 col-xs-12" for="id_partner_email">{{ form.partner_email.label }}{% if form.partner_email.field.required %}*{% endif %}</label>
+                <div class="col-sm-10 col-xs-12 {% if form.partner_email.errors %}error-info{% endif %}">{{ form.partner_email }}</div>
+                <div class="col-sm-10 col-sm-offset-2 col-xs-12 helptext">{{ form.partner_email.help_text }}</div>
+                {% if form.partner_email.errors %}
+                    <div class="col-sm-10 col-sm-offset-2 col-xs-12">
+                        {{ form.partner_email.errors }}
+                    </div>
+                {% endif %}
+            </div>
+        {% else %}
+            <span class="hide">{{ form.partner_name }}</span>
+            <span class="hide">{{ form.partner_email }}</span>
+        {% endif %}
+
+     <!---  DOUBLES PARTNER INFO --->
+    {% if form.show_doubles %}
+    <div class="container-fluid">
+        <div id="check_partner_status" class="btn btn-primary table-btn check-partner-btn col-sm-2 col-sm-offset-2">
+            Check partner status
+        </div>
+
+        <div class="col-sm-10 col-sm-offset-2 col-xs-12 partner_info vspace">
+            {% include "entries/includes/partner_check.txt" %}
+        </div>
+    </div>
+    {% endif %}
+
+
+    </div>
+        <div class="col-xs-12 vspace vspace-below">
+            <input class="btn btn-purple" name='submitted' type="submit" value="Submit" />
+        </div>
+
+    </form>
+
+</div>
+{% endblock %}
+
+
+{% block extra_js %}
+    {{ block.super }}
+   <script type='text/javascript' src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+   <script type='text/javascript' src="{% static 'entries/js/check_partner_ajax.js' %}"></script>
+{% endblock %}

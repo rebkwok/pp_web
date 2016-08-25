@@ -13,9 +13,9 @@ from braces.views import LoginRequiredMixin
 from payments.forms import PayPalPaymentsListForm, PayPalPaymentsVideoForm
 from payments.models import create_entry_paypal_transaction
 
-from .forms import EntryCreateUpdateForm
+from .forms import EntryCreateUpdateForm, SelectedEntryUpdateForm
 from .models import CATEGORY_CHOICES_DICT, Entry, ENTRY_FEES
-
+from .utils import check_partner_email
 
 """
 Enter Now link --> Entry form page
@@ -91,7 +91,7 @@ class EntryListView(LoginRequiredMixin, generic.ListView):
                         )
                     )
 
-                if entry.status == 'selected' and not \
+                if entry.status in ['selected', 'selected_confirmed'] and not \
                         entry.selected_entry_paid:
                     # ONLY DO THIS IF PAYPAL BUTTON NEEDED
                     invoice_id = create_entry_paypal_transaction(
@@ -192,6 +192,21 @@ class EntryUpdateView(LoginRequiredMixin, EntryMixin, generic.UpdateView):
         return get_object_or_404(Entry, entry_ref=ref)
 
 
+class SelectedEntryUpdateView(LoginRequiredMixin, generic.UpdateView):
+
+    model = Entry
+    template_name = 'entries/selected_entry_update.html'
+    form_class = SelectedEntryUpdateForm
+    success_message = 'Your entry has been {}'
+
+    def get_object(self, queryset=None):
+        ref = self.kwargs.get('ref')
+        return get_object_or_404(Entry, entry_ref=ref)
+
+    def get_success_url(self):
+        return reverse('entries:user_entries')
+
+
 class EntryDeleteView(LoginRequiredMixin, generic.DeleteView):
     model = Entry
     success_message = 'Entry has been deleted'
@@ -254,7 +269,7 @@ def entry_video_payment(request, ref):
         context['already_paid'] = True
     elif entry.status == 'in_progress':
         context['in_progress'] = True
-    elif entry.status == 'withdrawn':
+    elif entry.withdrawn:
         context['withdrawn'] = True
     else:
         host = 'http://{}'.format(request.META.get('HTTP_HOST'))
@@ -278,3 +293,14 @@ def entry_video_payment(request, ref):
 
     return TemplateResponse(request, template_name, context)
 
+
+def check_partner(request):
+    email = request.GET.get('email')
+    context = {'check': True, 'email': email}
+    if email:
+        partner_check_dict, _ = check_partner_email(email)
+        context.update(**partner_check_dict)
+
+    return render_to_response(
+        'entries/includes/partner_check.txt', context
+    )

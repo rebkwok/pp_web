@@ -19,10 +19,16 @@
                                 <th>Category</th>
                                 <th>Status</th>
                                 <th>Video submission</br>fee paid</th>
-                                <th>Selected entry</br>fee paid</th>
-                                <th>Song choice</br>completed</th>
+                                <th colspan="2" class="table-center">For selected entries</th>
                                 <th> </th>
-
+                            </tr>
+                            <tr class="default">
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th>Fee paid</th>
+                                <th>Data complete</th>
+                                <th> </th>
                             </tr>
                             {% for entry in entries %}
                                 <tr {% if entry.instance.withdrawn %}class='withdrawn'{% endif %}>
@@ -34,17 +40,29 @@
                                         {% else %}<span class="fa fa-times"></span>{% endif %}
                                     </td>
                                     <td>
-                                        {% if entry.instance.selected_entry_paid %}<span class="fa fa-check"></span>
-                                        {% elif entry.paypal_selected_form %}{% include 'payments/selected_payment.html' %}
-                                        {% else %}<span class="fa fa-times"></span>{% endif %}
+                                        {% if entry.instance.status == 'selected' or entry.instance.status == 'selected_confirmed' %}
+                                            {% if entry.instance.selected_entry_paid %}<span class="fa fa-check"></span>
+                                            {% elif entry.paypal_selected_form %}{% include 'payments/selected_payment.html' %}
+                                            {% else %}<span class="fa fa-times"></span>{% endif %}
+                                        {% else %}
+                                            N/A
+                                        {% endif %}
                                     </td>
                                     <td>
-                                        {% if entry.instance.song %}<span class="fa fa-check"></span>
-                                        {% else %}<span class="fa fa-times"></span>{% endif %}
+                                        {% if entry.instance.status == 'selected' or entry.instance.status == 'selected_confirmed' %}
+                                            {% if entry.instance.song and entry.instance.biography %}<span class="fa fa-check"></span>
+                                            {% else %}<span class="fa fa-times"></span>{% endif %}
+                                        {% else %}
+                                            N/A
+                                        {% endif %}
                                     </td>
                                     <td>
                                         {% if not entry.instance.withdrawn %}
-                                            <a class="btn table-btn btn-purple" href="{% url 'entries:edit_entry' entry.instance.entry_ref %}">Edit</a>
+                                            {% if entry.instance.status == 'selected' or entry.instance.status == 'selected_confirmed' %}
+                                                <a class="btn table-btn btn-purple" href="{% url 'entries:edit_selected_entry' entry.instance.entry_ref %}">Edit</a>
+                                            {% else %}
+                                                <a class="btn table-btn btn-purple" href="{% url 'entries:edit_entry' entry.instance.entry_ref %}">Edit</a>
+                                            {% endif %}
                                             {% if entry.can_delete %}
                                                 <a class="btn table-btn btn-danger" href="{% url 'entries:delete_entry' entry.instance.entry_ref %}">Delete</a>
                                             {% else %}

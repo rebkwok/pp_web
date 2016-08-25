@@ -59,8 +59,6 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'allauth',
     'allauth.account',
-    'allauth.socialaccount',
-    'allauth.socialaccount.providers.facebook',
     'debug_toolbar',
     'crispy_forms',
     'django_extensions',
@@ -103,14 +101,14 @@ AUTHENTICATION_BACKENDS = (
     "allauth.account.auth_backends.AuthenticationBackend",
 )
 
-SOCIALACCOUNT_PROVIDERS = \
-    {'facebook': {
-        'SCOPE': ['email'],
-        # 'AUTH_PARAMS': {'auth_type': 'reauthenticate'},
-        'METHOD': 'oauth2',
-        'VERIFIED_EMAIL': False,
-        'VERSION': 'v2.2'
-        }}
+# SOCIALACCOUNT_PROVIDERS = \
+#     {'facebook': {
+#         'SCOPE': ['email'],
+#         # 'AUTH_PARAMS': {'auth_type': 'reauthenticate'},
+#         'METHOD': 'oauth2',
+#         'VERIFIED_EMAIL': False,
+#         'VERSION': 'v2.2'
+#         }}
 
 
 ACCOUNT_AUTHENTICATION_METHOD = "username"
@@ -137,6 +135,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'entries.context_processors.pp_email',
             ],
             'loaders': [
                 'apptemplates.Loader',
@@ -306,6 +305,8 @@ if 'test' in sys.argv:  # use local cache for tests
 
 
 ENTRIES_OPEN = env('ENTRIES_OPEN')
+
+CURRENT_ENTRY_YEAR = env('CURRENT_ENTRY_YEAR')
 
 # if DEBUG and 'test' not in sys.argv:  # pragma: no cover
 #     ENABLE_DEBUG_TOOLBAR = True

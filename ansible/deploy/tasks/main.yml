@@ -16,9 +16,5 @@
   with_items:
     - migrate
 
-- name: Populate database
-  django_manage: command={{ item }} app_path={{ project_root_path }} virtualenv={{ virtualenv_path }}
-  with_items:
-    - setup_fb
 
 

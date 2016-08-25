@@ -3,24 +3,143 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
 from django import forms
+from django.contrib.auth.models import User
 
 from accounts import validators as account_validators
 from accounts.models import BOOL_CHOICES, GENDER_CHOICES, OnlineDisclaimer, \
-    DISCLAIMER_TERMS, OVER_18_TERMS, MEDICAL_TREATMENT_TERMS
+    DISCLAIMER_TERMS, OVER_18_TERMS, MEDICAL_TREATMENT_TERMS, UserProfile
 
 
-class SignupForm(forms.Form):
-    first_name = forms.CharField(max_length=30, label='First name')
-    first_name.widget.attrs.update(
-        {'placeholder': 'First name', 'autofocus': 'autofocus'}
+class AccountFormMixin(object):
+
+    def clean(self):
+        dob = self.data.get('dob', None)
+        if dob and self.errors.get('dob'):
+            del self.errors['dob']
+        if dob:
+            try:
+                dob = datetime.strptime(dob, '%d %b %Y').date()
+                self.cleaned_data['dob'] = dob
+            except ValueError:
+                self.add_error(
+                    'dob', 'Invalid date format.  Select from '
+                                        'the date picker or enter date in the '
+                                        'format e.g. 08 Jun 1990')
+
+            if not self.errors.get('dob'):
+                yearsago = datetime.today().date() - relativedelta(years=18)
+                if dob > yearsago:
+                    self.add_error(
+                        'dob', 'You must be over 18 years in order to register'
+                    )
+
+
+class SignupForm(AccountFormMixin, forms.Form):
+    first_name = forms.CharField(
+        max_length=30, label='First name',
+        widget=forms.TextInput(
+            {
+                'class': "form-control", 'placeholder': 'First name',
+                'autofocus': 'autofocus'
+            }
+        )
     )
-    last_name = forms.CharField(max_length=30, label='Last name')
-    last_name.widget.attrs.update({'placeholder': 'Last name'})
+    last_name = forms.CharField(
+        max_length=30, label='Last name',
+        widget=forms.TextInput(
+            {'class': "form-control", 'placeholder': 'Last name'}
+        )
+    )
+    dob = forms.DateField(
+        widget=forms.DateInput(
+                attrs={'class': "form-control", 'id': 'dobdatepicker'},
+                format='%d %b %Y'
+            )
+    )
+    address = forms.CharField(
+        max_length=255,
+        widget=forms.TextInput(attrs={'class': "form-control"})
+    )
+    postcode = forms.CharField(
+        max_length=10,
+        widget=forms.TextInput(attrs={'class': "form-control"})
+    )
+    phone = forms.CharField(
+        max_length=255, label='phone number',
+        widget=forms.TextInput(attrs={'class': "form-control"})
+    )
+    pole_school = forms.CharField(
+        max_length=255, required=False,
+        widget=forms.TextInput(attrs={'class': "form-control"})
+    )
+
+    def __init__(self, *args, **kwargs):
+        super(SignupForm, self).__init__(*args, **kwargs)
+        self.fields['email'].widget.attrs.update({'class': "form-control"})
+        self.fields['username'].widget.attrs.update({'class': "form-control"})
+        self.fields['password1'].widget.attrs.update({'class': "form-control"})
+        self.fields['password2'].widget.attrs.update({'class': "form-control"})
 
     def signup(self, request, user):
         user.first_name = self.cleaned_data['first_name']
         user.last_name = self.cleaned_data['last_name']
         user.save()
+
+        profile_data = self.cleaned_data.copy()
+        non_profile_fields = [
+            'first_name', 'last_name', 'password1', 'password2', 'username',
+            'confirmation_key', 'email'
+        ]
+        for field in non_profile_fields:
+            del profile_data[field]
+
+        UserProfile.objects.create(user=user, **profile_data)
+
+
+class ProfileForm(AccountFormMixin, forms.ModelForm):
+
+    pole_school = forms.CharField(
+        max_length=255, required=False,
+        widget=forms.TextInput(attrs={'class': "form-control"})
+    )
+    dob = forms.DateField(
+        widget=forms.DateInput(
+                attrs={'class': "form-control", 'id': 'dobdatepicker'},
+                format='%d %b %Y'
+            )
+    )
+    address = forms.CharField(
+        max_length=255,
+        widget=forms.TextInput(attrs={'class': "form-control"})
+    )
+    postcode = forms.CharField(
+        max_length=10,
+        widget=forms.TextInput(attrs={'class': "form-control"})
+    )
+    phone = forms.CharField(
+        max_length=255, label='phone number',
+        widget=forms.TextInput(attrs={'class': "form-control"})
+    )
+
+    def __init__(self, *args, **kwargs):
+        super(ProfileForm, self).__init__(*args, **kwargs)
+        self.fields['first_name'].required = True
+        self.fields['last_name'].required = True
+
+    class Meta:
+        model = User
+        fields = ('username', 'first_name', 'last_name',)
+        widgets = {
+            'username': forms.TextInput(
+                attrs={'class': "form-control"}
+            ),
+            'first_name': forms.TextInput(
+                attrs={'class': "form-control"}
+            ),
+            'last_name': forms.TextInput(
+                attrs={'class': "form-control"}
+            )
+        }
 
 
 class DisclaimerForm(forms.ModelForm):

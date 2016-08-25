@@ -181,3 +181,14 @@ class OnlineDisclaimer(models.Model):
             cache.set(disclaimer_cache_key(self.user), True, 0)
 
         super(OnlineDisclaimer, self).save()
+
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(
+        User, on_delete=models.CASCADE, related_name='profile'
+    )
+    pole_school = models.CharField(max_length=255, null=True, blank=True)
+    dob = models.DateField(verbose_name='date of birth')
+    address = models.CharField(max_length=512)
+    postcode = models.CharField(max_length=10)
+    phone = models.CharField(max_length=255)

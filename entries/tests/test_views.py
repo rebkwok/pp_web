@@ -181,14 +181,12 @@ class EntryCreateViewTests(TestSetupLoginRequiredMixin, TestCase):
             form.errors,
             {
                 'video_url': ['This field is required'],
-                'biography': ['This field is required']
             }
         )
         self.assertEqual(Entry.objects.count(), 0)
 
         data.update({
             'video_url': 'http://foo.com',
-            'biography': 'About me'
         })
         self.client.post(self.url, data)
         self.assertEqual(Entry.objects.count(), 1)
@@ -213,7 +211,6 @@ class EntryCreateViewTests(TestSetupLoginRequiredMixin, TestCase):
         data.update({
             'submitted': 'Submit',
             'video_url': 'http://foo.com',
-            'biography': 'About me'
         })
         resp = self.client.post(self.url, data)
 
@@ -235,7 +232,7 @@ class EntryCreateViewTests(TestSetupLoginRequiredMixin, TestCase):
         """
         self.assertFalse(Entry.objects.exists())
         self.client.login(username=self.user.username, password='test')
-        data = {'category': 'INT', 'biography': 'about me'}
+        data = {'category': 'INT', 'video_url': 'http://foo.com'}
 
         resp = self.client.post(self.url, data)
         self.assertEqual(resp.status_code, 302)
@@ -244,7 +241,7 @@ class EntryCreateViewTests(TestSetupLoginRequiredMixin, TestCase):
         resp = self.client.post(self.url, data, follow=True)
         self.assertEqual(
             resp.context_data['form'].initial,
-            {'category': 'INT', 'biography': 'about me'}
+            {'category': 'INT', 'video_url': 'http://foo.com'}
         )
         self.assertFalse(Entry.objects.exists())
 
@@ -257,7 +254,9 @@ class EntryCreateViewTests(TestSetupLoginRequiredMixin, TestCase):
         self.assertFalse(Entry.objects.exists())
         self.client.login(username=self.user.username, password='test')
         session = self.client.session
-        session['form_data'] = {'category': 'ADV', 'biography': 'foo'}
+        session['form_data'] = {
+            'category': 'ADV', 'video_url': 'http://foo.com'
+        }
         session.save()
 
         self.assertIsNotNone(self.client.session.get('form_data'))
@@ -265,7 +264,7 @@ class EntryCreateViewTests(TestSetupLoginRequiredMixin, TestCase):
         resp = self.client.get(self.url)
         self.assertEqual(
             resp.context_data['form'].initial,
-            {'category': 'ADV', 'biography': 'foo'}
+            {'category': 'ADV', 'video_url': 'http://foo.com'}
         )
 
         # form data has been removed from session
@@ -311,19 +310,16 @@ class EntryUpdateViewTests(TestSetupLoginRequiredMixin, TestCase):
             form.errors,
             {
                 'video_url': ['This field is required'],
-                'biography': ['This field is required']
             }
         )
 
         data.update({
             'video_url': 'http://foo.com',
-            'biography': 'About me'
         })
         self.client.post(self.url, data)
         self.entry.refresh_from_db()
         # status has been changed from in_progress to submitted
         self.assertEqual(self.entry.status, 'submitted')
-
 
     def test_change_category(self):
         """
@@ -332,7 +328,7 @@ class EntryUpdateViewTests(TestSetupLoginRequiredMixin, TestCase):
         edit entry form view
         """
         self.client.login(username=self.user.username, password='test')
-        data = {'category': 'INT', 'biography': 'about me'}
+        data = {'category': 'INT', 'video_url': 'http://foo.com'}
 
         resp = self.client.post(self.url, data)
         self.assertEqual(resp.status_code, 302)
@@ -340,8 +336,8 @@ class EntryUpdateViewTests(TestSetupLoginRequiredMixin, TestCase):
 
         self.entry.refresh_from_db()
         self.assertEqual(self.entry.category, 'INT')
-        self.assertEqual(self.entry.biography, 'about me')
         self.assertEqual(self.entry.status, 'in_progress')
+        self.assertEqual(self.entry.video_url, 'http://foo.com')
 
 
 class EntryDeleteViewTests(TestSetupLoginRequiredMixin, TestCase):
@@ -432,11 +428,11 @@ class VideoPaymentViewTests(TestSetupLoginRequiredMixin, TestCase):
         )
 
     def test_entry_withdrawn(self):
-        self.entry1.status = 'withdrawn'
-        self.entry1.save()
+        self.entry.withdrawn = True
+        self.entry.save()
 
         self.login()
-        resp = self.client.get(self.url1)
+        resp = self.client.get(self.url)
         self.assertEqual(resp.status_code, 200)
         self.assertNotIn('paypalform', resp.context_data)
         self.assertIn(

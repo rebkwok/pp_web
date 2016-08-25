@@ -1,8 +1,13 @@
 from model_mommy import  mommy
 
+from django.contrib.auth.models import User
 from django.test import TestCase
 
-from ..forms import EntryCreateUpdateForm
+from allauth.account.models import EmailAddress
+
+from accounts.models import OnlineDisclaimer
+
+from ..forms import EntryCreateUpdateForm, SelectedEntryUpdateForm
 from .helpers import TestSetupMixin
 from ..models import Entry, CATEGORY_CHOICES
 
@@ -43,14 +48,12 @@ class EntryCreateUpdateFormTests(TestSetupMixin, TestCase):
             form.errors,
             {
                 'video_url': ['This field is required'],
-                'biography': ['This field is required'],
             }
         )
 
         data.update(
             {
                 'video_url': 'http://foo.com',
-                'biography': 'About me'
             }
         )
         form = EntryCreateUpdateForm(data, user=self.user, initial_data={})
@@ -63,7 +66,6 @@ class EntryCreateUpdateFormTests(TestSetupMixin, TestCase):
         data = {
             'category': 'BEG',
             'video_url': 'http://',
-            'biography': 'About me',
             'submitted': 'Submit'
         }
 
@@ -84,7 +86,6 @@ class EntryCreateUpdateFormTests(TestSetupMixin, TestCase):
         data = {
             'category': 'DOU',
             'video_url': 'http://foo.com',
-            'biography': 'About me',
             'submitted': 'Submit'
         }
         form = EntryCreateUpdateForm(data, user=self.user, initial_data={})
@@ -132,3 +133,264 @@ class EntryCreateUpdateFormTests(TestSetupMixin, TestCase):
         self.assertEqual(
             form.fields['video_url'].widget.attrs['class'], 'hide'
         )
+
+    def test_doubles_partner_email_same_as_user(self):
+        data = {
+            'category': 'DOU',
+            'video_url': 'http://foo.com',
+            'submitted': 'Submit',
+            'partner_name': 'Test user',
+            'partner_email': self.user.email
+        }
+        form = EntryCreateUpdateForm(data, user=self.user, initial_data={})
+        self.assertFalse(form.is_valid())
+        self.assertEqual(
+            form.errors,
+            {
+                'partner_email': [
+                    'This cannot be one of your own registered email addresses'
+                ]
+            }
+        )
+
+    def test_doubles_partner_email_same_as_user_additional_email(self):
+        mommy.make(EmailAddress, user=self.user, email='other@test.com')
+        data = {
+            'category': 'DOU',
+            'video_url': 'http://foo.com',
+            'submitted': 'Submit',
+            'partner_name': 'Test user',
+            'partner_email': 'other@test.com'
+        }
+        form = EntryCreateUpdateForm(data, user=self.user, initial_data={})
+        self.assertFalse(form.is_valid())
+        self.assertEqual(
+            form.errors,
+            {
+                'partner_email': [
+                    'This cannot be one of your own registered email addresses'
+                ]
+            }
+        )
+
+    def test_submit_doubles_partner_not_registered(self):
+        data = {
+            'category': 'DOU',
+            'video_url': 'http://foo.com',
+            'submitted': 'Submit',
+            'partner_name': 'Test user',
+            'partner_email': 'nouser@unknown.com'
+        }
+        form = EntryCreateUpdateForm(data, user=self.user, initial_data={})
+        self.assertFalse(form.is_valid())
+        self.assertEqual(
+            form.errors,
+            {
+                'partner_email': [
+                    'Partner is not registered'
+                ]
+            }
+        )
+
+    def test_submit_doubles_partner_no_waiver(self):
+        partner = mommy.make(
+            User, username='partner', email='partner@test.com'
+        )
+        data = {
+            'category': 'DOU',
+            'video_url': 'http://foo.com',
+            'submitted': 'Submit',
+            'partner_name': 'Test user',
+            'partner_email': partner.email
+        }
+        form = EntryCreateUpdateForm(data, user=self.user, initial_data={})
+        self.assertFalse(form.is_valid())
+        self.assertEqual(
+            form.errors,
+            {
+                'partner_email': [
+                    'Partner has registered but has not yet completed waiver'
+                ]
+            }
+        )
+
+    def test_submit_doubles_partner_already_entered(self):
+        partner = mommy.make(
+            User, username='partner', email='partner@test.com'
+        )
+        mommy.make(OnlineDisclaimer, user=partner)
+        mommy.make(Entry, category='DOU', user=partner)
+
+        data = {
+            'category': 'DOU',
+            'video_url': 'http://foo.com',
+            'submitted': 'Submit',
+            'partner_name': 'Test user',
+            'partner_email': partner.email
+        }
+        form = EntryCreateUpdateForm(data, user=self.user, initial_data={})
+        self.assertFalse(form.is_valid())
+        self.assertEqual(
+            form.errors,
+            {
+                'partner_email': [
+                    'A user with this email address has already entered '
+                    'the doubles category'
+                ]
+            }
+        )
+
+    def test_submit_doubles(self):
+        partner = mommy.make(
+            User, username='partner', email='partner@test.com'
+        )
+        mommy.make(OnlineDisclaimer, user=partner)
+
+        data = {
+            'category': 'DOU',
+            'video_url': 'http://foo.com',
+            'submitted': 'Submit',
+            'partner_name': 'Test user',
+            'partner_email': partner.email
+        }
+        form = EntryCreateUpdateForm(data, user=self.user, initial_data={})
+        self.assertTrue(form.is_valid())
+
+
+class SelectedEntryUpdateFormTests(TestSetupMixin, TestCase):
+
+    def test_submit_form_valid(self):
+        data = {
+            'submitted': 'Submit'
+        }
+
+        form = SelectedEntryUpdateForm(data)
+        self.assertTrue(form.is_valid())
+
+    def test_submit_doubles_category_form_valid(self):
+        """
+        Doubles category also required partner fields to submit
+        """
+        data = {
+            'category': 'DOU',
+            'submitted': 'Submit'
+        }
+        form = SelectedEntryUpdateForm(data)
+        self.assertFalse(form.is_valid())
+        self.assertEqual(
+            form.errors,
+            {
+                'partner_name': ['This field is required'],
+                'partner_email': ['This field is required'],
+            }
+        )
+
+    def test_doubles_partner_email_same_as_user(self):
+        data = {
+            'submitted': 'Submit',
+            'partner_name': 'Test user',
+            'partner_email': self.user.email
+        }
+        form = SelectedEntryUpdateForm(data)
+        self.assertFalse(form.is_valid())
+        self.assertEqual(
+            form.errors,
+            {
+                'partner_email': [
+                    'This cannot be one of your own registered email addresses'
+                ]
+            }
+        )
+
+    def test_doubles_partner_email_same_as_user_additional_email(self):
+        mommy.make(EmailAddress, user=self.user, email='other@test.com')
+        data = {
+            'submitted': 'Submit',
+            'partner_name': 'Test user',
+            'partner_email': 'other@test.com'
+        }
+        form = SelectedEntryUpdateForm(data)
+        self.assertFalse(form.is_valid())
+        self.assertEqual(
+            form.errors,
+            {
+                'partner_email': [
+                    'This cannot be one of your own registered email addresses'
+                ]
+            }
+        )
+
+    def test_submit_doubles_partner_not_registered(self):
+        data = {
+            'submitted': 'Submit',
+            'partner_name': 'Test user',
+            'partner_email': 'nouser@unknown.com'
+        }
+        form = SelectedEntryUpdateForm(data)
+        self.assertFalse(form.is_valid())
+        self.assertEqual(
+            form.errors,
+            {
+                'partner_email': [
+                    'Partner is not registered'
+                ]
+            }
+        )
+
+    def test_submit_doubles_partner_no_waiver(self):
+        partner = mommy.make(
+            User, username='partner', email='partner@test.com'
+        )
+        data = {
+            'submitted': 'Submit',
+            'partner_name': 'Test user',
+            'partner_email': partner.email
+        }
+        form = SelectedEntryUpdateForm(data)
+        self.assertFalse(form.is_valid())
+        self.assertEqual(
+            form.errors,
+            {
+                'partner_email': [
+                    'Partner has registered but has not yet completed waiver'
+                ]
+            }
+        )
+
+    def test_submit_doubles_partner_already_entered(self):
+        partner = mommy.make(
+            User, username='partner', email='partner@test.com'
+        )
+        mommy.make(OnlineDisclaimer, user=partner)
+        mommy.make(Entry, category='DOU', user=partner)
+
+        data = {
+            'submitted': 'Submit',
+            'partner_name': 'Test user',
+            'partner_email': partner.email
+        }
+        form = SelectedEntryUpdateForm(data)
+        self.assertFalse(form.is_valid())
+        self.assertEqual(
+            form.errors,
+            {
+                'partner_email': [
+                    'A user with this email address has already entered '
+                    'the doubles category'
+                ]
+            }
+        )
+
+    def test_submit_doubles(self):
+        partner = mommy.make(
+            User, username='partner', email='partner@test.com'
+        )
+        mommy.make(OnlineDisclaimer, user=partner)
+
+        data = {
+            'submitted': 'Submit',
+            'partner_name': 'Test user',
+            'partner_email': partner.email
+        }
+        form = SelectedEntryUpdateForm(data)
+        self.assertTrue(form.is_valid())
