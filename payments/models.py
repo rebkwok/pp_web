@@ -104,12 +104,12 @@ def send_processed_refund_emails(payment_type, paypal_trans, user, obj):
     # user will have received automated paypal payment
     send_mail(
         '{} Payment refund processed for {} payment for entry ref {}'.format(
-            settings.ACCOUNT_EMAIL_SUBJECT_PREFIX, payment_type, obj,entry_ref),
+            settings.ACCOUNT_EMAIL_SUBJECT_PREFIX, payment_type, obj.entry_ref),
         get_template(
             'payments/email/payment_refund_processed_to_studio.txt'
         ).render(ctx),
         settings.DEFAULT_FROM_EMAIL,
-        [settings.DEFAULT_STUDIO_EMAIL, settings.SUPPORT_EMAIL],
+        [settings.SUPPORT_EMAIL],
         html_message=get_template(
             'payments/email/payment_refund_processed_to_studio.html'
         ).render(ctx),
