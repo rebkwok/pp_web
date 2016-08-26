@@ -1,9 +1,12 @@
 from model_mommy import mommy
 
 from django.test import TestCase, override_settings
+from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 
-from .helpers import TestSetupMixin, TestSetupLoginRequiredMixin
+from accounts.models import OnlineDisclaimer
+
+from .helpers import format_content, TestSetupMixin, TestSetupLoginRequiredMixin
 from ..models import Entry
 
 from payments.models import PaypalEntryTransaction
@@ -340,6 +343,31 @@ class EntryUpdateViewTests(TestSetupLoginRequiredMixin, TestCase):
         self.assertEqual(self.entry.video_url, 'http://foo.com')
 
 
+class SelectedEntryUpdateViewTests(TestSetupLoginRequiredMixin, TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        super(SelectedEntryUpdateViewTests, cls).setUpTestData()
+        cls.entry = mommy.make(Entry, user=cls.user)
+        cls.url = reverse(
+            'entries:edit_selected_entry', args=(cls.entry.entry_ref,)
+        )
+
+    def setUp(self):
+        self.post_data = {
+            'submitted': 'Submit'
+        }
+
+    def test_upate_entry_and_save(self):
+        self.client.login(username=self.user.username, password='test')
+        data = self.post_data.copy()
+        data.update({'biography': 'About me'})
+        self.client.post(self.url, data)
+
+        self.entry.refresh_from_db()
+        self.assertEqual(self.entry.biography, 'About me')
+
+
 class EntryDeleteViewTests(TestSetupLoginRequiredMixin, TestCase):
 
     @classmethod
@@ -482,3 +510,91 @@ class VideoPaymentViewTests(TestSetupLoginRequiredMixin, TestCase):
         pptrans1 = PaypalEntryTransaction.objects.first()
         self.assertEqual(pptrans.id, pptrans1.id)
         self.assertEqual(first_invoice_id, pptrans1.invoice_id)
+
+
+class DoublePartnerCheckTests(TestSetupMixin, TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        super(DoublePartnerCheckTests, cls).setUpTestData()
+        cls.user_with_disclaimer = mommy.make(User, email='testA@test.com')
+        mommy.make(OnlineDisclaimer, user=cls.user_with_disclaimer)
+
+        cls.user_already_doubles = mommy.make(
+            User, email='testB@test.com'
+        )
+        mommy.make(OnlineDisclaimer, user=cls.user_already_doubles)
+        mommy.make(Entry, user=cls.user_already_doubles, category='DOU')
+
+        cls.user_already_other = mommy.make(
+            User, email='testC@test.com'
+        )
+        mommy.make(OnlineDisclaimer, user=cls.user_already_other)
+        mommy.make(Entry, user=cls.user_already_other, category='BEG')
+
+    def setUp(self):
+        self.client.login(username=self.user.username, password='test')
+
+    def get_url(self, email):
+        return reverse('entries:check_partner') + '?email=' + email
+
+    def test_partner_exists_and_has_disclaimer(self):
+        resp = self.client.get(self.get_url(self.user_with_disclaimer.email))
+        self.assertIn(
+            'Doubles partner registered: Yes',
+            format_content(str(resp.content)),
+        )
+        self.assertIn(
+            'Waiver completed: Yes',
+            format_content(str(resp.content)),
+        )
+
+    def test_partner_exists_no_disclaimer(self):
+        resp = self.client.get(self.get_url(self.user_no_disclaimer.email))
+        self.assertIn(
+            'Doubles partner registered: Yes',
+            format_content(str(resp.content)),
+        )
+        self.assertIn(
+            'Waiver completed: No',
+            format_content(str(resp.content)),
+        )
+
+    def test_partner_does_not_exist(self):
+        resp = self.client.get(self.get_url('nonuser@test.com'))
+        self.assertIn(
+            'Doubles partner registered: No',
+            format_content(str(resp.content)),
+        )
+        self.assertIn(
+            'Waiver completed: No',
+            format_content(str(resp.content)),
+        )
+
+    def test_partner_no_email_provided(self):
+        resp = self.client.get(self.get_url(''))
+        self.assertIn(
+            'No partner email provided',
+            format_content(str(resp.content)),
+        )
+
+    def test_partner_already_entered_doubles(self):
+        resp = self.client.get(self.get_url(self.user_already_doubles.email))
+        self.assertIn(
+            '!!! A user with this email address has already entered the '
+            'Doubles category. Only one entry should be submitted per doubles. '
+            'You will not be able to submit this entry form. Please have your '
+            'partner complete the entry form on his/her account.',
+            format_content(str(resp.content)),
+        )
+
+    def test_partner_already_entered_other_category(self):
+        resp = self.client.get(self.get_url(self.user_already_other.email))
+        self.assertIn(
+            'Doubles partner registered: Yes',
+            format_content(str(resp.content)),
+        )
+        self.assertIn(
+            'Waiver completed: Yes',
+            format_content(str(resp.content)),
+        )

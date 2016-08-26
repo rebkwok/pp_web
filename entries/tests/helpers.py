@@ -39,6 +39,10 @@ class TestSetupLoginRequiredMixin(TestSetupMixin):
 def format_content(content):
     # strip tags, \n, \t and extra whitespace from content
     return ' '.join(
-        strip_tags(content).replace('\n', '').replace('\t', '').split()
+        strip_tags(content)
+        .replace('\n', '')
+        .replace('\\n', '')
+        .replace('\t', '')
+        .split()
     )
 

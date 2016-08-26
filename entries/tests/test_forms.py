@@ -256,6 +256,39 @@ class EntryCreateUpdateFormTests(TestSetupMixin, TestCase):
         form = EntryCreateUpdateForm(data, user=self.user, initial_data={})
         self.assertTrue(form.is_valid())
 
+    def test_show_doubles(self):
+        """
+        Show double if existing doubles entry, new entry with doubles in
+        initial data or new entry with doubles as first in choices (b/c entries
+        already created for other categories)
+        """
+        entry = mommy.make(Entry, user=self.user, category='DOU')
+        form = EntryCreateUpdateForm(
+            instance=entry, user=self.user, initial_data={}
+        )
+        self.assertTrue(form.show_doubles)
+        entry.category = 'BEG'
+        entry.save()
+        form = EntryCreateUpdateForm(
+            instance=entry, user=self.user, initial_data={}
+        )
+        self.assertFalse(form.show_doubles)
+
+        user = mommy.make(User)
+        form = EntryCreateUpdateForm(
+            user=user, initial_data={'category': 'DOU'}
+        )
+        self.assertTrue(form.show_doubles)
+
+        # make entries for all preceding categories in the choices list
+        mommy.make(Entry, user=user, category='BEG')
+        mommy.make(Entry, user=user, category='INT')
+        mommy.make(Entry, user=user, category='ADV')
+        mommy.make(Entry, user=user, category='PRO')
+
+        form = EntryCreateUpdateForm(user=user, initial_data={})
+        self.assertTrue(form.show_doubles)
+
 
 class SelectedEntryUpdateFormTests(TestSetupMixin, TestCase):
 

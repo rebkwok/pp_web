@@ -30,7 +30,7 @@ class AccountFormMixin(object):
                 yearsago = datetime.today().date() - relativedelta(years=18)
                 if dob > yearsago:
                     self.add_error(
-                        'dob', 'You must be over 18 years in order to register'
+                        'dob', 'You must be 18 or over to register'
                     )
 
 

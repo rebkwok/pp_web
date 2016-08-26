@@ -323,7 +323,7 @@ class CustomSignUpViewTests(TestSetupMixin, TestCase):
         self.assertEqual(user.profile.address, "1 test st")
         self.assertEqual(user.profile.phone, "123445")
 
-    def test_signup_form_with_invalid_data(self):
+    def test_signup_form_with_invalid_name(self):
         # first_name must have 30 characters or fewer
         form_data = self.form_data.copy()
         form_data.update({
@@ -332,6 +332,51 @@ class CustomSignUpViewTests(TestSetupMixin, TestCase):
         resp = self.client.post(self.url, form_data)
         form = resp.context_data['form']
         self.assertFalse(form.is_valid())
+        self.assertEqual(
+            form.errors,
+            {
+                'first_name': [
+                    'Ensure this value has at most 30 characters (it has 31).'
+                ]
+            }
+        )
+
+    def test_signup_form_with_invalid_date_format(self):
+        form_data = self.form_data.copy()
+        form_data.update({
+            'dob': '19Jan1990',
+        })
+        resp = self.client.post(self.url, form_data)
+        form = resp.context_data['form']
+        self.assertFalse(form.is_valid())
+        self.assertEqual(
+            form.errors,
+            {
+                'dob': [
+                    'Invalid date format.  Select from the date picker or '
+                    'enter date in the format e.g. 08 Jun 1990'
+                ]
+            }
+        )
+
+    def test_signup_form_under_18(self):
+        # user must be over 18 to register
+        year = timezone.now().year - 17
+        form_data = self.form_data.copy()
+        form_data.update({
+            'dob': '19 Jan {}'.format(year),
+        })
+        resp = self.client.post(self.url, form_data)
+        form = resp.context_data['form']
+        self.assertFalse(form.is_valid())
+        self.assertEqual(
+            form.errors,
+            {
+                'dob': [
+                    'You must be 18 or over to register'
+                ]
+            }
+        )
 
 
 class DisclaimerModelTests(TestCase):
