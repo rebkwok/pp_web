@@ -29,7 +29,8 @@
                                     Status
                                 </label>
                                 <div class="col-xs-6 col-sm-7">
-                                    {{ entry.instance|format_status }}
+                                    <span class="{{ entry.instance|status_class }}">{{ entry.instance|format_status }}</span>
+                                    {% if entry.instance.status == "selected" %}<a class="btn btn-success table-btn" href="#">Confirm</a>{% endif %}
                                 </div>
                             </div>
                             <div class="col-xs-12">
@@ -37,9 +38,9 @@
                                     Video submission paid
                                 </label>
                                 <div class="col-xs-6 col-sm-7">
-                                    {% if entry.instance.video_entry_paid %}<span class="fa fa-check"></span>
-                                    {% elif entry.paypal_video_form %}{% include 'payments/video_payment.html' %}
-                                    {% else %}<span class="fa fa-times"></span>{% endif %}
+                                    {% if entry.instance.video_entry_paid %}<span class="fa fa-check success"></span>
+                                    {% elif entry.paypal_video_form %}Click Paypal button to make payment{% include 'payments/video_payment.html' %}
+                                    {% else %}<span class="fa fa-times fail"></span>{% endif %}
                                 </div>
                             </div>
                             <div class="col-xs-12">
@@ -48,9 +49,9 @@
                                 </label>
                                 <div class="col-xs-6 col-sm-7">
                                     {% if entry.instance.status == 'selected' or entry.instance.status == 'selected_confirmed' %}
-                                        {% if entry.instance.selected_entry_paid %}<span class="fa fa-check"></span>
+                                        {% if entry.instance.selected_entry_paid %}<span class="fa fa-check success"></span>
                                         {% elif entry.paypal_selected_form %}{% include 'payments/selected_payment.html' %}
-                                        {% else %}<span class="fa fa-times"></span>{% endif %}
+                                        {% else %}<span class="fa fa-times fail"></span>{% endif %}
                                     {% else %}
                                         N/A
                                     {% endif %}
@@ -62,25 +63,25 @@
                                 </label>
                                 <div class="col-xs-6 col-sm-7">
                                     {% if entry.instance.status == 'selected' or entry.instance.status == 'selected_confirmed' %}
-                                        {% if entry.instance.song and entry.instance.biography %}<span class="fa fa-check"></span>
-                                        {% else %}<span class="fa fa-times"></span>{% endif %}
+                                        {% if entry.instance.song and entry.instance.biography %}<span class="fa fa-check success"></span>
+                                        {% else %}<span class="fa fa-times fail"></span>{% endif %}
                                     {% else %}
                                         N/A
                                     {% endif %}
                                 </div>
                             </div>
                             <div class="col-xs-12">
-                                <div class="col-xs-12">
+                                <div class="col-xs-6 col-sm-7 col-xs-offset-6 col-sm-offset-5">
                                     {% if not entry.instance.withdrawn %}
                                         {% if entry.instance.status == 'selected' or entry.instance.status == 'selected_confirmed' %}
-                                            <a class="btn table-btn btn-purple" href="{% url 'entries:edit_selected_entry' entry.instance.entry_ref %}">Edit</a>
+                                            <a class="btn table-btn btn-purple" href="{% url 'entries:edit_selected_entry' entry.instance.entry_ref %}">Edit details</a>
                                         {% else %}
-                                            <a class="btn table-btn btn-purple" href="{% url 'entries:edit_entry' entry.instance.entry_ref %}">Edit</a>
+                                            <a class="btn table-btn btn-purple" href="{% url 'entries:edit_entry' entry.instance.entry_ref %}">Edit details</a>
                                         {% endif %}
                                         {% if entry.can_delete %}
                                             <a class="btn table-btn btn-danger" href="{% url 'entries:delete_entry' entry.instance.entry_ref %}">Delete</a>
                                         {% else %}
-                                            <a class="btn table-btn btn-warning" href="{% url 'entries:withdraw_entry' entry.instance.entry_ref %}">Withdraw</a>
+                                            <a class="btn table-btn btn-warning {% if entry.instance.status == 'rejected' %}disabled{% endif %}" href="{% url 'entries:withdraw_entry' entry.instance.entry_ref %}">Withdraw</a>
                                         {% endif %}
                                     {% else %}
                                         <span class="helptext">Contact organizers if you wish to reopen this entry</span>

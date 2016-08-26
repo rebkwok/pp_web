@@ -62,7 +62,7 @@ class EntryListViewTests(TestSetupLoginRequiredMixin, TestCase):
         self.assertIsNone(entry_ctx['paypal_video_form'])
         self.assertIsNone(entry_ctx['paypal_selected_form'])
         self.assertTrue(entry_ctx['can_delete'])
-        self.assertIn('>Edit</a>', resp.rendered_content)
+        self.assertIn('>Edit details</a>', resp.rendered_content)
         self.assertNotIn('>Withdraw</a>', resp.rendered_content)
 
     def test_entry_submitted(self):
@@ -77,8 +77,10 @@ class EntryListViewTests(TestSetupLoginRequiredMixin, TestCase):
         self.assertIsNotNone(entry_ctx['paypal_video_form'])
         self.assertIsNone(entry_ctx['paypal_selected_form'])
         self.assertFalse(entry_ctx['can_delete'])
-        self.assertIn('>Edit</a>', resp.rendered_content)
+        self.assertIn('>Edit details</a>', resp.rendered_content)
         self.assertIn('>Withdraw</a>', resp.rendered_content)
+        # status shows payment pending
+        self.assertIn('Submitted (pending payment)', resp.rendered_content)
 
         # No paypal form if video entry paid
         entry.video_entry_paid = True
@@ -87,10 +89,32 @@ class EntryListViewTests(TestSetupLoginRequiredMixin, TestCase):
         entry_ctx = resp.context_data['entries'][0]
         self.assertIsNone(entry_ctx['paypal_video_form'])
         self.assertIsNone(entry_ctx['paypal_selected_form'])
+        self.assertIn('Submitted', resp.rendered_content)
+        self.assertNotIn('Submitted (pending payment)', resp.rendered_content)
 
     def test_entry_selected(self):
-        # shows correct status, paypal button for entry, edit and withdraw btns
+        # shows correct status, no paypal button for payments,
+        # edit and withdraw btns
         entry = mommy.make(Entry, user=self.user, status='selected')
+        self.client.login(username=self.user.username, password='test')
+        resp = self.client.get(self.url)
+        entries = resp.context_data['entries']
+        self.assertEqual(len(resp.context_data['entries']), 1)
+        entry_ctx = entries[0]
+        self.assertEqual(entry_ctx['instance'], entry)
+        self.assertIsNone(entry_ctx['paypal_video_form'])
+        self.assertIsNone(entry_ctx['paypal_selected_form'])
+        self.assertFalse(entry_ctx['can_delete'])
+        self.assertIn('>Edit details</a>', resp.rendered_content)
+        self.assertIn('>Withdraw</a>', resp.rendered_content)
+
+        # status shows not confirmed
+        self.assertIn('Selected - NOT CONFIRMED', resp.rendered_content)
+
+    def test_entry_selected_confirmed(self):
+        # shows correct status, paypal button for selected payments,
+        # edit and withdraw btns
+        entry = mommy.make(Entry, user=self.user, status='selected_confirmed')
         self.client.login(username=self.user.username, password='test')
         resp = self.client.get(self.url)
         entries = resp.context_data['entries']
@@ -100,8 +124,13 @@ class EntryListViewTests(TestSetupLoginRequiredMixin, TestCase):
         self.assertIsNone(entry_ctx['paypal_video_form'])
         self.assertIsNotNone(entry_ctx['paypal_selected_form'])
         self.assertFalse(entry_ctx['can_delete'])
-        self.assertIn('>Edit</a>', resp.rendered_content)
+        self.assertIn('>Edit details</a>', resp.rendered_content)
         self.assertIn('>Withdraw</a>', resp.rendered_content)
+
+        # status shows payment pending
+        self.assertIn(
+            'Selected - confirmed (pending payment)', resp.rendered_content
+        )
 
         # No paypal form if selected entry paid
         entry.selected_entry_paid = True
@@ -110,6 +139,10 @@ class EntryListViewTests(TestSetupLoginRequiredMixin, TestCase):
         entry_ctx = resp.context_data['entries'][0]
         self.assertIsNone(entry_ctx['paypal_video_form'])
         self.assertIsNone(entry_ctx['paypal_selected_form'])
+        self.assertIn('Selected', resp.rendered_content)
+        self.assertNotIn(
+            'Selected - confirmed (pending payment)', resp.rendered_content
+        )
 
     def test_entry_rejected(self):
         # shows correct status, paypal button for entry, edit and withdraw btns
@@ -123,7 +156,7 @@ class EntryListViewTests(TestSetupLoginRequiredMixin, TestCase):
         self.assertIsNone(entry_ctx['paypal_video_form'])
         self.assertIsNone(entry_ctx['paypal_selected_form'])
         self.assertFalse(entry_ctx['can_delete'])
-        self.assertIn('>Edit</a>', resp.rendered_content)
+        self.assertIn('>Edit details</a>', resp.rendered_content)
         self.assertIn('>Withdraw</a>', resp.rendered_content)
 
     def test_entry_withdrawn(self):
@@ -139,7 +172,7 @@ class EntryListViewTests(TestSetupLoginRequiredMixin, TestCase):
         self.assertIsNone(entry_ctx['paypal_video_form'])
         self.assertIsNone(entry_ctx['paypal_selected_form'])
         self.assertFalse(entry_ctx['can_delete'])
-        self.assertNotIn('>Edit</a>', resp.rendered_content)
+        self.assertNotIn('>Edit details</a>', resp.rendered_content)
         self.assertNotIn('>Withdraw</a>', resp.rendered_content)
         self.assertIn(
             'Contact organizers if you wish to reopen this entry',

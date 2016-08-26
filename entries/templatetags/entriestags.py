@@ -18,6 +18,29 @@ def format_category(category):
 
 @register.filter
 def format_status(entry):
+    add_text = ''
     if entry.withdrawn:
         return "Withdrawn"
-    return STATUS_CHOICES_DICT[entry.status]
+    elif entry.status == "selected":
+        add_text = " - NOT CONFIRMED"
+    elif (
+            (entry.status == "submitted" and not entry.video_entry_paid) or
+            (entry.status in ["selected", "selected_confirmed"] and not
+                entry.selected_entry_paid)
+    ):
+        add_text = " (pending payment)"
+    return STATUS_CHOICES_DICT[entry.status] + add_text
+
+@register.filter
+def status_class(entry):
+    if not entry.withdrawn:
+        if entry.status == "submitted":
+            if entry.video_entry_paid:
+                return "success bold"
+            return "fail bold"
+        if entry.status in ["selected", "selected_confirmed"]:
+            if entry.selected_entry_paid:
+                return "success bold"
+            return "fail bold"
+        return ""
+    return ""

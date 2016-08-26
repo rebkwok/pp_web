@@ -93,7 +93,7 @@ class EntryListView(LoginRequiredMixin, generic.ListView):
                         )
                     )
 
-                if entry.status in ['selected', 'selected_confirmed'] and not \
+                if entry.status in ['selected_confirmed'] and not \
                         entry.selected_entry_paid:
                     # ONLY DO THIS IF PAYPAL BUTTON NEEDED
                     invoice_id = create_entry_paypal_transaction(
