@@ -30,7 +30,10 @@
                                 </label>
                                 <div class="col-xs-6 col-sm-7">
                                     <span class="{{ entry.instance|status_class }}">{{ entry.instance|format_status }}</span>
-                                    {% if entry.instance.status == "selected" %}<a class="btn btn-success table-btn" href="#">Confirm</a>{% endif %}
+                                    {% if entry.instance.status == "selected" and not entry.instance.withdrawn %}
+                                    <a class="btn btn-success table-btn" href="{% url 'entries:confirm_entry' entry.instance.entry_ref %}">Confirm entry</a>{% endif %}
+                                    {% if entry.instance.withdrawn and entry.instance.status == "selected_confirmed" and not entry.instance.withdrawal_fee_paid %}
+                                    <a class="btn btn-purple table-btn" href="{% url 'entries:withdrawal_payment' entry.instance.entry_ref %}">Pay fee</a>{% endif %}
                                 </div>
                             </div>
                             <div class="col-xs-12">

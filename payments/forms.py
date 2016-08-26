@@ -23,10 +23,10 @@ class PayPalPaymentsListForm(PayPalPaymentsForm):
         </form>""" % (self.get_endpoint(), self.as_p(), self.get_image()))
 
 
-class PayPalPaymentsVideoForm(PayPalPaymentsForm):
+class PayPalPaymentsEntryForm(PayPalPaymentsForm):
 
     def get_image(self):
-        super(PayPalPaymentsVideoForm, self).get_image()
+        super(PayPalPaymentsEntryForm, self).get_image()
         return {
             (True, self.SUBSCRIBE): 'https://www.paypalobjects.com/webstatic/en_US/i/btn/png/gold-pill-paypal-44px.png',
             (True, self.BUY): 'https://www.paypalobjects.com/webstatic/en_US/i/btn/png/gold-pill-paypal-44px.png',
@@ -37,7 +37,7 @@ class PayPalPaymentsVideoForm(PayPalPaymentsForm):
         }[self.test_mode(), self.button_type]
 
     def render(self):
-        super(PayPalPaymentsVideoForm, self).render()
+        super(PayPalPaymentsEntryForm, self).render()
         return mark_safe(u"""<form class="paypal-btn-form" action="%s" method="post">
             %s
         <input type="image" src="%s" border="0" name="submit" alt="Paypal" />

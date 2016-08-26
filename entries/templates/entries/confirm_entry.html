@@ -1,0 +1,25 @@
+{% extends "entries/entries_base.html" %}
+{% load static %}
+{% load entriestags %}
+
+{% block content %}
+    <div class="container-fluid">
+    <h1>Confirm Entry</h1>
+        <div>
+            <h3>Congratulations on your selection for the Pole Performance {{ entry.category|format_category }} category!</h3>
+
+            <p>To confirm your entry and proceed to entry fee payment please click the Confirm button below.
+                Please note that a withdrawal fee will apply if you withdraw after confirmation.
+            </p>
+
+            <p>Additional information is now required for your entry, including your song choice and short
+            biography.  Please go to the My Entries page and click Edit to provide this information.
+            </p>
+
+        <form action="" method="post">{% csrf_token %}
+            <input class="btn btn-danger" type="submit" value="Confirm entry" />
+            <a href="{% url 'entries:user_entries' %}"><div class="btn btn-warning">Back</div></a>
+        </form>
+    </div>
+    </div>
+{% endblock content %}

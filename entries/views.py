@@ -10,12 +10,12 @@ from django.views import generic
 
 from braces.views import LoginRequiredMixin
 
-from payments.forms import PayPalPaymentsListForm, PayPalPaymentsVideoForm
+from payments.forms import PayPalPaymentsListForm, PayPalPaymentsEntryForm
 from payments.models import create_entry_paypal_transaction
 
 from .forms import EntryCreateUpdateForm, SelectedEntryUpdateForm
 from .models import CATEGORY_CHOICES_DICT, Entry, VIDEO_ENTRY_FEES, \
-    SELECTED_ENTRY_FEES
+    SELECTED_ENTRY_FEES, WITHDRAWAL_FEE
 from .utils import check_partner_email
 
 """
@@ -191,7 +191,7 @@ class EntryUpdateView(LoginRequiredMixin, EntryMixin, generic.UpdateView):
 
     def get_object(self, queryset=None):
         ref = self.kwargs.get('ref')
-        return get_object_or_404(Entry, entry_ref=ref)
+        return get_object_or_404(Entry, entry_ref=ref, user=self.request.user)
 
 
 class SelectedEntryUpdateView(LoginRequiredMixin, generic.UpdateView):
@@ -201,9 +201,20 @@ class SelectedEntryUpdateView(LoginRequiredMixin, generic.UpdateView):
     form_class = SelectedEntryUpdateForm
     success_message = 'Your entry has been {}'
 
+    def dispatch(self, request, *args, **kwargs):
+        # redirect if not status "selected" or "selected_confirmed"
+        if not request.user.is_anonymous():
+            entry = self.get_object()
+            if entry.status not in ["selected", "selected_confirmed"] or \
+                    entry.withdrawn:
+                return HttpResponseRedirect(reverse('permission_denied'))
+        return super(SelectedEntryUpdateView, self).dispatch(
+            request, *args, **kwargs
+        )
+
     def get_object(self, queryset=None):
         ref = self.kwargs.get('ref')
-        return get_object_or_404(Entry, entry_ref=ref)
+        return get_object_or_404(Entry, entry_ref=ref, user=self.request.user)
 
     def get_success_url(self):
         return reverse('entries:user_entries')
@@ -215,12 +226,20 @@ class EntryDeleteView(LoginRequiredMixin, generic.DeleteView):
     template_name = 'entries/delete_withdraw_entry.html'
     context_object_name = 'entry'
 
+    def dispatch(self, request, *args, **kwargs):
+        # redirect if not status "in_progress"
+        if not request.user.is_anonymous():
+            entry = self.get_object()
+            if entry.status != "in_progress":
+                return HttpResponseRedirect(reverse('permission_denied'))
+        return super(EntryDeleteView, self).dispatch(request, *args, **kwargs)
+
     def get_success_url(self):
         return reverse('entries:user_entries')
     
     def get_object(self, queryset=None):
         ref = self.kwargs.get('ref')
-        return get_object_or_404(Entry, entry_ref=ref)
+        return get_object_or_404(Entry, entry_ref=ref, user=self.request.user)
 
     def get_context_data(self, **kwargs):
         context = super(EntryDeleteView, self).get_context_data(**kwargs)
@@ -241,9 +260,19 @@ class EntryWithdrawView(LoginRequiredMixin, generic.UpdateView):
     success_message = 'Your entry has been withdrawn'
     fields = ('id',)
 
+    def dispatch(self, request, *args, **kwargs):
+        # redirect if already withdrawn
+        if not request.user.is_anonymous():
+            entry = self.get_object()
+            if entry.withdrawn :
+                return HttpResponseRedirect(reverse('permission_denied'))
+        return super(EntryWithdrawView, self).dispatch(
+            request, *args, **kwargs
+        )
+
     def get_object(self, queryset=None):
         ref = self.kwargs.get('ref')
-        return get_object_or_404(Entry, entry_ref=ref)
+        return get_object_or_404(Entry, entry_ref=ref, user=self.request.user)
 
     def get_context_data(self, **kwargs):
         context = super(EntryWithdrawView, self).get_context_data(**kwargs)
@@ -257,6 +286,10 @@ class EntryWithdrawView(LoginRequiredMixin, generic.UpdateView):
 
         messages.success(self.request, self.success_message)
 
+        if entry.status == 'selected_confirmed':
+            return HttpResponseRedirect(
+                reverse('entries:withdrawal_payment', args=[entry.entry_ref])
+            )
         return HttpResponseRedirect(reverse('entries:user_entries'))
 
 
@@ -265,22 +298,23 @@ def entry_video_payment(request, ref):
     entry = get_object_or_404(Entry, entry_ref=ref)
     template_name = 'entries/video_payment.html'
 
-    context = {'entry': entry}
+    context = {
+        'entry': entry,
+        'already_paid': entry.video_entry_paid,
+        'in_progress': entry.status == 'in_progress',
+        'not_selected_confirmed': entry.status != 'selected_confirmed',
+        'withdrawn': entry.withdrawn
+    }
 
-    if entry.video_entry_paid:
-        context['already_paid'] = True
-    elif entry.status == 'in_progress':
-        context['in_progress'] = True
-    elif entry.withdrawn:
-        context['withdrawn'] = True
-    else:
+    if not entry.video_entry_paid and not \
+            entry.status == 'in_progress' and not entry.withdrawn:
         host = 'http://{}'.format(request.META.get('HTTP_HOST'))
         invoice_id = create_entry_paypal_transaction(
             request.user, entry, 'video').invoice_id
-        paypalform = PayPalPaymentsVideoForm(
+        paypalform = PayPalPaymentsEntryForm(
             initial=get_paypal_dict(
                 host,
-                SELECTED_ENTRY_FEES[entry.category],
+                VIDEO_ENTRY_FEES[entry.category],
                 'Video submission fee for {} category'.format(
                     CATEGORY_CHOICES_DICT[entry.category]
                 ),
@@ -291,7 +325,7 @@ def entry_video_payment(request, ref):
         )
         context.update({
             'paypalform': paypalform,
-            'fee': SELECTED_ENTRY_FEES[entry.category]
+            'fee': VIDEO_ENTRY_FEES[entry.category]
         })
 
     return TemplateResponse(request, template_name, context)
@@ -307,3 +341,103 @@ def check_partner(request):
     return render_to_response(
         'entries/includes/partner_check.txt', context
     )
+
+
+class EntryConfirmView(LoginRequiredMixin, generic.UpdateView):
+    """
+    An update view for confirming entry selection
+    """
+    model = Entry
+    template_name = 'entries/confirm_entry.html'
+    fields = ('id',)
+
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_anonymous():
+            # redirect if not status "selected"
+            entry = self.get_object()
+            if entry.status != "selected" or entry.withdrawn :
+                return HttpResponseRedirect(reverse('permission_denied'))
+        return super(EntryConfirmView, self).dispatch(request, *args, **kwargs)
+
+    def get_object(self, queryset=None):
+        ref = self.kwargs.get('ref')
+        return get_object_or_404(Entry, entry_ref=ref, user=self.request.user)
+
+    def form_valid(self, form):
+        entry = form.save(commit=False)
+        entry.status = "selected_confirmed"
+        entry.save()
+
+        return HttpResponseRedirect(
+            reverse('entries:selected_payment', args=[entry.entry_ref])
+        )
+
+@login_required
+def entry_selected_payment(request, ref):
+    entry = get_object_or_404(Entry, entry_ref=ref, user=request.user)
+    template_name = 'entries/selected_payment.html'
+
+    context = {
+        'entry': entry,
+        'already_paid': entry.selected_entry_paid,
+        'not_selected_confirmed': entry.status != 'selected_confirmed',
+        'withdrawn': entry.withdrawn
+    }
+
+    if entry.status == 'selected_confirmed' and not \
+            entry.withdrawn and not entry.selected_entry_paid:
+        host = 'http://{}'.format(request.META.get('HTTP_HOST'))
+        invoice_id = create_entry_paypal_transaction(
+            request.user, entry, 'selected').invoice_id
+        paypalform = PayPalPaymentsEntryForm(
+            initial=get_paypal_dict(
+                host,
+                SELECTED_ENTRY_FEES[entry.category],
+                'Entry fee for {} category'.format(
+                    CATEGORY_CHOICES_DICT[entry.category]
+                ),
+                invoice_id,
+                'selected {}'.format(entry.id),
+                paypal_email=settings.DEFAULT_PAYPAL_EMAIL,
+            )
+        )
+        context.update({
+            'paypalform': paypalform,
+            'fee': SELECTED_ENTRY_FEES[entry.category]
+        })
+
+    return TemplateResponse(request, template_name, context)
+
+
+@login_required
+def entry_withdrawal_payment(request, ref):
+    entry = get_object_or_404(Entry, entry_ref=ref, user=request.user)
+    template_name = 'entries/withdrawal_payment.html'
+
+    context = {'entry': entry}
+
+    if not (entry.status == 'selected_confirmed' and entry.withdrawn) \
+            or entry.withdrawal_fee_paid:
+        return HttpResponseRedirect('permission_denied')
+    else:
+        host = 'http://{}'.format(request.META.get('HTTP_HOST'))
+        invoice_id = create_entry_paypal_transaction(
+            request.user, entry, 'withdrawal').invoice_id
+        paypalform = PayPalPaymentsEntryForm(
+            initial=get_paypal_dict(
+                host,
+                WITHDRAWAL_FEE,
+                'Withdrawal fee for {} category'.format(
+                    CATEGORY_CHOICES_DICT[entry.category]
+                ),
+                invoice_id,
+                'withdrawal {}'.format(entry.id),
+                paypal_email=settings.DEFAULT_PAYPAL_EMAIL,
+            )
+        )
+        context.update({
+            'paypalform': paypalform,
+            'fee': WITHDRAWAL_FEE
+        })
+
+    return TemplateResponse(request, template_name, context)

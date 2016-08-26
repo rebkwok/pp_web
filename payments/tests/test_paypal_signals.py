@@ -273,6 +273,29 @@ class PaypalSignalsTests(TestCase):
         self.assertTrue(entry.video_entry_paid)
 
     @patch('paypal.standard.ipn.models.PayPalIPN._postback')
+    def test_successful_paypal_withdrawal_payment(self, mock_postback):
+        mock_postback.return_value = b"VERIFIED"
+        entry = mommy.make(
+            Entry, status='selected_confirmed', withdrawal_fee_paid=False,
+            selected_entry_paid=True
+        )
+        invoice_id = create_entry_paypal_transaction(
+            entry.user, entry, 'withdrawal'
+        ).invoice_id
+        self.assertFalse(entry.withdrawal_fee_paid)
+        self.assertFalse(PayPalIPN.objects.exists())
+        params = dict(IPN_POST_PARAMS)
+        params.update(
+            {
+                'custom': b('withdrawal {}'.format(entry.id)),
+                'invoice': b(invoice_id)
+            }
+        )
+        self.paypal_post(params)
+        entry.refresh_from_db()
+        self.assertTrue(entry.withdrawal_fee_paid)
+
+    @patch('paypal.standard.ipn.models.PayPalIPN._postback')
     def test_paypal_notify_only_updates_relevant_entry(self, mock_postback):
         mock_postback.return_value = b"VERIFIED"
         entry = mommy.make(Entry)
@@ -305,7 +328,9 @@ class PaypalSignalsTests(TestCase):
             self.assertFalse(en.video_entry_paid)
 
     @patch('paypal.standard.ipn.models.PayPalIPN._postback')
-    def test_paypal_notify_url_with_complete_status_no_invoice_number(self, mock_postback):
+    def test_paypal_notify_url_with_complete_status_no_invoice_number(
+            self, mock_postback
+    ):
         mock_postback.return_value = b"VERIFIED"
         entry = mommy.make(Entry)
 
@@ -325,7 +350,7 @@ class PaypalSignalsTests(TestCase):
         self.assertEqual(len(mail.outbox), 2)
         self.assertEqual(
             mail.outbox[1].subject,
-            '{} No invoice number on paypal ipn for selected payment for '
+            '{} No invoice number on paypal ipn for selected entry fee for '
             'entry id {}'.format(
                 settings.ACCOUNT_EMAIL_SUBJECT_PREFIX, entry.id
             )
@@ -732,7 +757,7 @@ class PaypalSignalsTests(TestCase):
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(
             mail.outbox[0].subject,
-            '{} There was some problem processing video payment for '
+            '{} There was some problem processing video submission fee for '
             'entry id {}'.format(
                 settings.ACCOUNT_EMAIL_SUBJECT_PREFIX, entry.id
             ),
@@ -770,7 +795,7 @@ class PaypalSignalsTests(TestCase):
         with self.assertRaises(Exception):
             self.paypal_post(params)
             payment_models_logger.warning.assert_called_with(
-                'Problem processing payment_not_received for video payment for '
+                'Problem processing payment_not_received for video submission fee for '
                 'entry {}; '
                 'invoice_id {}, transaction id: test_txn_id. Exception: '
                 'Error sending mail'.format(entry.id, pptrans.invoice)
@@ -821,7 +846,7 @@ class PaypalSignalsTests(TestCase):
         self.assertEqual(support_email.to, [settings.SUPPORT_EMAIL])
         self.assertEqual(
             support_email.subject,
-            '{} There was some problem processing video payment for entry '
+            '{} There was some problem processing video submission fee for entry '
             'id {}'.format(settings.ACCOUNT_EMAIL_SUBJECT_PREFIX, entry.id)
         )
         self.assertIn(
@@ -863,12 +888,12 @@ class PaypalSignalsTests(TestCase):
         self.assertEqual(support_email.to, [settings.SUPPORT_EMAIL])
         self.assertEqual(
             support_email.subject,
-            '{} There was some problem processing video payment for entry '
+            '{} There was some problem processing video submission fee for entry '
             'id {}'.format(settings.ACCOUNT_EMAIL_SUBJECT_PREFIX, entry.id)
         )
         self.assertIn(
             'The exception raised was "PayPal payment returned with '
-            'status PENDING for video payment for entry {}; '
+            'status PENDING for video submission fee for entry {}; '
             'ipn obj id {} (txn id {}).  This is usually due to an '
             'unrecognised or unverified paypal email address.'.format(
                 entry.id, ppipn.id, ppipn.txn_id
@@ -910,12 +935,12 @@ class PaypalSignalsTests(TestCase):
         self.assertEqual(support_email.to, [settings.SUPPORT_EMAIL])
         self.assertEqual(
             support_email.subject,
-            '{} There was some problem processing video payment for entry '
+            '{} There was some problem processing video submission fee for entry '
             'id {}'.format(settings.ACCOUNT_EMAIL_SUBJECT_PREFIX, entry.id)
         )
         self.assertIn(
             'The exception raised was "Unexpected payment status VOIDED for '
-            'video payment for entry {}; ipn obj id {} (txn id {})'.format(
+            'video submission fee for entry {}; ipn obj id {} (txn id {})'.format(
                 entry.id, ppipn.id, ppipn.txn_id
             ),
             support_email.body

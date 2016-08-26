@@ -44,6 +44,8 @@ SELECTED_ENTRY_FEES = {
     'MEN': 15,
 }
 
+WITHDRAWAL_FEE = 25
+
 YEAR_CHOICES = (
     ('2017', '2017'),
     ('2018', '2018'),
@@ -95,6 +97,7 @@ class Entry(models.Model):
     # payment
     video_entry_paid = models.BooleanField(default=False)
     selected_entry_paid = models.BooleanField(default=False)
+    withdrawal_fee_paid = models.BooleanField(default=False)
 
     date_submitted = models.DateTimeField(null=True, blank=True)
 
@@ -108,12 +111,13 @@ class Entry(models.Model):
         verbose_name_plural = 'entries'
 
     def __str__(self):
-        return "{first} {last} - {ref} - {cat} - {yr} - {status}".format(
+        return "{first} {last} - {ref} - {cat} - {yr} - {status}{wd}".format(
             first=self.user.first_name, last=self.user.last_name,
             ref=self.entry_ref,
             cat=CATEGORY_CHOICES_DICT[self.category],
             yr=self.entry_year,
-            status=STATUS_CHOICES_DICT[self.status]
+            status=STATUS_CHOICES_DICT[self.status],
+            wd=' (withdrawn)' if self.withdrawn else ''
         )
 
     def save(self, force_insert=False, force_update=False, using=None,

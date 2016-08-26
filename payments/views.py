@@ -39,7 +39,7 @@ def paypal_confirm_return(request):
 
     if custom:
         try:
-            payment_type = custom[0]  # video or selected payment
+            payment_type = custom[0]  # video, selected or withdrawal payment
             entry_id = int(custom[1])
             obj = Entry.objects.select_related('user').get(id=entry_id)
 
@@ -65,7 +65,9 @@ def paypal_confirm_return(request):
             'obj_unknown': True,
             'organiser_email': settings.DEFAULT_STUDIO_EMAIL
         }
-    return TemplateResponse(request, 'payments/confirmed_payment.html', context)
+    return TemplateResponse(
+        request, 'payments/confirmed_payment.html', context
+    )
 
 
 @csrf_exempt

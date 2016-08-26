@@ -1,0 +1,29 @@
+{% extends "entries/entries_base.html" %}
+{% load static %}
+{% load entriestags %}
+
+{% block content %}
+
+<div class="extra-top-margin container-fluid row">
+   <div class="panel panel-default">
+        <div class="panel-heading">
+            <h1 class="panel-title">Entry fee for {{ entry.category|format_category }} category</h1>
+        </div>
+        <div class="panel-body">
+            {% if paypalform %}
+                <p>To complete your entry and confirm your place, please click below to be transferred to paypal
+                    to pay the entry fee.</p>
+                <p>Entry Fee: £ {{ fee }}</p>
+                {% include 'payments/payment.html' %}
+            {% elif already_paid %}
+                <p>The fee for this entry has already been paid.</p>
+            {% elif not_selected_confirmed %}
+                <p>This entry has not been selected and confirmed.  Please check status on the My Entries page.</p>
+            {% elif withdrawn %}
+                <p>This entry has been withdrawn.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

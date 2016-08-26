@@ -17,9 +17,19 @@ urlpatterns = [
         views.SelectedEntryUpdateView.as_view(), name='edit_selected_entry'
     ),
     url(
-        r'^myentries/(?P<ref>[\w-]+)/payment/$',
+        r'^myentries/(?P<ref>[\w-]+)/video-submission-payment/$',
         views.entry_video_payment,
         name='video_payment'
+    ),
+    url(
+        r'^myentries/(?P<ref>[\w-]+)/selected-entry-payment/$',
+        views.entry_selected_payment,
+        name='selected_payment'
+    ),
+    url(
+        r'^myentries/(?P<ref>[\w-]+)/withdraw-entry-payment/$',
+        views.entry_withdrawal_payment,
+        name='withdrawal_payment'
     ),
     url(
         r'^myentries/(?P<ref>[\w-]+)/delete/$',
@@ -30,6 +40,11 @@ urlpatterns = [
         r'^myentries/(?P<ref>[\w-]+)/withdraw/$',
         views.EntryWithdrawView.as_view(),
         name='withdraw_entry'
+    ),
+    url(
+        r'^myentries/(?P<ref>[\w-]+)/confirm/$',
+        views.EntryConfirmView.as_view(),
+        name='confirm_entry'
     ),
     url(
         r'^myentries/check_partner/$', views.check_partner,

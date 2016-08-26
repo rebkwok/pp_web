@@ -1,0 +1,21 @@
+{% extends "entries/entries_base.html" %}
+{% load static %}
+{% load entriestags %}
+
+{% block content %}
+
+<div class="extra-top-margin container-fluid row">
+   <div class="panel panel-default">
+        <div class="panel-heading">
+            <h1 class="panel-title">Withdrawal fee for {{ entry.category|format_category }} category</h1>
+        </div>
+        <div class="panel-body">
+                <p>You have withdrawn your entry after selection and confirmation.  Please click below to be transferred to paypal
+                    to pay the withdrawal fee.</p>
+                <p>Withdrawal Fee: £ {{ fee }}</p>
+                {% include 'payments/payment.html' %}
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

@@ -58,7 +58,12 @@ class PaypalEntryTransaction(models.Model):
     )
     entry = models.ForeignKey(Entry, null=True)
     payment_type = models.CharField(
-        choices=(('video', 'video'), ('selected', 'selected')), max_length=255
+        choices=(
+            ('video', 'video'),
+            ('selected', 'selected'),
+            ('withdrawal', 'withdrawal')
+        ),
+        max_length=255
     )
     transaction_id = models.CharField(
         max_length=255, null=True, blank=True, unique=True
@@ -68,10 +73,12 @@ class PaypalEntryTransaction(models.Model):
         return self.invoice_id
 
 
-def send_processed_payment_emails(payment_type, paypal_trans, user, obj):
+def send_processed_payment_emails(
+        payment_type_verbose, paypal_trans, user, obj
+):
     ctx = {
         'user': " ".join([user.first_name, user.last_name]),
-        'payment_type': payment_type,
+        'payment_type': payment_type_verbose,
         'obj': obj,
         'invoice_id': paypal_trans.invoice_id,
         'paypal_transaction_id': paypal_trans.transaction_id,
@@ -80,8 +87,10 @@ def send_processed_payment_emails(payment_type, paypal_trans, user, obj):
 
     # send email to user
     send_mail(
-        '{} Payment processed for {} payment for entry ref {}'.format(
-            settings.ACCOUNT_EMAIL_SUBJECT_PREFIX, payment_type, obj.entry_ref),
+        '{} Payment processed for {} for entry ref {}'.format(
+            settings.ACCOUNT_EMAIL_SUBJECT_PREFIX, payment_type_verbose,
+            obj.entry_ref
+        ),
         get_template(
             'payments/email/payment_processed_to_user.txt').render(ctx),
         settings.DEFAULT_FROM_EMAIL,
@@ -91,10 +100,12 @@ def send_processed_payment_emails(payment_type, paypal_trans, user, obj):
         fail_silently=False)
 
 
-def send_processed_refund_emails(payment_type, paypal_trans, user, obj):
+def send_processed_refund_emails(
+        payment_type_verbose, paypal_trans, user, obj
+):
     ctx = {
         'user': " ".join([user.first_name, user.last_name]),
-        'payment_type': payment_type,
+        'payment_type': payment_type_verbose,
         'obj': obj,
         'invoice_id': paypal_trans.invoice_id,
         'paypal_transaction_id': paypal_trans.transaction_id,
@@ -103,8 +114,9 @@ def send_processed_refund_emails(payment_type, paypal_trans, user, obj):
     # send email to studio only and to support for checking;
     # user will have received automated paypal payment
     send_mail(
-        '{} Payment refund processed for {} payment for entry ref {}'.format(
-            settings.ACCOUNT_EMAIL_SUBJECT_PREFIX, payment_type, obj.entry_ref),
+        '{} Payment refund processed for {} for entry ref {}'.format(
+            settings.ACCOUNT_EMAIL_SUBJECT_PREFIX, payment_type_verbose,
+            obj.entry_ref),
         get_template(
             'payments/email/payment_refund_processed_to_studio.txt'
         ).render(ctx),
@@ -125,7 +137,7 @@ def get_obj(ipn_obj):
         # in case custom not included in paypal response or incorrect format
         raise PayPalTransactionError('Unknown object for payment')
 
-    if payment_type not in ['video', 'selected']:
+    if payment_type not in ['video', 'selected', 'withdrawal']:
         raise PayPalTransactionError('Unknown payment type %s' % payment_type)
 
     try:
@@ -157,8 +169,14 @@ def get_obj(ipn_obj):
     else:  # we got one paypaltrans, as we should have
         paypal_trans = paypal_trans[0]
 
+    payment_type_verbose = {
+        'video': 'video submission fee',
+        'selected': 'selected entry fee',
+        'withdrawal': 'withdrawal fee'
+    }
     return {
         'payment_type': payment_type,
+        'payment_type_verbose': payment_type_verbose[payment_type],
         'obj': obj,
         'paypal_trans': paypal_trans,
     }
@@ -189,6 +207,7 @@ def payment_received(sender, **kwargs):
 
     obj = obj_dict['obj']
     payment_type = obj_dict['payment_type']
+    payment_type_verbose = obj_dict['payment_type_verbose']
     paypal_trans = obj_dict['paypal_trans']
 
     try:
@@ -204,33 +223,35 @@ def payment_received(sender, **kwargs):
                 obj.video_entry_paid = False
             elif payment_type == 'selected':
                 obj.selected_entry_paid = False
+            elif payment_type == 'withdrawal':
+                obj.withdrawal_fee_paid = False
             obj.save()
 
             ActivityLog.objects.create(
-                log='{} payment for entry id {} for user {} has been refunded from paypal; '
-                    'paypal transaction id {}, invoice id {}.'.format(
-                        payment_type.title(), obj.id, obj.user.username,
+                log='{} for entry id {} for user {} has been refunded '
+                    'from paypal; paypal transaction id {}, '
+                    'invoice id {}.'.format(
+                        payment_type_verbose, obj.id, obj.user.username,
                         ipn_obj.txn_id, paypal_trans.invoice_id
                     )
             )
             send_processed_refund_emails(
-                payment_type, paypal_trans, obj.user, obj
+                payment_type_verbose, paypal_trans, obj.user, obj
             )
 
         elif ipn_obj.payment_status == ST_PP_PENDING:
             ActivityLog.objects.create(
                 log='PayPal payment returned with status PENDING for {} '
-                    'payment for entry {}; '
-                    'ipn obj id {} (txn id {})'.format(
-                     payment_type, obj.id, ipn_obj.id, ipn_obj.txn_id
+                    'for entry {}; ipn obj id {} (txn id {})'.format(
+                     payment_type_verbose, obj.id, ipn_obj.id, ipn_obj.txn_id
                     )
             )
             raise PayPalTransactionError(
-                'PayPal payment returned with status PENDING for {} payment '
+                'PayPal payment returned with status PENDING for {} '
                 'for entry {}; '
                 'ipn obj id {} (txn id {}).  This is usually due to an '
                 'unrecognised or unverified paypal email address.'.format(
-                    payment_type, obj.id, ipn_obj.id, ipn_obj.txn_id
+                    payment_type_verbose, obj.id, ipn_obj.id, ipn_obj.txn_id
                 )
             )
 
@@ -244,6 +265,8 @@ def payment_received(sender, **kwargs):
                 obj.video_entry_paid = True
             elif payment_type == 'selected':
                 obj.selected_entry_paid = True
+            elif payment_type == 'withdrawal':
+                obj.withdrawal_fee_paid = True
             obj.save()
 
             # do this AFTER saving the entry as paid; in the edge case that a
@@ -256,13 +279,13 @@ def payment_received(sender, **kwargs):
             ActivityLog.objects.create(
                 log='{} for entry id {} for user {} paid by PayPal; paypal '
                     'id {}'.format(
-                    payment_type.title(), obj.id, obj.user.username,
+                    payment_type_verbose.title(), obj.id, obj.user.username,
                     paypal_trans.id
                     )
             )
 
             send_processed_payment_emails(
-                payment_type, paypal_trans, obj.user, obj
+                payment_type_verbose, paypal_trans, obj.user, obj
             )
 
             if not ipn_obj.invoice:
@@ -272,9 +295,9 @@ def payment_received(sender, **kwargs):
                 ipn_obj.save()
                 send_mail(
                     '{} No invoice number on paypal ipn for '
-                    '{} payment for entry id {}'.format(
-                        settings.ACCOUNT_EMAIL_SUBJECT_PREFIX, payment_type,
-                        obj.id
+                    '{} for entry id {}'.format(
+                        settings.ACCOUNT_EMAIL_SUBJECT_PREFIX,
+                        payment_type_verbose, obj.id
                     ),
                     'Please check entry and paypal records for '
                     'paypal transaction id {}.  No invoice number on paypal'
@@ -288,33 +311,34 @@ def payment_received(sender, **kwargs):
 
         else:  # any other status
             ActivityLog.objects.create(
-                log='Unexpected payment status {} for {} payment for entry {}; '
+                log='Unexpected payment status {} for {} for entry {}; '
                     'ipn obj id {} (txn id {})'.format(
-                     ipn_obj.payment_status.upper(), payment_type, obj.id,
-                     ipn_obj.id, ipn_obj.txn_id
+                    ipn_obj.payment_status.upper(), payment_type_verbose,
+                    obj.id, ipn_obj.id, ipn_obj.txn_id
                     )
             )
             raise PayPalTransactionError(
-                'Unexpected payment status {} for {} payment for entry {}; '
+                'Unexpected payment status {} for {} for entry {}; '
                 'ipn obj id {} (txn id {})'.format(
-                    ipn_obj.payment_status.upper(), payment_type, obj.id,
-                    ipn_obj.id, ipn_obj.txn_id
+                    ipn_obj.payment_status.upper(), payment_type_verbose,
+                    obj.id, ipn_obj.id, ipn_obj.txn_id
                 )
             )
 
     except Exception as e:
         # if anything else goes wrong, send a warning email
         logger.warning(
-            'Problem processing payment for {} payment for entry {}; '
+            'Problem processing payment for {} for entry {}; '
             'invoice_id {}, transaction id: {}.  Exception: {}'.format(
-                payment_type, obj.id, ipn_obj.invoice, ipn_obj.txn_id, e
+                payment_type_verbose, obj.id, ipn_obj.invoice,
+                ipn_obj.txn_id, e
                 )
         )
 
         send_mail(
-            '{} There was some problem processing {} payment for '
+            '{} There was some problem processing {} for '
             'entry id {}'.format(
-                settings.ACCOUNT_EMAIL_SUBJECT_PREFIX, payment_type,
+                settings.ACCOUNT_EMAIL_SUBJECT_PREFIX, payment_type_verbose,
                 obj.id
             ),
             'Please check your entry and paypal records for '
@@ -351,35 +375,39 @@ def payment_not_received(sender, **kwargs):
     try:
         obj = obj_dict.get('obj')
         payment_type = obj_dict.get('payment_type')
+        payment_type_verbose = obj_dict.get('payment_type_verbose')
 
         if obj:
             logger.warning('Invalid Payment Notification received from PayPal '
-                           'for {} payment for entry id {}'.format(
-                    payment_type, obj.id
+                           'for {} for entry id {}'.format(
+                    payment_type_verbose, obj.id
                 )
             )
             send_mail(
                 'WARNING! Invalid Payment Notification received from PayPal',
                 'PayPal sent an invalid transaction notification while '
-                'attempting to process {} payment for entry id {}.\n\nThe flag '
-                'info was "{}"'.format(payment_type, obj.id, ipn_obj.flag_info),
+                'attempting to process {} for entry id {}.\n\nThe flag '
+                'info was "{}"'.format(
+                    payment_type_verbose, obj.id, ipn_obj.flag_info
+                ),
                 settings.DEFAULT_FROM_EMAIL, [settings.SUPPORT_EMAIL],
                 fail_silently=False)
 
     except Exception as e:
             # if anything else goes wrong, send a warning email
             logger.warning(
-                'Problem processing payment_not_received for {} payment for '
+                'Problem processing payment_not_received for {} for '
                 'entry id {}; invoice_id {}, transaction id: {}. '
                 'Exception: {}'.format(
-                    payment_type, obj.id, ipn_obj.invoice, ipn_obj.txn_id, e
+                    payment_type_verbose, obj.id, ipn_obj.invoice,
+                    ipn_obj.txn_id, e
                 )
             )
             send_mail(
                 '{} There was some problem processing payment_not_received for '
                 '{} payment for entry id {}'.format(
-                    settings.ACCOUNT_EMAIL_SUBJECT_PREFIX, payment_type,
-                    obj.id
+                    settings.ACCOUNT_EMAIL_SUBJECT_PREFIX,
+                    payment_type_verbose, obj.id
                 ),
                 'Please check your entry and paypal records for '
                 'invoice # {}, paypal transaction id {}.\n\nThe exception '

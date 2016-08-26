@@ -381,7 +381,7 @@ class SelectedEntryUpdateViewTests(TestSetupLoginRequiredMixin, TestCase):
     @classmethod
     def setUpTestData(cls):
         super(SelectedEntryUpdateViewTests, cls).setUpTestData()
-        cls.entry = mommy.make(Entry, user=cls.user)
+        cls.entry = mommy.make(Entry, user=cls.user, status='selected')
         cls.url = reverse(
             'entries:edit_selected_entry', args=(cls.entry.entry_ref,)
         )
@@ -391,12 +391,11 @@ class SelectedEntryUpdateViewTests(TestSetupLoginRequiredMixin, TestCase):
             'submitted': 'Submit'
         }
 
-    def test_upate_entry_and_save(self):
+    def test_update_entry_and_save(self):
         self.client.login(username=self.user.username, password='test')
         data = self.post_data.copy()
         data.update({'biography': 'About me'})
-        self.client.post(self.url, data)
-
+        resp = self.client.post(self.url, data, follow=True)
         self.entry.refresh_from_db()
         self.assertEqual(self.entry.biography, 'About me')
 
