@@ -8,8 +8,8 @@
 
     <div class="extra-top-margin">
             {% if not user.is_authenticated %}
-                <div class="pull-right">To submit an entry or view your previous submission,
-                    please <a href="{% url 'login' %}?next=/entries/">log in</a>.</div><br/>
+                <div class="pull-right">To enter or view your previous entries,
+                    please <a href="{% url 'login' %}?next=/entries/">log in</a> or <a href="{% url 'account_signup' %}?next=/entries/">sign up</a> for a new account.</div><br/>
             {% endif %}
             {% if entries_open %}
                 <div class="pull-right" {% if not user.is_authenticated %} data-toggle="tooltip" data-placement="left" title="Log in to enter"{% endif %}>

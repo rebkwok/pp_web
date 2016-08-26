@@ -26,13 +26,22 @@ CATEGORY_CHOICES = (
 )
 CATEGORY_CHOICES_DICT = dict(CATEGORY_CHOICES)
 
-ENTRY_FEES = {
-    'BEG': 25,
-    'INT': 25,
-    'ADV': 25,
-    'DOU': 30,
-    'PRO': 25,
-    'MEN': 25,
+VIDEO_ENTRY_FEES = {
+    'BEG': 10,
+    'INT': 10,
+    'ADV': 10,
+    'DOU': 15,
+    'PRO': 10,
+    'MEN': 10,
+}
+
+SELECTED_ENTRY_FEES = {
+    'BEG': 15,
+    'INT': 15,
+    'ADV': 15,
+    'DOU': 20,
+    'PRO': 15,
+    'MEN': 15,
 }
 
 YEAR_CHOICES = (
@@ -97,10 +106,6 @@ class Entry(models.Model):
     class Meta:
         unique_together = ('entry_year', 'user', 'category')
         verbose_name_plural = 'entries'
-
-    @cached_property
-    def fee(self):
-        return ENTRY_FEES[self.category]
 
     def __str__(self):
         return "{first} {last} - {ref} - {cat} - {yr} - {status}".format(

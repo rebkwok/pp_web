@@ -163,6 +163,7 @@ class SelectedEntryUpdateForm(EntryFormMixin, forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(SelectedEntryUpdateForm, self).__init__(*args, **kwargs)
+        self.user = self.instance.user
         self.show_doubles = self.instance.category == 'DOU'
         email_help = self.fields['partner_email'].help_text
         new_email_help = email_help + " Use the button below to check your " \

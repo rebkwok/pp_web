@@ -186,10 +186,6 @@ input[type='radio']:checked:before {
     font-weight: bold;
 }
 
-.entry-table {
-    font-size: 90%;
-}
-
 .paypal-table-btn {
     padding-top: 0;
     margin-top: 0;
@@ -197,7 +193,7 @@ input[type='radio']:checked:before {
     height: 85%;
     }
 
-tr.withdrawn {
+.withdrawn {
     color: lightgrey;
 }
 
@@ -222,4 +218,21 @@ div.partner-info-box {
 
 div.partner-info-box > .partner-info-text {
     padding-left: 10px;
+}
+
+.panel-divider {
+  height: 1px;
+  width:94%;
+  display:block; /* for use on default inline elements like span */
+  margin-top: 9px;
+  margin-left: 3%;
+    margin-right: 3%;
+  overflow: hidden;
+  background-color: #e5e5e5;
+}
+
+@media (max-width: 600px) {
+    .entries-panel {
+        font-size: small;
+    }
 }

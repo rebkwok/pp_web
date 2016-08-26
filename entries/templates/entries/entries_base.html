@@ -20,7 +20,7 @@
     <ul class="nav navbar-nav pull-right account-nav">
         {% if request.user.is_authenticated %}
         <li class="dropdown">
-            <div class="welcome-menu">Logged in as {{request.user}}</div>
+            <div class="welcome-menu">{{request.user}}</div>
           <a href="#" class="account-menu dropdown-toggle active-nav-login" data-toggle="dropdown" role="button" aria-expanded="false">My Account<span class="caret"></span></a>
           <ul class="dropdown-menu" role="menu">
             <li><a href="{% url 'account_change_password' %}">Change password</a></li>

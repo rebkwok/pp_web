@@ -259,23 +259,28 @@ class EntryCreateUpdateFormTests(TestSetupMixin, TestCase):
 
 class SelectedEntryUpdateFormTests(TestSetupMixin, TestCase):
 
+    def setUp(self):
+        self.entry = mommy.make(Entry, user=self.user, status='selected')
+
     def test_submit_form_valid(self):
         data = {
             'submitted': 'Submit'
         }
 
-        form = SelectedEntryUpdateForm(data)
+        form = SelectedEntryUpdateForm(instance=self.entry, data=data)
         self.assertTrue(form.is_valid())
 
     def test_submit_doubles_category_form_valid(self):
         """
         Doubles category also required partner fields to submit
         """
+        self.entry.category = 'DOU'
+        self.entry.save()
         data = {
             'category': 'DOU',
             'submitted': 'Submit'
         }
-        form = SelectedEntryUpdateForm(data)
+        form = form = SelectedEntryUpdateForm(instance=self.entry, data=data)
         self.assertFalse(form.is_valid())
         self.assertEqual(
             form.errors,
@@ -286,12 +291,14 @@ class SelectedEntryUpdateFormTests(TestSetupMixin, TestCase):
         )
 
     def test_doubles_partner_email_same_as_user(self):
+        self.entry.category = 'DOU'
+        self.entry.save()
         data = {
             'submitted': 'Submit',
             'partner_name': 'Test user',
             'partner_email': self.user.email
         }
-        form = SelectedEntryUpdateForm(data)
+        form = form = SelectedEntryUpdateForm(instance=self.entry, data=data)
         self.assertFalse(form.is_valid())
         self.assertEqual(
             form.errors,
@@ -303,13 +310,15 @@ class SelectedEntryUpdateFormTests(TestSetupMixin, TestCase):
         )
 
     def test_doubles_partner_email_same_as_user_additional_email(self):
+        self.entry.category = 'DOU'
+        self.entry.save()
         mommy.make(EmailAddress, user=self.user, email='other@test.com')
         data = {
             'submitted': 'Submit',
             'partner_name': 'Test user',
             'partner_email': 'other@test.com'
         }
-        form = SelectedEntryUpdateForm(data)
+        form = form = SelectedEntryUpdateForm(instance=self.entry, data=data)
         self.assertFalse(form.is_valid())
         self.assertEqual(
             form.errors,
@@ -321,12 +330,14 @@ class SelectedEntryUpdateFormTests(TestSetupMixin, TestCase):
         )
 
     def test_submit_doubles_partner_not_registered(self):
+        self.entry.category = 'DOU'
+        self.entry.save()
         data = {
             'submitted': 'Submit',
             'partner_name': 'Test user',
             'partner_email': 'nouser@unknown.com'
         }
-        form = SelectedEntryUpdateForm(data)
+        form = form = SelectedEntryUpdateForm(instance=self.entry, data=data)
         self.assertFalse(form.is_valid())
         self.assertEqual(
             form.errors,
@@ -338,6 +349,8 @@ class SelectedEntryUpdateFormTests(TestSetupMixin, TestCase):
         )
 
     def test_submit_doubles_partner_no_waiver(self):
+        self.entry.category = 'DOU'
+        self.entry.save()
         partner = mommy.make(
             User, username='partner', email='partner@test.com'
         )
@@ -346,7 +359,7 @@ class SelectedEntryUpdateFormTests(TestSetupMixin, TestCase):
             'partner_name': 'Test user',
             'partner_email': partner.email
         }
-        form = SelectedEntryUpdateForm(data)
+        form = form = SelectedEntryUpdateForm(instance=self.entry, data=data)
         self.assertFalse(form.is_valid())
         self.assertEqual(
             form.errors,
@@ -358,6 +371,8 @@ class SelectedEntryUpdateFormTests(TestSetupMixin, TestCase):
         )
 
     def test_submit_doubles_partner_already_entered(self):
+        self.entry.category = 'DOU'
+        self.entry.save()
         partner = mommy.make(
             User, username='partner', email='partner@test.com'
         )
@@ -369,7 +384,7 @@ class SelectedEntryUpdateFormTests(TestSetupMixin, TestCase):
             'partner_name': 'Test user',
             'partner_email': partner.email
         }
-        form = SelectedEntryUpdateForm(data)
+        form = form = SelectedEntryUpdateForm(instance=self.entry, data=data)
         self.assertFalse(form.is_valid())
         self.assertEqual(
             form.errors,
@@ -382,6 +397,8 @@ class SelectedEntryUpdateFormTests(TestSetupMixin, TestCase):
         )
 
     def test_submit_doubles(self):
+        self.entry.category = 'DOU'
+        self.entry.save()
         partner = mommy.make(
             User, username='partner', email='partner@test.com'
         )
@@ -392,5 +409,5 @@ class SelectedEntryUpdateFormTests(TestSetupMixin, TestCase):
             'partner_name': 'Test user',
             'partner_email': partner.email
         }
-        form = SelectedEntryUpdateForm(data)
+        form = form = SelectedEntryUpdateForm(instance=self.entry, data=data)
         self.assertTrue(form.is_valid())

@@ -14,7 +14,8 @@ from payments.forms import PayPalPaymentsListForm, PayPalPaymentsVideoForm
 from payments.models import create_entry_paypal_transaction
 
 from .forms import EntryCreateUpdateForm, SelectedEntryUpdateForm
-from .models import CATEGORY_CHOICES_DICT, Entry, ENTRY_FEES
+from .models import CATEGORY_CHOICES_DICT, Entry, VIDEO_ENTRY_FEES, \
+    SELECTED_ENTRY_FEES
 from .utils import check_partner_email
 
 """
@@ -61,8 +62,9 @@ class EntryListView(LoginRequiredMixin, generic.ListView):
     template_name = 'entries/user_entries.html'
 
     def get_queryset(self):
-        return Entry.objects.select_related('user')\
-            .filter(user=self.request.user)
+        return Entry.objects.select_related('user').filter(
+            user=self.request.user, entry_year=settings.CURRENT_ENTRY_YEAR
+        )
 
     def get_context_data(self, **kwargs):
         # Call the base implementation first to get a context
@@ -81,7 +83,7 @@ class EntryListView(LoginRequiredMixin, generic.ListView):
                     paypal_video_form = PayPalPaymentsListForm(
                         initial=get_paypal_dict(
                             host,
-                            ENTRY_FEES[entry.category],  # TODO confirm fees for each stage
+                            VIDEO_ENTRY_FEES[entry.category],
                             'Video submission fee for {} category'.format(
                                 CATEGORY_CHOICES_DICT[entry.category]
                             ),
@@ -99,7 +101,7 @@ class EntryListView(LoginRequiredMixin, generic.ListView):
                     paypal_selected_form = PayPalPaymentsListForm(
                         initial=get_paypal_dict(
                             host,
-                            ENTRY_FEES[entry.category],  # TODO confirm fees for each stage
+                            SELECTED_ENTRY_FEES[entry.category],
                             'Entry fee for {} category'.format(
                                 CATEGORY_CHOICES_DICT[entry.category]
                             ),
@@ -278,7 +280,7 @@ def entry_video_payment(request, ref):
         paypalform = PayPalPaymentsVideoForm(
             initial=get_paypal_dict(
                 host,
-                ENTRY_FEES[entry.category],  # TODO confirm fees for each stage
+                SELECTED_ENTRY_FEES[entry.category],
                 'Video submission fee for {} category'.format(
                     CATEGORY_CHOICES_DICT[entry.category]
                 ),
@@ -288,7 +290,8 @@ def entry_video_payment(request, ref):
             )
         )
         context.update({
-            'paypalform': paypalform, 'fee': ENTRY_FEES[entry.category]
+            'paypalform': paypalform,
+            'fee': SELECTED_ENTRY_FEES[entry.category]
         })
 
     return TemplateResponse(request, template_name, context)
