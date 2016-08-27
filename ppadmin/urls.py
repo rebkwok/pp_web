@@ -2,7 +2,7 @@ from django.conf.urls import url
 from django.views.generic import RedirectView
 from ppadmin.views import user_disclaimer, DisclaimerUpdateView, \
     DisclaimerDeleteView, ActivityLogListView, toggle_subscribed, \
-    MailingListView, unsubscribe, UserListView
+    MailingListView, unsubscribe, UserListView, EntryListView, EntryDetailView
 
 
 urlpatterns = [
@@ -16,6 +16,10 @@ urlpatterns = [
     url(r'^users/(?P<encoded_user_id>[\w-]+)/disclaimer/delete/$',
         DisclaimerDeleteView.as_view(),
         name='delete_user_disclaimer'),
+    url(r'^entries/$', EntryListView.as_view(), name="entries"),
+    url(
+        r'^entries/(?P<ref>[\w-]+)/$', EntryDetailView.as_view(), name="entry"
+    ),
     url(
         r'activitylog/$', ActivityLogListView.as_view(), name='activitylog'
     ),

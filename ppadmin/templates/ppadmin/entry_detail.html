@@ -1,0 +1,56 @@
+{% extends 'ppadmin/base.html' %}
+{% load entriestags accounttags ppadmintags %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid">
+    <h1>Entry Details: {{ entry.user.first_name }} {{ entry.user.last_name }} - {{ entry.category |format_category }}</h1>
+
+        <div class="panel-group">
+            <div class="panel panel-default">
+                <div class="panel-heading">User Details</div>
+                <div class="panel-body">
+                    Address: {{ entry.user.profile.address }}</br>
+                    Postcode: {{ entry.user.profile.postcode }}</br>
+                    Phone: {{ entry.user.profile.phone }}</br>
+                    Pole School: {{ entry.user.profile.phone }}
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">Status</div>
+                <div class="panel-body">
+                    {{ entry | format_status_admin }}
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">Video URL</div>
+                <div class="panel-body">
+                    <a href="{{ entry.video_url }}">{{ entry.video_url }}</a>
+                </div>
+            </div>
+            {% if entry.category == 'DOU' %}
+            <div class="panel panel-default">
+                <div class="panel-heading">Doubles Partner</div>
+                <div class="panel-body">
+                    {{ entry.partner_name }} {{ entry.partner_email }}</a>
+                </div>
+            </div>
+            {% endif %}
+            {% if entry.status == 'selected' or entry.status == 'selected_confirmed' %}
+            <div class="panel panel-default">
+                <div class="panel-heading">Song Choice</div>
+                <div class="panel-body">
+                    {% if entry.song %}{{ entry.song }}{% else %}<span class="incomplete">Not provided yet</span>{% endif %}
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">Biography</div>
+                <div class="panel-body">
+                    {% if entry.biography %}{{ entry.biography }}{% else %}<span class="incomplete">Not provided yet</span>{% endif %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+</div>
+{% endblock %}

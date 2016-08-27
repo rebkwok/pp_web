@@ -21,6 +21,8 @@ def format_status(entry):
     add_text = ''
     if entry.withdrawn:
         return "Withdrawn"
+    elif entry.status == 'rejected':
+        return "Unsuccessful"
     elif entry.status == "selected":
         add_text = " - NOT CONFIRMED"
     elif (
@@ -36,11 +38,11 @@ def status_class(entry):
     if not entry.withdrawn:
         if entry.status == "submitted":
             if entry.video_entry_paid:
-                return "success bold"
-            return "fail bold"
+                return "complete info bold"
+            return "incomplete info bold"
         if entry.status in ["selected", "selected_confirmed"]:
             if entry.selected_entry_paid:
-                return "success bold"
-            return "fail bold"
+                return "complete success bold"
+            return "incomplete danger bold"
         return ""
     return ""

@@ -1,0 +1,86 @@
+{% extends "ppadmin/base.html" %}
+{% load static %}
+{% load accounttags ppadmintags entriestags %}
+
+{% block content %}
+
+    <div class="container-fluid row">
+
+        <h2>Registered Users</h2>
+
+        <div class=row>
+            <div class="col-sm-12">
+            <form action="" method="get">
+                {{ filter_form }}
+                <input class="btn btn-purple table-btn" type="submit" value="Filter" />
+                <input class="btn btn-purple table-btn" type="submit" name='reset' value="Reset" />
+            </form>
+        </div>
+
+
+
+        </div>
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="panel panel-default">
+
+                    <div class="table-responsive">
+                        <table class="table tablesorter" id="sortTable">
+                            <thead>
+                            <tr class="default">
+                                <th class="table-center">User <span class="fa fa-sort"></span></br><span class="ppadmin-help">Click to view details</span></th>
+                                <th class="table-center">Email</th>
+                                <th class="table-center">Category <span class="fa fa-sort"></span></th>
+                                <th class="table-center">Doubles</br>partner</th>
+                                <th class="table-center">Status <span class="fa fa-sort"></span></th>
+                                <th class="table-center">Video URL</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% if entries %}
+                                {% for entry in entries %}
+                                <tr {% if entry.withdrawn %}class='withdrawn'{% endif %}>
+                                    <td class="table-center ppadmin-tbl"><a href="{% url 'ppadmin:entry' entry.entry_ref %}">{{ entry.user.first_name|abbr_name }} {{ entry.user.last_name|abbr_name }}</a></td>
+                                    <td class="table-center ppadmin-tbl"><a href="mailto:{{ user.email }}" target="_blank">{{ entry.user.email|abbr_email }}</a></td>
+                                    <td class="table-center ppadmin-tbl">{{ entry.category | format_category }}</td>
+                                    <td class="table-center ppadmin-tbl">{% if entry.category == 'DOU' %}{{ entry.partner_name }}{% else %}N/A{% endif %}</td>
+                                    <td class="table-center ppadmin-tbl {{ entry|status_class }}">{{ entry | format_status_admin }}</td>
+                                    <td class="table-center ppadmin-tbl"><a href="{{ entry.video_url }}">{{ entry.video_url|abbr_url }}</a></td>
+                                {% endfor %}
+                            {% else %}
+                                <tr><td colspan="6">No entries found</td></tr>
+                            {% endif %}
+
+                            {% if is_paginated %}
+                                <tr>
+                                    <td class="ppadmin-tbl" colspan="6">
+                                            <div class="pagination">
+                                                {% if page_obj.has_previous %}
+                                                    <a href="?{{ request.GET.urlencode }}&page={{ page_obj.previous_page_number }}">Previous</a>
+                                                {% else %}
+                                                    <a class="disabled" disabled=disabled href="#">Previous</a>
+                                                {% endif %}
+                                                <span class="page-current">
+                                                    --  Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }} --
+                                                </span>
+                                                {% if page_obj.has_next %}
+                                                    <a href="?{{ request.GET.urlencode }}&page={{ page_obj.next_page_number }}">Next</a>
+                                                {% else %}
+                                                    <a class="disabled" href="#">Next</a>
+                                                {% endif %}
+                                            </div>
+                                    </td>
+                                </tr>
+                            {% endif %}
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+         </div>
+
+    </div>
+
+{% endblock content %}

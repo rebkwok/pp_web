@@ -12,7 +12,7 @@
     <ul class="nav navbar-nav">
         <li><a href="{% url 'web:home' %}" class="smoothScroll">Home</a></li>
         <li><a href="{% url 'ppadmin:users' %}" class="smoothScroll">Users</a></li>
-        <li><a href="#" class="smoothScroll">Entries</a></li>
+        <li><a href="{% url 'ppadmin:entries' %}" class="smoothScroll">Entries</a></li>
         <li><a href="{% url 'ppadmin:mailing_list' %}#rules" class="smoothScroll">Mailing List</a></li>
         <li><a href="{% url 'ppadmin:activitylog' %}#tc" class="smoothScroll">Activity Log</a></li>
     </ul>

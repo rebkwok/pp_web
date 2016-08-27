@@ -193,7 +193,7 @@ input[type='radio']:checked:before {
     height: 85%;
     }
 
-.withdrawn, .withdrawn .success, .withdrawn .fail {
+.withdrawn, .withdrawn .success, .withdrawn .fail, .withdrawn > td > a {
     color: lightgrey;
 }
 
@@ -201,15 +201,15 @@ input[type='radio']:checked:before {
     width: 10.5em;
     font-size: 80%;
 }
-span.success{
+td.complete, span.complete{
     color: green;
 }
 
-span.fail{
+td.incomplete, span.incomplete{
     color: red;
 }
 
-.fail.bold, .success.bold {
+.incomplete.bold, .complete.bold {
     font-weight: bold;
 }
 
@@ -237,4 +237,12 @@ div.partner-info-box > .partner-info-text {
     .entries-panel {
         font-size: small;
     }
+}
+
+th {
+    font-size: 90%;
+}
+
+.table-responsive > .table > tbody > tr > td {
+    white-space: normal;
 }

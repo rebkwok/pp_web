@@ -50,7 +50,13 @@
                             <tbody>
                             {% for user in users %}
                             <tr>
-                                <td class="table-center ppadmin-tbl">{{ user.username|abbr_username }}</td>
+                                <td class="table-center ppadmin-tbl">
+                                    {% if user.entries.all %}
+                                    <a href="{% url 'ppadmin:entries' %}?user={{ user.id}}">{{ user.username|abbr_username }}</a>
+                                    {% else %}
+                                    {{ user.username|abbr_username }}
+                                    {% endif %}
+                                </td>
                                 <td class="table-center ppadmin-tbl">{{ user.first_name|abbr_name }}</td>
                                 <td class="table-center ppadmin-tbl">{{ user.last_name|abbr_name }}</td>
                                 <td class="table-center ppadmin-tbl">
