@@ -3,11 +3,13 @@ from .disclaimer_views import DisclaimerUpdateView, DisclaimerDeleteView, \
     user_disclaimer
 from .user_views import MailingListView, toggle_subscribed, unsubscribe, \
     UserListView
-from .entries_views import EntryDetailView, EntryListView
+from .entries_views import EntryDetailView, EntryListView, \
+    EntrySelectionListView, toggle_selection
 
 __all__ = [
     'ActivityLogListView',
-    'EntryDetailView', 'EntryListView',
+    'EntryDetailView', 'EntryListView', 'EntrySelectionListView',
     'DisclaimerDeleteView', 'DisclaimerUpdateView', 'user_disclaimer',
-    'MailingListView', 'toggle_subscribed', 'unsubscribe, ''UserListView'
+    'MailingListView', 'toggle_subscribed', 'unsubscribe, ''UserListView',
+    'toggle_selection'
 ]

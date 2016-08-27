@@ -86,3 +86,7 @@ def format_status_admin(entry):
 
     return STATUS_CHOICES_DICT[entry.status] + add_text
 
+
+@register.filter
+def format_selected_status(status):
+    return STATUS_CHOICES_DICT[status]

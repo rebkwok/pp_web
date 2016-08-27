@@ -1,0 +1,9 @@
+<button class="btn table-btn selection-btn
+    {% if entry.status == 'selected' or entry.status = 'selected_confirmed' %}
+        btn-success
+    {% else
+        btn-default
+    {% endif %}
+    {% if entry.status = 'selected_confirmed' %}disabled{% endif %}">
+    Selected
+</button>

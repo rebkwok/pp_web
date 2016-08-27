@@ -4,83 +4,109 @@
 {% block content %}
 
 <div class="extra-top-margin container-fluid row">
-       <div class="panel panel-default">
-            <div class="panel-heading">
+       <div class="panel-group">
+        <div class="panel panel-default">
+           <div class="panel-heading">
                 <h1 class="panel-title">Your Profile</h1>
             </div>
            <div class="panel-body">
-               <div class="row">
-                   <div class="form-group col-xs-12">
-                       <label class="control-label col-xs-2">Username:</label>
-                       <div class="col-xs-10">{{ user.username }}</div>
+                   <div class="row">
+                       <label class="control-label col-xs-4">Username:</label>
+                       <div class="col-xs-8">{{ user.username }}</div>
                    </div>
-                   <div class="form-group col-xs-12">
-                       <label class="control-label col-xs-2">Name:</label>
-                       <div class="col-xs-10">{{ user.first_name }} {{ user.last_name }}</div>
+                   <div class="row">
+                       <label class="control-label col-xs-4">Name:</label>
+                       <div class="col-xs-8">{{ user.first_name }} {{ user.last_name }}</div>
                    </div>
-                   <div class="form-group col-xs-12">
-                       <label class="control-label col-xs-2">Address:</label>
-                       <div class="col-xs-10">{{ user.profile.address }} {{ user.profile.postcode }}</div>
+                   <div class="row">
+                       <label class="control-label col-xs-4">Address:</label>
+                       <div class="col-xs-8">{{ user.profile.address }} {{ user.profile.postcode }}</div>
                    </div>
-                   <div class="form-group col-xs-12">
-                       <label class="control-label col-xs-2">Phone:</label>
-                       <div class="col-xs-10">{{ user.profile.phone }}</div>
+                   <div class="row">
+                       <label class="control-label col-xs-4">Phone:</label>
+                       <div class="col-xs-8">{{ user.profile.phone }}</div>
                    </div>
-                   <div class="form-group col-xs-12">
-                       <label class="control-label col-xs-2">Date of birth:</label>
-                       <div class="col-xs-10">{{ user.profile.dob }} </div>
+                   <div class="row">
+                       <label class="control-label col-xs-4">Date of birth:</label>
+                       <div class="col-xs-8">{{ user.profile.dob }} </div>
                    </div>
-                   <div class="form-group col-xs-12">
-                       <label class="control-label col-xs-2">Pole School:</label>
-                       <div class="col-xs-10">{{ user.profile.pole_school }} </div>
+                   <div class="row">
+                       <label class="control-label col-xs-4">Pole School:</label>
+                       <div class="col-xs-8">{{ user.profile.pole_school }} </div>
                    </div>
-                   <div class="form-group col-xs-12"><a href="{% url 'accounts:update_profile' %}">Change profile</a></div>
-                <div class="form-group col-xs-12">
-                       <label class="control-label col-xs-2">Primary email address:</label>
-                       <div class="col-xs-10">{{ user.email }} </div>
-                </div>
-                <div class="form-group col-xs-12"><a href="{% url 'account_email' %}">Change email addresses</a></div>
-
-               <div class="form-group col-xs-12">
-                       <label class="control-label col-xs-2">Mailing List:</label>
-                       <div class="col-xs-10">
-                           {% if request.user|subscribed %}
-                                Subscribed
-                           {% else %}
-                                Not subscribed
-                           {% endif %}
-                       </div>
-                </div>
-               <div class="form-group col-xs-12"><a href="{% url 'accounts:subscribe' %}">Change mailing list subscription</a></div>
-
-               <div class="form-group col-xs-12">
-                       <label class="control-label col-xs-2">Waiver:</label>
-                       <div class="col-xs-10">
-                           {% if disclaimer %}
-                                Completed
-                           {% else %}
-                                Not completed
-                           {% endif %}
-                       </div>
-                </div>
-
-                   {% if not disclaimer %}
-                   <div class="col-xs-12">
-                       <h3>WAIVER</h3>
-                       <p>You have not completed a waiver form.
-                           This must be completed before you can submit an entry form.</p>
-                       <p><a href="{% url 'accounts:disclaimer_form' %}">Complete waiver form now</a></p>
+                   <div class="row">
+                       <div class="col-xs-12"><a href="{% url 'accounts:update_profile' %}">Change</a></div>
                    </div>
-                   {% else %}
-                       <div class="col-xs-12">
-                           <p>If you have any additional questions or concerns about the information you have provided, please contact
-                            <a href="mailto:{{ pp_email }}">{{ pp_email }}</a>.</p>
-                           <p>View our <a href="{% url 'accounts:data_protection' %}">data protection statement.</a></p>
-                       </div>
-                   {% endif %}
                </div>
+           </div>
+            <div class="panel panel-default">
+               <div class="panel-heading">
+                    <h1 class="panel-title">Email Addresses</h1>
+                </div>
+               <div class="panel-body">
+                   <div class="row">
+                       <label class="control-label col-xs-4">Primary email address:</label>
+                       <div class="col-xs-8">{{ user.email }} </div>
+                   <div class="col-xs-12"><a href="{% url 'account_email' %}">Change</a></div>
+                   </div>
                </div>
+            </div>
+
+               <div class="panel panel-default">
+                   <div class="panel-heading">
+                        <h1 class="panel-title">Mailing List</h1>
+                    </div>
+                   <div class="panel-body">
+                       <div class="row">
+                           <div class="col-xs-12">
+                               {% if request.user|subscribed %}
+                                    Subscribed
+                               {% else %}
+                                    Not subscribed
+                               {% endif %}
+                           </div>
+                       </div>
+                        <div class="row">
+                            <div class="col-xs-12"><a href="{% url 'accounts:subscribe' %}">Change</a></div>
+                        </div>
+                    </div>
+               </div>
+
+               <div class="panel panel-default">
+                   <div class="panel-heading">
+                        <h1 class="panel-title">Waiver</h1>
+                    </div>
+                   <div class="panel-body">
+                       <div class="row">
+                           <div class="col-xs-8">
+                               {% if disclaimer %}
+                                    Completed
+                               {% else %}
+                                    Not completed
+                               {% endif %}</br></br>
+                           </div>
+                           <div class="panel-divider"></div></br>
+                       </div>
+
+                       <div class="row">
+                       {% if not disclaimer %}
+                           <div class="col-xs-12">
+                               <h3>WAIVER</h3>
+                               <p>You have not completed a waiver form.
+                                   This must be completed before you can submit an entry form.</p>
+                               <p><a href="{% url 'accounts:disclaimer_form' %}">Complete waiver form now</a></p>
+                           </div>
+                       {% else %}
+                           <div class="col-xs-12">
+                               If you have any additional questions or concerns about the information you have provided, please contact
+                                <a href="mailto:{{ pp_email }}">{{ pp_email }}</a>.</br>
+                               <span class="helptext">View our <a href="{% url 'accounts:data_protection' %}">data protection statement.</a></span>
+                           </div>
+                       {% endif %}
+                       </div>
+                </div>
+           </div>
+           </div>
         </div>
-   </div>
 {% endblock content %}
 

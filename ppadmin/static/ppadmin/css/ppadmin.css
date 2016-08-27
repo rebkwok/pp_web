@@ -1,10 +1,9 @@
-.ppadmin-tbl {
-    padding-top: 5px; !important;
-    padding-bottom: 5px; !important;
+.table > tbody > tr > td.ppadmin-tbl {
+    padding-top: 5px;
+    padding-bottom: 5px;
     white-space: nowrap;
     font-size: small;
 	vertical-align: middle; !important;
-
 }
 
 .ppadmin-help {
@@ -73,4 +72,32 @@
     color: rgb(151, 10, 241);
     font-size: xx-large;
     font-weight: bolder;
+}
+
+.btn-selection {
+    width: 2em;
+}
+
+.selected-status, .rejected-status, .undecided-status {
+    margin: 0;
+    padding: 6px;
+}
+
+.toggle_undecided_button {
+    color: darkgrey;
+}
+
+tr > td.selection_status_td {
+    width: 75px;
+    padding: 0 !important;
+}
+
+.selected-status {
+    background-color: rgba(92, 184, 92, 0.3);
+}
+.rejected-status {
+    background-color: rgba(217, 83, 79, 0.3);
+}
+.undecided-status {
+    background-color: rgba(125, 125, 125, 0.2);
 }
