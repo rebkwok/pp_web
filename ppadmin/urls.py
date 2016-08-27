@@ -3,7 +3,7 @@ from django.views.generic import RedirectView
 from ppadmin.views import user_disclaimer, DisclaimerUpdateView, \
     DisclaimerDeleteView, ActivityLogListView, toggle_subscribed, \
     MailingListView, unsubscribe, UserListView, EntryListView, EntryDetailView, \
-    EntrySelectionListView, toggle_selection
+    EntrySelectionListView, toggle_selection, notify_users
 
 
 urlpatterns = [
@@ -22,6 +22,7 @@ urlpatterns = [
         r'^entries/selection/$', EntrySelectionListView.as_view(),
         name="entries_selection"
     ),
+    url(r'^entries/selection/notify/$', notify_users, name="notify_users"),
     url(
         r'^entries/(?P<entry_id>\d+)/toggle_selection/selected/$',
         toggle_selection, {'decision': 'selected'}

@@ -11,8 +11,7 @@
 {% block nav_content %}
     <ul class="nav navbar-nav">
         <li><a href="{% url 'entries:entries_home' %}#entry-info" class="smoothScroll">Entry Information</a></li>
-        <li><a href="{% url 'entries:entries_home' %}#technical-specs" class="smoothScroll">Technical Specs</a></li>
-        <li><a href="{% url 'entries:entries_home' %}#rules" class="smoothScroll">Rules</a></li>
+        <li><a href="{% url 'entries:entries_home' %}#categories" class="smoothScroll">Categories</a></li>
         <li><a href="{% url 'entries:entries_home' %}#tc" class="smoothScroll">T & C</a></li>
         {% if user.is_authenticated %}<li><a href="{% url 'entries:user_entries' %}" class="smoothScroll">My entries</a></li>{% endif %}
     </ul>

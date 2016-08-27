@@ -10,6 +10,8 @@ from django.views import generic
 
 from braces.views import LoginRequiredMixin
 
+from activitylog.models import ActivityLog
+
 from payments.forms import PayPalPaymentsListForm, PayPalPaymentsEntryForm
 from payments.models import create_entry_paypal_transaction
 
@@ -131,6 +133,11 @@ class EntryMixin(object):
         entry = form.save(commit=False)
         entry.user = self.request.user
 
+        if entry.id:
+            new = False
+        else:
+            new = True
+
         if self.request.POST.get('submitted', None):
             action = 'submitted'
         elif self.request.POST.get('saved', None):
@@ -156,9 +163,28 @@ class EntryMixin(object):
         entry.save()
 
         if first_submission:
+            ActivityLog.objects.create(
+                log="Entry {entry_id} ({category}) - user {username} - "
+                    "{action}".format(
+                    entry_id=entry.id,
+                    category=CATEGORY_CHOICES_DICT[entry.category],
+                    username=self.request.user.username,
+                    action='created and submitted' if new else 'submitted'
+                )
+            )
             return HttpResponseRedirect(
                 reverse('entries:video_payment', args=[entry.entry_ref])
             )
+        ActivityLog.objects.create(
+            log="Entry {entry_id} ({category}) - user {username} - "
+                "{action1} and {action2}".format(
+                entry_id=entry.id,
+                category=CATEGORY_CHOICES_DICT[entry.category],
+                username=self.request.user.username,
+                action1='created' if new else 'edited',
+                action2=action
+            )
+        )
         messages.success(self.request, self.success_message.format(action))
         return HttpResponseRedirect(self.get_success_url())
 
@@ -219,6 +245,18 @@ class SelectedEntryUpdateView(LoginRequiredMixin, generic.UpdateView):
     def get_success_url(self):
         return reverse('entries:user_entries')
 
+    def form_valid(self, form):
+        entry = form.save()
+        ActivityLog.objects.create(
+            log="Selected entry {entry_id} ({category}) - user {username} - "
+                "updated".format(
+                    entry_id=entry.id,
+                    category=CATEGORY_CHOICES_DICT[entry.category],
+                    username=self.request.user.username,
+                )
+        )
+        return super(SelectedEntryUpdateView, self).form_valid(form)
+
 
 class EntryDeleteView(LoginRequiredMixin, generic.DeleteView):
     model = Entry
@@ -248,6 +286,15 @@ class EntryDeleteView(LoginRequiredMixin, generic.DeleteView):
 
     def delete(self, request, *args, **kwargs):
         messages.success(request, 'Your entry was deleted')
+        entry = self.get_object()
+        ActivityLog.objects.create(
+            log="In progress entry {entry_id} ({category}) - user {username} - "
+                "deleted".format(
+                    entry_id=entry.id,
+                    category=CATEGORY_CHOICES_DICT[entry.category],
+                    username=self.request.user.username,
+                )
+        )
         return super(EntryDeleteView, self).delete(request, *args, **kwargs)
 
 
@@ -285,6 +332,16 @@ class EntryWithdrawView(LoginRequiredMixin, generic.UpdateView):
         entry.save()
 
         messages.success(self.request, self.success_message)
+
+        ActivityLog.objects.create(
+            log="Entry {entry_id} ({category}) - status {status} - user {username} - "
+                "withdrawn".format(
+                    entry_id=entry.id,
+                    category=CATEGORY_CHOICES_DICT[entry.category],
+                    status=entry.status,
+                    username=self.request.user.username,
+                )
+        )
 
         if entry.status == 'selected_confirmed':
             return HttpResponseRedirect(
@@ -367,6 +424,15 @@ class EntryConfirmView(LoginRequiredMixin, generic.UpdateView):
         entry = form.save(commit=False)
         entry.status = "selected_confirmed"
         entry.save()
+
+        ActivityLog.objects.create(
+            log="Selected entry {entry_id} ({category}) - user {username} - "
+                "confirmed".format(
+                    entry_id=entry.id,
+                    category=CATEGORY_CHOICES_DICT[entry.category],
+                    username=self.request.user.username,
+                )
+        )
 
         return HttpResponseRedirect(
             reverse('entries:selected_payment', args=[entry.entry_ref])

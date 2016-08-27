@@ -50,14 +50,14 @@
 			<div class="row">
 				<div class="col-sm-4 callout">
 					<!--<span class="icon icon-eye"></span>-->
-					<h2>Dates</h2>
-					<p>To be announced</p>
+					<h2>Date</h2>
+					<p>12 March 2017</br>(Final)</p>
 				</div><!-- col-lg-4 -->
 
 				<div class="col-sm-4 callout">
 					<!--<span class="icon icon-stack"></span>-->
 					<h2>Categories</h2>
-					<p>Beginner - Intermediate - Advanced - Professional - Doubles</p>
+					<p>Beginner - Intermediate - Advanced - Mens - Professional - Doubles</p>
 				</div><!-- col-lg-4 -->
 
 				<div class="col-sm-4 callout">
@@ -88,9 +88,9 @@
 		<!-- ==== SECTION DIVIDER1 -->
 		<section class="section-divider textdivider divider1">
 			<div class="container">
-				<h1>ENTRIES OPEN JANUARY 2017</h1>
+				<h1>ENTRIES OPEN SEPTEMBER 2016</h1>
 				<hr>
-				<p>Please check back for further information.</p>
+				<div class="centered"><a href="{% url 'entries:entries_home' %}" class="btn btn-large btn-purple">Enter now</a></div>
 			</div><!-- container -->
 		</section><!-- section -->
 		
@@ -198,7 +198,7 @@
 			<div class="container">
 				<h1>SPONSORSHIP OPTIONS AVAILABLE</h1>
 				<hr>
-				<p>Contact us for details</p>
+				<p><a href="mailto:{{ pp_email }}">Contact us</a> for details</p>
 			</div><!-- container -->
 		</section><!-- section -->
 		
@@ -404,7 +404,7 @@
 					<p><span class="icon icon-home"></span> Address<br/>
 						<span class="icon icon-phone"></span> 0131 xxx xxxx <br/>
 						<span class="icon icon-mobile"></span> 077xx xxx xxxx <br/>
-						<span class="icon icon-envelop"></span> <a href="#">{{ pp_email }}</a> <br/>
+						<span class="icon icon-envelop"></span> <a href="mailto:{{ pp_email }}">{{ pp_email }}</a> <br/>
 						<span class="icon icon-twitter"></span> <a href="#"> @poleperformance </a> <br/>
 						<span class="icon icon-facebook"></span> <a href="https://www.facebook.com/Pole-Performance-Competition-111934239163033/"> Pole Peformance Competition </a> <br/>
 					</p>

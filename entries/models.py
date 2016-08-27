@@ -127,6 +127,10 @@ class Entry(models.Model):
 
         if self.status == 'submitted' and not self.date_submitted:
             self.date_submitted = timezone.now()
+
+        if self.notified and not self.notified_date:
+            self.notified_date = timezone.now()
+
         super(Entry, self).save(
             force_insert, force_update, using, update_fields
         )

@@ -83,7 +83,7 @@ var processToggleUndecided = function()  {
 
    var processResult = function(
        result, status, jqXHR)  {
-      console.log("sf result='" + result + "', status='" + status + "', jqXHR='" + jqXHR + "', entry_id='" + entry_id + "'");
+      //console.log("sf result='" + result + "', status='" + status + "', jqXHR='" + jqXHR + "', entry_id='" + entry_id + "'");
       $('#selection_status_' + entry_id).html(result);
    }
 

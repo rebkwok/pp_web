@@ -32,7 +32,7 @@ body {
 }
 
 .account-nav {
-    padding-right: 10px;
+    padding-right: 30px;
 }
 
 .account-menu {
@@ -191,7 +191,7 @@ input[type='radio']:checked:before {
     padding-top: 0;
     margin-top: 0;
     margin-bottom: 0;
-    height: 85%;
+    height: 50%;
     }
 
 .withdrawn, .withdrawn .success, .withdrawn .fail, .withdrawn > td > a {

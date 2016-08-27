@@ -18,7 +18,8 @@ from ppadmin.forms import EntryFilterForm, EntrySelectionFilterForm
 
 from ppadmin.views.helpers import staff_required, StaffUserMixin
 
-from entries.models import Entry
+from activitylog.models import ActivityLog
+from entries.models import Entry, CATEGORY_CHOICES_DICT
 
 
 logger = logging.getLogger(__name__)
@@ -102,6 +103,7 @@ class EntrySelectionListView(LoginRequiredMixin,  StaffUserMixin,  ListView):
 
     def get_queryset(self):
         cat_filter = self.request.GET.get('cat_filter', 'all')
+        hide_rejected = self.request.GET.get('hide_rejected', False)
 
         queryset = Entry.objects.select_related('user')\
             .filter(
@@ -116,14 +118,20 @@ class EntrySelectionListView(LoginRequiredMixin,  StaffUserMixin,  ListView):
         if cat_filter != 'all':
             queryset = queryset.filter(category=cat_filter)
 
+        if hide_rejected:
+            queryset = queryset.exclude(status='rejected')
+
         return queryset
 
     def get_context_data(self, **kwargs):
         cat_filter = self.request.GET.get('cat_filter', 'all')
+        hide_rejected = self.request.GET.get('hide_rejected', False)
         ctx = super(EntrySelectionListView, self).get_context_data(**kwargs)
         ctx.update({
             'filter_form': EntrySelectionFilterForm(
-                initial={'cat_filter': cat_filter}
+                initial={
+                    'cat_filter': cat_filter, 'hide_rejected': hide_rejected
+                }
             ),
             'doubles': cat_filter == 'DOU',
             'category': cat_filter
@@ -136,16 +144,43 @@ class EntrySelectionListView(LoginRequiredMixin,  StaffUserMixin,  ListView):
 def toggle_selection(request, entry_id, decision=None):
     template = "ppadmin/includes/selection_status.txt"
 
-    entry = Entry.objects.get(id=entry_id)
+    entry = Entry.objects.select_related('user').get(id=entry_id)
 
     if not entry.status == "selected_confirmed":
-        if decision == "selected":
-            entry.status = 'selected'
-        elif decision == "rejected":
-            entry.status = 'rejected'
-        elif decision == "undecided":
-            entry.status = 'submitted'
-        entry.save()
+        if entry.status != decision:
+            old_status = entry.status
+            if decision == "selected":
+                entry.status = 'selected'
+            elif decision == "rejected":
+                entry.status = 'rejected'
+            elif decision == "undecided":
+                entry.status = 'submitted'
+            entry.save()
+
+            ActivityLog.objects.create(
+                log="Entry {entry_id} ({category}) - user {username} - "
+                    "changed from {old_status} to {decision} by admin "
+                    "user {adminuser}".format(
+                        entry_id=entry_id,
+                        category=CATEGORY_CHOICES_DICT[entry.category],
+                        username=entry.user.username,
+                        old_status=old_status,
+                        decision=decision,
+                        adminuser=request.user.username
+                    )
+            )
 
     return render_to_response(template, {'entry': entry})
 
+
+@login_required
+@staff_required
+def notify_users(request):
+    unnotified_entries = Entry.objects.select_related('user').filter(
+        status__in=['selected', 'rejected'], withdrawn=False,
+        notified=False
+    )
+
+    # TODO
+    # GET: show list of users to be notified - categpry and status
+    # POST: send emails to unnotified users, redirect to selection list

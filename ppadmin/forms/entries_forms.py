@@ -3,7 +3,7 @@ from django import forms
 from entries.models import CATEGORY_CHOICES, STATUS_CHOICES
 
 
-class EntrySelectionFilterForm(forms.Form):
+class CategoryFilterForm(forms.Form):
 
     category_choices = list(CATEGORY_CHOICES)
     category_choices.insert(0, ('all', 'All'))
@@ -17,7 +17,7 @@ class EntrySelectionFilterForm(forms.Form):
     )
 
 
-class EntryFilterForm(EntrySelectionFilterForm):
+class EntryFilterForm(CategoryFilterForm):
 
     status_choices = list(STATUS_CHOICES)
     status_choices.insert(0, ('all_excl', 'All (excluding in progress/withdrawn'))
@@ -32,3 +32,12 @@ class EntryFilterForm(EntrySelectionFilterForm):
         label="Status"
     )
 
+
+class EntrySelectionFilterForm(CategoryFilterForm):
+
+    hide_rejected = forms.BooleanField(
+        widget=forms.CheckboxInput(
+            attrs={'onchange': 'form.submit()'}
+        ),
+        label="Hide rejected entries"
+    )
