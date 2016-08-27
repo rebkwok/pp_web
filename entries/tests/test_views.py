@@ -7,7 +7,7 @@ from django.core.urlresolvers import reverse
 from accounts.models import OnlineDisclaimer
 
 from .helpers import format_content, TestSetupMixin, TestSetupLoginRequiredMixin
-from ..models import Entry
+from ..models import Entry, STATUS_CHOICES_DICT
 
 from payments.models import PaypalEntryTransaction
 
@@ -408,6 +408,20 @@ class EntryDeleteViewTests(TestSetupLoginRequiredMixin, TestCase):
         cls.entry = mommy.make(Entry, user=cls.user)
         cls.url = reverse('entries:delete_entry', args=(cls.entry.entry_ref,))
 
+    def test_redirect_if_not_in_progress(self):
+        """
+        Entry can only be deleted if status is "in_progress"
+        """
+        entry = mommy.make(
+            Entry, user=self.user, category='INT', status='submitted'
+        )
+        self.client.login(username=self.user.username, password='test')
+        resp = self.client.get(
+            reverse('entries:delete_entry', args=(entry.entry_ref,))
+        )
+        self.assertEqual(resp.status_code, 302)
+        self.assertIn(reverse('permission_denied'), resp.url)
+
     def test_get_context(self):
         self.client.login(username=self.user.username, password='test')
         resp = self.client.get(self.url)
@@ -439,6 +453,18 @@ class EntryWithdrawViewTests(TestSetupLoginRequiredMixin, TestCase):
             'entries:withdraw_entry', args=(cls.entry.entry_ref,)
         )
 
+    def test_redirect_if_already_withdrawn(self):
+        entry = mommy.make(
+            Entry, user=self.user, category='INT', status='submitted',
+            withdrawn=True
+        )
+        self.client.login(username=self.user.username, password='test')
+        resp = self.client.get(
+            reverse('entries:withdraw_entry', args=(entry.entry_ref,))
+        )
+        self.assertEqual(resp.status_code, 302)
+        self.assertIn(reverse('permission_denied'), resp.url)
+
     def test_get_context(self):
         self.client.login(username=self.user.username, password='test')
         resp = self.client.get(self.url)
@@ -448,11 +474,35 @@ class EntryWithdrawViewTests(TestSetupLoginRequiredMixin, TestCase):
         self.client.login(username=self.user.username, password='test')
         self.assertEqual(self.entry.status, 'submitted')
         self.assertFalse(self.entry.withdrawn)
-        self.client.post(self.url, {'id': self.entry.id})
+
+        resp = self.client.post(self.url, {'id': self.entry.id})
+        self.assertEqual(resp.status_code, 302)
+        self.assertIn(reverse("entries:user_entries"), resp.url)
 
         self.entry.refresh_from_db()
         self.assertEqual(self.entry.status, 'submitted')
         self.assertTrue(self.entry.withdrawn)
+
+    def test_redirects_to_payment_if_selected_confirmed(self):
+        self.client.login(username=self.user.username, password='test')
+        entry = mommy.make(
+            Entry, user=self.user, category='ADV', status='selected_confirmed',
+        )
+        self.assertEqual(entry.status, 'selected_confirmed')
+        self.assertFalse(entry.withdrawn)
+        resp = self.client.post(
+            reverse('entries:withdraw_entry', args=(entry.entry_ref,)),
+            {'id': entry.id}
+        )
+        self.assertEqual(resp.status_code, 302)
+        self.assertIn(
+            reverse("entries:withdrawal_payment", args=(entry.entry_ref,)),
+            resp.url
+        )
+
+        entry.refresh_from_db()
+        self.assertEqual(entry.status, 'selected_confirmed')
+        self.assertTrue(entry.withdrawn)
 
 
 class VideoPaymentViewTests(TestSetupLoginRequiredMixin, TestCase):
@@ -630,3 +680,227 @@ class DoublePartnerCheckTests(TestSetupMixin, TestCase):
             'Waiver completed: Yes',
             format_content(str(resp.content)),
         )
+
+
+class EntryConfirmViewTests(TestSetupLoginRequiredMixin, TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        super(EntryConfirmViewTests, cls).setUpTestData()
+        cls.entry = mommy.make(Entry, user=cls.user, status='selected')
+        cls.url = reverse('entries:confirm_entry', args=(cls.entry.entry_ref,))
+
+    def test_redirect_if_status_not_selected_or_withdrawn(self):
+        entry = mommy.make(Entry, user=self.user, category='INT')
+        self.client.login(username=self.user.username, password='test')
+        url = reverse('entries:confirm_entry', args=(entry.entry_ref,))
+
+        non_selected_statuses = list(STATUS_CHOICES_DICT.keys())
+        non_selected_statuses.remove('selected')
+
+        for status in non_selected_statuses:
+            entry.status = status
+            entry.save()
+            resp = self.client.get(url)
+            self.assertEqual(resp.status_code, 302)
+            self.assertIn(reverse('permission_denied'), resp.url)
+
+        entry.status = 'selected'
+        entry.withdrawn = True
+        entry.save()
+        resp = self.client.get(url)
+        self.assertEqual(resp.status_code, 302)
+        self.assertIn(reverse('permission_denied'), resp.url)
+
+    def test_confirm_selected(self):
+        self.client.login(username=self.user.username, password='test')
+        self.assertEqual(self.entry.status, 'selected')
+        resp = self.client.post(self.url, {'id': self.entry.id})
+
+        self.entry.refresh_from_db()
+        self.assertEqual(self.entry.status, 'selected_confirmed')
+
+        # redirects to payment page
+        self.assertEqual(resp.status_code, 302)
+        self.assertIn(
+            reverse('entries:selected_payment', args=[self.entry.entry_ref]),
+            resp.url
+        )
+
+
+class SelectedPaymentViewTests(TestSetupLoginRequiredMixin, TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        super(SelectedPaymentViewTests, cls).setUpTestData()
+        cls.entry = mommy.make(
+            Entry, user=cls.user, status='selected_confirmed'
+        )
+        cls.url = reverse(
+            'entries:selected_payment', args=(cls.entry.entry_ref,)
+        )
+
+    def setUp(self):
+        self.entry1 = mommy.make(
+            Entry, user=self.user, category='INT', status='submitted'
+        )
+        self.url1 = reverse(
+            'entries:selected_payment', args=(self.entry1.entry_ref,)
+        )
+
+    def login(self):
+        self.client.login(username=self.user.username, password='test')
+
+    def test_entry_not_selected_confirmed(self):
+        self.login()
+        resp = self.client.get(self.url1)
+        self.assertEqual(resp.status_code, 200)
+        self.assertNotIn('paypalform', resp.context_data)
+        self.assertIn(
+            'This entry has not been selected and confirmed.  '
+            'Please check status on the My Entries page.',
+            resp.rendered_content
+        )
+
+    def test_entry_withdrawn(self):
+        entry = mommy.make(
+            Entry, user=self.user, status='selected_confirmed', category='ADV',
+            withdrawn=True
+        )
+        url = reverse('entries:selected_payment', args=(entry.entry_ref,))
+        self.login()
+        resp = self.client.get(url)
+        self.assertEqual(resp.status_code, 200)
+        self.assertNotIn('paypalform', resp.context_data)
+        self.assertIn(
+            'This entry has been withdrawn.',
+            resp.rendered_content
+        )
+
+    def test_entry_already_paid(self):
+        self.entry.selected_entry_paid = True
+        self.entry.save()
+
+        self.login()
+        resp = self.client.get(self.url)
+        self.assertEqual(resp.status_code, 200)
+        self.assertNotIn('paypalform', resp.context_data)
+        self.assertIn(
+            'The fee for this entry has already been paid.',
+            resp.rendered_content
+        )
+
+    def test_renders_correct_paypal_dict_info(self):
+        self.login()
+        self.assertFalse(PaypalEntryTransaction.objects.exists())
+        resp = self.client.get(self.url)
+
+        # PaypalEntryTransaction is created by the view
+        self.assertEqual(PaypalEntryTransaction.objects.count(), 1)
+        pptrans = PaypalEntryTransaction.objects.first()
+        first_invoice_id = pptrans.invoice_id
+
+        self.assertIn('paypalform', resp.context_data)
+        paypalform_data = resp.context_data['paypalform'].initial
+
+
+        self.assertEqual(paypalform_data['invoice'], pptrans.invoice_id)
+        self.assertEqual(
+            paypalform_data['custom'], 'selected {}'.format(self.entry.id)
+        )
+        self.assertEqual(
+            paypalform_data['item_name'],
+            'Entry fee for Beginner category'
+        )
+
+        # getting the view again doesn't create a new pptrans or update inv id
+        resp = self.client.get(self.url)
+        self.assertEqual(PaypalEntryTransaction.objects.count(), 1)
+        pptrans1 = PaypalEntryTransaction.objects.first()
+        self.assertEqual(pptrans.id, pptrans1.id)
+        self.assertEqual(first_invoice_id, pptrans1.invoice_id)
+
+
+class WithdrawalPaymentViewTests(TestSetupLoginRequiredMixin, TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        super(WithdrawalPaymentViewTests, cls).setUpTestData()
+        cls.entry = mommy.make(
+            Entry, user=cls.user, status='selected_confirmed',
+            withdrawn=True
+        )
+        cls.url = reverse(
+            'entries:withdrawal_payment', args=(cls.entry.entry_ref,)
+        )
+
+    def login(self):
+        self.client.login(username=self.user.username, password='test')
+
+    def test_entry_not_selected_confirmed_and_withdrawn(self):
+        self.login()
+
+        entry_not_wd = mommy.make(
+            Entry, user=self.user, category='INT', status='selected_confirmed'
+        )
+        url = reverse(
+            'entries:withdrawal_payment', args=(entry_not_wd.entry_ref,)
+        )
+        resp = self.client.get(url)
+        self.assertEqual(resp.status_code, 302)
+        self.assertIn(resp.url, reverse('permission_denied'))
+
+        entry_not_selected_confirmed = mommy.make(
+            Entry, user=self.user, category='ADV', status='submitted',
+            withdrawn=True
+        )
+        url = reverse(
+            'entries:withdrawal_payment',
+            args=(entry_not_selected_confirmed.entry_ref,)
+        )
+        resp = self.client.get(url)
+        self.assertEqual(resp.status_code, 302)
+        self.assertIn(resp.url, reverse('permission_denied'))
+
+    def test_entry_already_paid(self):
+        self.login()
+        entry_already_paid = mommy.make(
+            Entry, user=self.user, category='INT', status='selected_confirmed',
+            withdrawn=True, withdrawal_fee_paid=True
+        )
+        url = reverse(
+            'entries:withdrawal_payment', args=(entry_already_paid.entry_ref,)
+        )
+        resp = self.client.get(url)
+        self.assertEqual(resp.status_code, 302)
+        self.assertIn(resp.url, reverse('permission_denied'))
+
+    def test_renders_correct_paypal_dict_info(self):
+        self.login()
+        self.assertFalse(PaypalEntryTransaction.objects.exists())
+        resp = self.client.get(self.url)
+
+        # PaypalEntryTransaction is created by the view
+        self.assertEqual(PaypalEntryTransaction.objects.count(), 1)
+        pptrans = PaypalEntryTransaction.objects.first()
+        first_invoice_id = pptrans.invoice_id
+
+        self.assertIn('paypalform', resp.context_data)
+        paypalform_data = resp.context_data['paypalform'].initial
+
+
+        self.assertEqual(paypalform_data['invoice'], pptrans.invoice_id)
+        self.assertEqual(
+            paypalform_data['custom'], 'withdrawal {}'.format(self.entry.id)
+        )
+        self.assertEqual(
+            paypalform_data['item_name'],
+            'Withdrawal fee for Beginner category'
+        )
+
+        # getting the view again doesn't create a new pptrans or update inv id
+        resp = self.client.get(self.url)
+        self.assertEqual(PaypalEntryTransaction.objects.count(), 1)
+        pptrans1 = PaypalEntryTransaction.objects.first()
+        self.assertEqual(pptrans.id, pptrans1.id)
+        self.assertEqual(first_invoice_id, pptrans1.invoice_id)

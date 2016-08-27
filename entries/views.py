@@ -418,7 +418,7 @@ def entry_withdrawal_payment(request, ref):
 
     if not (entry.status == 'selected_confirmed' and entry.withdrawn) \
             or entry.withdrawal_fee_paid:
-        return HttpResponseRedirect('permission_denied')
+        return HttpResponseRedirect(reverse('permission_denied'))
     else:
         host = 'http://{}'.format(request.META.get('HTTP_HOST'))
         invoice_id = create_entry_paypal_transaction(

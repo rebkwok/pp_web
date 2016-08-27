@@ -521,6 +521,40 @@ class PaypalSignalsTests(TestCase):
         self.assertEqual(mail.outbox[0].to, [settings.SUPPORT_EMAIL])
 
     @patch('paypal.standard.ipn.models.PayPalIPN._postback')
+    def test_paypal_notify_url_for_withdrawal_with_refunded(self, mock_postback):
+        """
+        when a paypal payment is refunded, it looks like it posts back to the
+        notify url again (since the PayPalIPN is updated).  Test that we can
+        identify and process refunded payments.
+        """
+        mock_postback.return_value = b"VERIFIED"
+        entry = mommy.make(Entry, status='selected_confirmed', withdrawn=True)
+        pptrans = create_entry_paypal_transaction(
+            entry.user, entry, 'withdrawal'
+        )
+        pptrans.transaction_id = "test_trans_id"
+        pptrans.save()
+
+        self.assertFalse(PayPalIPN.objects.exists())
+        params = dict(IPN_POST_PARAMS)
+        params.update(
+            {
+                'custom': b('withdrawal {}'.format(entry.id)),
+                'invoice': b(pptrans.invoice_id),
+                'payment_status': b'Refunded'
+            }
+        )
+        self.paypal_post(params)
+        entry.refresh_from_db()
+        self.assertFalse(entry.withdrawal_fee_paid)
+        self.assertTrue(entry.withdrawn)  # still withdrawn
+
+        self.assertEqual(len(mail.outbox), 1,)
+
+        # emails sent to support
+        self.assertEqual(mail.outbox[0].to, [settings.SUPPORT_EMAIL])
+
+    @patch('paypal.standard.ipn.models.PayPalIPN._postback')
     def test_paypal_date_format_with_extra_spaces(self, mock_postback):
         mock_postback.return_value = b"VERIFIED"
         entry = mommy.make(Entry)
