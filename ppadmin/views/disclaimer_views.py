@@ -58,10 +58,6 @@ class DisclaimerUpdateView(LoginRequiredMixin, StaffUserMixin, UpdateView):
 
     def form_valid(self, form):
         changed = form.changed_data
-        if 'dob' in form.changed_data:
-            old = OnlineDisclaimer.objects.get(id=self.object.id)
-            if old.dob == form.instance.dob:
-                changed.remove('dob')
         if 'password' in form.changed_data:
              changed.remove('password')
 
@@ -73,12 +69,12 @@ class DisclaimerUpdateView(LoginRequiredMixin, StaffUserMixin, UpdateView):
                 disclaimer.save()
                 messages.success(
                     self.request,
-                    "Disclaimer for {} has been updated".format(
+                    "Waiver for {} has been updated".format(
                         disclaimer.user.username
                     )
                 )
                 ActivityLog.objects.create(
-                    log="Online disclaimer for {} updated by admin "
+                    log="Waiver for {} updated by admin "
                         "user {} (user password supplied)".format(
                         disclaimer.user.username, self.request.user.username
                     )
@@ -120,12 +116,12 @@ class DisclaimerDeleteView(LoginRequiredMixin, StaffUserMixin, DeleteView):
 
     def get_success_url(self):
         messages.success(
-            self.request, "Disclaimer deleted for {} {} ({})".format(
+            self.request, "Waiver deleted for {} {} ({})".format(
                 self.user.first_name, self.user.last_name, self.user.username
             )
         )
         ActivityLog.objects.create(
-            log="Disclaimer deleted for {} {} ({}) by admin user {}".format(
+            log="Waiver deleted for {} {} ({}) by admin user {}".format(
                 self.user.first_name, self.user.last_name, self.user.username,
                 self.request.user.username
             )

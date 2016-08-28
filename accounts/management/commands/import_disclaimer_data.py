@@ -59,7 +59,7 @@ class Command(BaseCommand):
                             dates_match = True
                         else:
                             dates_match = False
-                        log_msg = "Disclaimer for {} already exists and has " \
+                        log_msg = "Waiver for {} already exists and has " \
                                   "not been overwritten with backup data. " \
                                   "Dates in db and back up {}match.".format(
                                         user.username,
@@ -75,37 +75,14 @@ class Command(BaseCommand):
                                 row[2], '%Y-%m-%d %H:%M:%S:%f %z'
                             ),
                             date_updated=bu_date_updated,
-                            name=row[4],
-                            dob=datetime.strptime(row[5], '%Y-%m-%d').date(),
-                            gender=row[6],
-                            address=row[7],
-                            postcode=row[8],
-                            home_phone=row[9],
-                            mobile_phone=row[10],
-                            emergency_contact1_name=row[11],
-                            emergency_contact1_relationship=row[12],
-                            emergency_contact1_phone=row[13],
-                            emergency_contact2_name=row[14],
-                            emergency_contact2_relationship=row[15],
-                            emergency_contact2_phone=row[16],
-                            medical_conditions=True
-                            if row[17] == "Yes" else False,
-                            medical_conditions_details=row[18],
-                            joint_problems=True if row[19] == "Yes" else False,
-                            joint_problems_details=row[20],
-                            allergies=True if row[21] == "Yes" else False,
-                            allergies_details=row[22],
-                            medical_treatment_terms=row[23],
-                            medical_treatment_permission=True
-                            if row[24] == "Yes" else False,
-                            disclaimer_terms=row[25],
+                            emergency_contact_name=row[4],
+                            emergency_contact_relationship=row[5],
+                            emergency_contact_phone=row[6],
+                            waiver_terms=row[7],
                             terms_accepted=True
-                            if row[26] == "Yes" else False,
-                            over_18_statement=row[27],
-                            age_over_18_confirmed=True
-                            if row[28] == "Yes" else False,
+                            if row[8] == "Yes" else False,
                         )
-                        log_msg = "Disclaimer for {} imported from " \
+                        log_msg = "Waiver for {} imported from " \
                                    "backup.".format(user.username)
                         self.stdout.write(log_msg)
                         logger.info(log_msg)

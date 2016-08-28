@@ -60,106 +60,41 @@ def has_readonly_fields(original_class):
     return original_class
 
 
+WAIVER_TERMS = """
+I hereby declare that I have read and understood all the rules of the Pole Performance categories and agree to represent the competition in a professional manner during and prior to the event.
 
-DISCLAIMER_TERMS = "I recognise that I may be asked to participate in some " \
-                   "strenuous exercise during the course and that such " \
-                   "participation may present a heightened risk of injury or " \
-                   "ill health. All risks will be fully explained and I do " \
-                   "NOT hold The Watermelon Studio and any of their staff " \
-                   "responsible for any harm that may come to me should I " \
-                   "decide to participate in such tasks. I knowingly assume " \
-                   "all risks associated with participation, even if arising " \
-                   "from negligence of the participants or others and assume " \
-                   "full responsibility for my participation. I certify that " \
-                   "I am in good physical condition can participate in the " \
-                   "courses offered by The Watermelon Studio. I will not " \
-                   "participate if pregnant and will update my teacher on " \
-                   "any new medical condition/injury throughout my time at " \
-                   "The Watermelon Studio.  I will not participate under the " \
-                   "influence of drugs or alcohol. Other teachers/instructors " \
-                   "may use the information submitted in this form to help " \
-                   "keep the chances of any injury to a minimum. I also " \
-                   "hereby agree to follow all rules set out by The " \
-                   "Watermelon Studio.  I have read and agree to the terms " \
-                   "and conditions on the website."
+I agree that I am available all day on March 12th 2017.
 
-OVER_18_TERMS = "I confirm that I am aged 18 or over"
+I understand that my entry will not be accepted until I have paid the appropriate entry fee and that all judges’ decisions are final.
 
-MEDICAL_TREATMENT_TERMS = "I give permission for myself to receive medical " \
-                          "treatment in the event of an accident"
+I am taking part in Pole Performance entirely at my own risk. Pole Performance is not responsible for any injury/death caused by my participation in this event.
 
-BOOL_CHOICES = ((True, 'Yes'), (False, 'No'))
+I assume full responsibility for my participation, knowing the risks involved, and I hold Pole Performance and Carnegie Hall staff/volunteers free from any liability.
 
-GENDER_CHOICES = (('female', 'Female'), ('male', 'Male'))
+I am not pregnant and have not been pregnant in the past three months.
+
+I am deemed physically fit to participate in exercise and have no health or heart conditions that may affect my ability to participate safely in a pole competition.
+
+I give permission for my photo to be taken and used for advertisement and promotional purposes for Pole Performance.
+
+I agree to the above T&amp;C’s and release of liability. I have fully read and understood all information given to me by Pole Performance and free and  voluntarily sign without any inducement.
+"""
 
 
 @has_readonly_fields
 class OnlineDisclaimer(models.Model):
-
-    read_only_fields = (
-        'disclaimer_terms', 'medical_treatment_terms', 'over_18_statement',
-        'date'
-    )
+    read_only_fields = ('waiver_terms', )
 
     user = models.OneToOneField(User, related_name='online_disclaimer')
     date = models.DateTimeField(default=timezone.now)
     date_updated = models.DateTimeField(null=True, blank=True)
-
-    name = models.CharField(max_length=255, verbose_name="full name")
-    gender = models.CharField(
-        max_length=20, choices=GENDER_CHOICES,
-        default='female'
-    )
-    dob = models.DateField(verbose_name='date of birth')
-    address = models.CharField(max_length=512)
-    postcode = models.CharField(max_length=10)
-    home_phone = models.CharField(max_length=255, null=True, blank=True)
-    mobile_phone = models.CharField(max_length=255)
-    emergency_contact1_name = models.CharField(max_length=255, verbose_name='name')
-    emergency_contact1_relationship = models.CharField(max_length=255, verbose_name='relationship')
-    emergency_contact1_phone = models.CharField(max_length=255, verbose_name='contact number')
-    emergency_contact2_name = models.CharField(max_length=255, verbose_name='name')
-    emergency_contact2_relationship = models.CharField(max_length=255, verbose_name='relationship')
-    emergency_contact2_phone = models.CharField(max_length=255, verbose_name='contact number')
-
-    medical_conditions = models.BooleanField(
-        choices=BOOL_CHOICES, default=True,
-        verbose_name='Do you have any medical conditions which may require '
-                     'treatment or medication?'
-    )
-    medical_conditions_details = models.CharField(
-        max_length=2048, null=True, blank=True
-    )
-    joint_problems = models.BooleanField(
-        choices=BOOL_CHOICES, default=True,
-        verbose_name='Do you suffer from problems regarding '
-                     'knee/back/shoulder/ankle/hip/neck?'
-    )
-    joint_problems_details = models.CharField(
-        max_length=2048, null=True, blank=True
-    )
-    allergies = models.BooleanField(
-        choices=BOOL_CHOICES, default=True,
-        verbose_name='Do you have any allergies?'
-    )
-    allergies_details = models.CharField(
-        max_length=2048, null=True, blank=True
-    )
-
-    medical_treatment_terms = models.CharField(
-        max_length=2048, default=OVER_18_TERMS
-    )
-    medical_treatment_permission = models.BooleanField()
-
-    disclaimer_terms = models.CharField(
-        max_length=2048, default=DISCLAIMER_TERMS
+    emergency_contact_name = models.CharField(max_length=255, verbose_name='name')
+    emergency_contact_relationship = models.CharField(max_length=255, verbose_name='relationship')
+    emergency_contact_phone = models.CharField(max_length=255, verbose_name='contact number')
+    waiver_terms = models.CharField(
+        max_length=2048, default=WAIVER_TERMS
     )
     terms_accepted = models.BooleanField()
-
-    over_18_statement = models.CharField(
-        max_length=2048, default=OVER_18_TERMS
-    )
-    age_over_18_confirmed = models.BooleanField()
 
     def __str__(self):
         return '{} - {}'.format(self.user.username, self.date.astimezone(
@@ -168,12 +103,10 @@ class OnlineDisclaimer(models.Model):
 
     def save(self, **kwargs):
         if not self.id:
-            self.disclaimer_terms = DISCLAIMER_TERMS
-            self.over_18_statement = OVER_18_TERMS
-            self.medical_treatment_terms = MEDICAL_TREATMENT_TERMS
+            self.waiver_terms = WAIVER_TERMS
 
             ActivityLog.objects.create(
-                log="Online disclaimer created: {}".format(self.__str__())
+                log="Waiver created: {}".format(self.__str__())
             )
 
             # set cache; never expires (will only be invalidated if disclaimer
@@ -192,3 +125,4 @@ class UserProfile(models.Model):
     address = models.CharField(max_length=512)
     postcode = models.CharField(max_length=10)
     phone = models.CharField(max_length=255)
+

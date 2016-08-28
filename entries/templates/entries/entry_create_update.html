@@ -11,7 +11,7 @@
 {% endif %}
 
 {% if not request.user|has_disclaimer %}
-    <p>Please <a href="{% url 'accounts:disclaimer_form' %}">complete a disclaimer</a> before beginning the entry process.</p>
+    <p>Please <a href="{% url 'accounts:disclaimer_form' %}">complete a waiver</a> before beginning the entry process.</p>
 {% else %}
     {% if form.errors %}
         <div class="errorlist">Please correct the errors below</div>

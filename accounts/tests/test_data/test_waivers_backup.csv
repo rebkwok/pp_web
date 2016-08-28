@@ -1,0 +1,4 @@
+"""ID",User,Date,Date Updated,Emergency Contact: Name,Emergency Contact: Relationship,Emergency Contact: Phone,Waiver Terms,Waiver Terms Accepted
+2,test_1,2015-12-18 15:32:07:191781 +0000,,Test1 Contact1,Partner,8782347239,Terms,Yes
+3,test_2,2015-01-15 15:43:19:747445 +0000,2016-01-06 15:09:16:920219 +0000,Test1 Contact2,Friend,7283642323,Terms,Yes
+4,test_3,2016-02-18 16:09:16:920219 +0000,,Test User3,Friend,123456,Terms,Yes

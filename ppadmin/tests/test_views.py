@@ -381,37 +381,23 @@ class DisclaimerUpdateViewTests(TestSetupStaffLoginRequiredMixin, TestCase):
         OnlineDisclaimer.objects.all().delete()
         self.disclaimer = mommy.make(
             OnlineDisclaimer, user=self.user,
-            medical_conditions=False, allergies=False, joint_problems=False,
-            medical_treatment_permission=True, terms_accepted=True,
-            age_over_18_confirmed=True, dob=date(1990, 1, 1)
+            terms_accepted=True
         )
         self.post_data = {
             'id': self.disclaimer.id,
-            'name': 'test',
-            'dob': '01 Jan 1990', 'gender': 'female', 'address': '1 test st',
-            'postcode': 'TEST1', 'home_phone': '123445',
-            'mobile_phone': '124566',
-            'emergency_contact1_name': 'test1',
-            'emergency_contact1_relationship': 'mother',
-            'emergency_contact1_phone': '4547',
-            'emergency_contact2_name': 'test2',
-            'emergency_contact2_relationship': 'father',
-            'emergency_contact2_phone': '34657',
-            'medical_conditions': False, 'medical_conditions_details': '',
-            'joint_problems': False, 'joint_problems_details': '',
-            'allergies': False, 'allergies_details': '',
-            'medical_treatment_permission': True,
+            'emergency_contact_name': 'Foo',
+            'emergency_contact_relationship': 'mother',
+            'emergency_contact_phone': '4547',
             'terms_accepted': True,
-            'age_over_18_confirmed': True,
             'password': 'password'
         }
 
     def test_user_password_required_to_update_disclaimer(self):
-        self.assertNotEqual(self.disclaimer.address, '1 test st')
+        self.assertNotEqual(self.disclaimer.emergency_contact_name, 'Foo')
         self.client.login(username=self.staff_user.username, password='test')
         self.client.post(self.url, self.post_data)
         self.disclaimer.refresh_from_db()
-        self.assertEqual(self.disclaimer.address, '1 test st')
+        self.assertEqual(self.disclaimer.emergency_contact_name, 'Foo')
 
     def test_user_password_incorrect(self):
         self.post_data['password'] = 'password1'
@@ -431,36 +417,13 @@ class DisclaimerUpdateViewTests(TestSetupStaffLoginRequiredMixin, TestCase):
         self.disclaimer.refresh_from_db()
         self.assertIsNotNone(self.disclaimer.date_updated)
 
-    def test_update_dislaimer(self):
-        self.assertIsNone(self.disclaimer.home_phone)  # null by default
-        self.client.login(username=self.staff_user.username, password='test')
-        self.client.post(self.url, self.post_data)
-        self.disclaimer.refresh_from_db()
-        self.assertEqual(self.disclaimer.home_phone, '123445')
-
     def test_no_changes_made(self):
         post_data = {
             'id': self.disclaimer.id,
-            'name': self.disclaimer.name,
-            'dob': self.disclaimer.dob.strftime('%d %b %Y'),
-            'gender': self.disclaimer.gender,
-            'address': self.disclaimer.address,
-            'postcode': self.disclaimer.postcode,
-            'mobile_phone': self.disclaimer.mobile_phone,
-            'emergency_contact1_name': self.disclaimer.emergency_contact1_name,
-            'emergency_contact1_relationship': self.disclaimer.emergency_contact1_relationship,
-            'emergency_contact1_phone': self.disclaimer.emergency_contact1_phone,
-            'emergency_contact2_name': self.disclaimer.emergency_contact2_name,
-            'emergency_contact2_relationship': self.disclaimer.emergency_contact2_relationship,
-            'emergency_contact2_phone': self.disclaimer.emergency_contact2_phone,
-            'medical_conditions': False,
-            'medical_conditions_details': '',
-            'joint_problems': False,
-            'joint_problems_details': '',
-            'allergies': False, 'allergies_details': '',
-            'medical_treatment_permission': True,
+            'emergency_contact_name': self.disclaimer.emergency_contact_name,
+            'emergency_contact_relationship': self.disclaimer.emergency_contact_relationship,
+            'emergency_contact_phone': self.disclaimer.emergency_contact_phone,
             'terms_accepted': True,
-            'age_over_18_confirmed': True,
             'password': 'password'
         }
 
