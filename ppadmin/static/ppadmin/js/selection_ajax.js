@@ -98,6 +98,35 @@ var processToggleUndecided = function()  {
 };
 
 /**
+   Executes a toggle click. Triggered by clicks on the reset button.
+ */
+var processToggleReset = function()  {
+
+   //In this scope, "this" is the button just clicked on.
+   //The "this" in processResult is *not* the button just clicked
+   //on.
+   var $button_just_clicked_on = $(this);
+
+   //The value of the "data-entry_id" attribute.
+   var entry_id = $button_just_clicked_on.data('entry_id');
+
+   var processResult = function(
+       result, status, jqXHR)  {
+      //console.log("sf result='" + result + "', status='" + status + "', jqXHR='" + jqXHR + "', entry_id='" + entry_id + "'");
+      $('#reset_' + entry_id).html(result);
+   }
+
+   $.ajax(
+       {
+          url: '/ppadmin/entries/' + entry_id + '/toggle_selection_reset',
+          dataType: 'html',
+          success: processResult
+          //Should also have a "fail" call as well.
+       }
+    );
+};
+
+/**
    The Ajax "main" function. Attaches the listeners to the elements on
    page load, each of which only take effect every
    <link to MILLS_TO_IGNORE> seconds.
@@ -133,7 +162,8 @@ $(document).ready(function()  {
       MILLS_TO_IGNORE, true));
   $('.toggle_undecided_button').click(_.debounce(processToggleUndecided,
       MILLS_TO_IGNORE, true));
-
+  $('.reset_button').click(_.debounce(processToggleReset,
+      MILLS_TO_IGNORE, true));
   /*
     Warning: Placing the true parameter outside of the debounce call:
 

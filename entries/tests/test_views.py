@@ -388,7 +388,9 @@ class SelectedEntryUpdateViewTests(TestSetupLoginRequiredMixin, TestCase):
 
     def setUp(self):
         self.post_data = {
-            'submitted': 'Submit'
+            'submitted': 'Submit',
+            'song': 'Song title',
+            'biography': 'About me'
         }
 
     def test_update_entry_and_save(self):

@@ -6,25 +6,23 @@
 
     <div class="container-fluid row">
 
-        <h2>Submitted Entries: {% if category != 'all' %}{{ category|format_category }}{% else %}All categories{% endif %}</h2>
+        <h2>Notified Entries: {% if category != 'all' %}{{ category|format_category }}{% else %}All categories{% endif %}</h2>
 
-        <h4>Note: after an entry has been selected/rejected and the user notified, it is no longer possible to update its
-            status on this page. If you need to do this (e.g. if a previously rejected entry is now to be selected), go to the
-            <a href="{% url 'ppadmin:entries_notified' %}">notified list</a> first to reset.
+        <h4>Use the "Reset Selection" button to allow changes to the selection of a entry for which the user has already
+        been notified of semi-final results.  Note that this will remove the notification date and will allow you to
+        update an entry and re-notify the user on the Selection page.
         </h4>
         <div class=row>
             <div class="col-xs-12">
                 <form action="" method="get">
                     {{ filter_form }}
-                    <div class="pull-right"><label>Notify:</label>
-                    <a href="{% url 'ppadmin:notify_selected_users' %}" class="btn table-btn btn-purple notify-btn">Selected</a>
-                    <a href="{% url 'ppadmin:notify_rejected_users' %}" class="btn table-btn btn-purple notify-btn">Rejected</a>
-                    <a href="{% url 'ppadmin:notify_users' %}" class="btn table-btn btn-purple notify-btn">All</a>
+                    <div class="pull-right">
+                    <a href="{% url 'ppadmin:entries_selection' %}" class="btn table-btn btn-purple">Selection List</a>
                     </div>
                 </form>
             </div>
-            </div>
         </div>
+
 
         <div class="row">
             <div class="col-sm-12">
@@ -37,10 +35,8 @@
                                 <th class="table-center">User <span class="fa fa-sort"></span></br><span class="ppadmin-help">Click to view details</span></th>
                                 <th class="table-center">Category <span class="fa fa-sort"></span></th>
                                 {% if doubles %}<th class="table-center">Doubles</br>partner</th>{% endif %}
-                                <th class="table-center">Video URL</th>
-                                <th class="table-center">Status</th>
-                                <th class="table-center">Selection</th>
-                                <th class="table-center">Notified</th>
+                                <th class="table-center">Status - Notified date</th>
+                                <th></th>
                             </tr>
                             </thead>
                             <tbody>
@@ -52,14 +48,8 @@
                                     {% if filter_form.category.initial == 'DOU' %}
                                         <td class="table-center ppadmin-tbl">{% if entry.category == 'DOU' %}{{ entry.partner_name }}{% else %}N/A{% endif %}</td>
                                     {% endif %}
-                                    <td class="table-center ppadmin-tbl"><a href="{{ entry.video_url }}">{{ entry.video_url|abbr_url }}</a></td>
-                                    <td id="selection_status_{{ entry.id }}" class="table-center ppadmin-tbl selection_status_td">{% include "ppadmin/includes/selection_status.txt" %}</td>
-                                    <td class="table-center ppadmin-tbl">
-                                        <span data-entry_id="{{ entry.id }}" class="toggle_selected_button btn table-btn btn-success btn-selection {% if entry.status == 'selected_confirmed' or entry.notified %}disabled{% endif %}"><span class="fa fa-check"></span></span>
-                                        <span data-entry_id="{{ entry.id }}" class="toggle_rejected_button btn table-btn btn-danger btn-selection {% if entry.status == 'selected_confirmed' or entry.notified %}disabled{% endif %}"><span class="fa fa-times"></span></span>
-                                        <span data-entry_id="{{ entry.id }}" class="toggle_undecided_button btn table-btn btn-default btn-selection {% if entry.status == 'selected_confirmed' or entry.notified %}disabled{% endif %}"><span class="fa fa-question"></span></span>
-                                    </td>
-                                    <td class="table-center ppadmin-tbl">{% if entry.notified_date %}{{ entry.notified_date|date:'d M Y' }}{% endif %}</td>
+                                    <td id="reset_{{ entry.id }}" class="table-center ppadmin-tbl reset_td">{% include "ppadmin/includes/notified_status.txt" %}</td>
+                                    <td class="table-center ppadmin-tbl"><span data-entry_id="{{ entry.id }}" class="reset_button btn table-btn btn-danger">Reset Selection</span></td>
                                 </tr>
                                 {% endfor %}
                             {% else %}

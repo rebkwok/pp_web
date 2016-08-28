@@ -7,4 +7,4 @@ Invoice number: {{ invoice_id }}
 Paypal Transaction id: {{ paypal_transaction_id }}
 Paypal Email: {{ paypal_email }}
 
-{% include "account/email/do_not_reply.txt" %}
+{% include "account/email/footer.txt" %}

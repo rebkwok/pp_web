@@ -164,11 +164,16 @@ class SelectedEntryUpdateForm(EntryFormMixin, forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(SelectedEntryUpdateForm, self).__init__(*args, **kwargs)
         self.user = self.instance.user
-        self.show_doubles = self.instance.category == 'DOU'
-        email_help = self.fields['partner_email'].help_text
-        new_email_help = email_help + " Use the button below to check your " \
-                                      "partner's information"
-        self.fields['partner_email'].help_text = new_email_help
+        if self.instance.category == 'DOU':
+            self.show_doubles = True
+            email_help = self.fields['partner_email'].help_text
+            new_email_help = email_help + " Use the button below to check " \
+                                          "your partner's information"
+            self.fields['partner_email'].help_text = new_email_help
+            self.fields['partner_email'].required = True
+            self.fields['partner_name'].required = True
+        self.fields['biography'].required = True
+        self.fields['song'].required = True
 
     def clean(self):
         super(SelectedEntryUpdateForm, self).clean()

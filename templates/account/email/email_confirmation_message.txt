@@ -5,4 +5,4 @@ You're receiving this e-mail because user {{ user_display }} at {{ site_domain }
 To confirm this is correct, go to {{ activate_url }}
 {% endblocktrans %}{% endautoescape %}
 
-{% include "account/email/do_not_reply.txt" %}
+{% include "account/email/footer.txt" %}

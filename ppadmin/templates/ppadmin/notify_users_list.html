@@ -1,0 +1,35 @@
+{% extends "ppadmin/base.html" %}
+{% load static %}
+{% load entriestags ppadmintags %}
+
+{% block content %}
+
+<div class="row">
+    <div class="col-sm-12">
+
+    <h2>Semi-Final Results Notification</h2>
+
+        {% if entries %}
+
+            <p>You are about to send notifications to the following users:</p>
+
+            <ul>
+                {% for entry in entries %}
+                    <li>{{ entry.user.first_name }} {{ entry.user.last_name }} - {{ entry.category|format_category|upper }} - {{ entry.status|upper }}</li>
+                {% endfor %}
+
+            </ul>
+
+            <form action="" method="post">{% csrf_token %}
+                <input class="btn btn-success" type="submit" name='confirmed' value="Send Email" />
+                <a class="btn btn-danger" href="{% url 'ppadmin:entries_selection' %}">Cancel</a>
+            </form>
+
+        {% else %}
+            <p>No unnotified users</p>
+            <a class="btn btn-danger" href="{% url 'ppadmin:entries_selection' %}">Back</a>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}

@@ -3,4 +3,4 @@
 {% blocktrans %}Confirm E-mail Address{% endblocktrans %}
 {% endautoescape %}
 
-{% include "account/email/do_not_reply.txt" %}
+{% include "account/email/footer.txt" %}

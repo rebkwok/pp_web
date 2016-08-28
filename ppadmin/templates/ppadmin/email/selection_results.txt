@@ -1,0 +1,20 @@
+{% block messagecontent %}
+Pole Performance 2017 Semi Finals
+-------------------------------------------
+{% if entry.status == 'selected' %}
+Congratulations!
+--------------------
+We are pleased to offer you a place in the Pole Performance Competition {{ entry.entry_year }} Finals in the following category:
+- {{ category }}
+
+Please follow the link below to confirm your place and pay your entry fee.  You will also now need to provide your song choice and short biography for your performance at the finals.</p>
+
+Confirm entry: {{ host }}/entries/myentries/{{ entry.entry_ref }}/confirm
+Provide additional entry information: {{ host }}/entries/myentries/{{ entry.entry_ref }}/selected/edit
+{% else %}
+Thank you for your application to Pole Performance 2017.  Unfortunately you have not been successful in securing a place in the following category:
+- {{ category }}
+{% endif %}
+{% endblock %}
+
+{% include "account/email/footer.txt" %}

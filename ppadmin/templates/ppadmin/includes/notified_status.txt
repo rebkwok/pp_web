@@ -1,0 +1,10 @@
+{% load ppadmintags %}
+<div class="{% if entry.status == "selected" or entry.status == "selected_confirmed" %}
+        selected-status
+    {% elif entry.status == "rejected" %}
+        rejected-status
+    {% else %}
+        undecided-status
+    {% endif %}">{{ entry.status|format_selected_status }} -
+    {% if entry.notified %}{{ entry.notified_date|date:'d M Y' }}{% else %}<span class="unnotified">Not notified</span>{% endif %}
+</div>

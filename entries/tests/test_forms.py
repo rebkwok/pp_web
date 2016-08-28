@@ -297,7 +297,9 @@ class SelectedEntryUpdateFormTests(TestSetupMixin, TestCase):
 
     def test_submit_form_valid(self):
         data = {
-            'submitted': 'Submit'
+            'submitted': 'Submit',
+            'song': 'Song title',
+            'biography': 'About me'
         }
 
         form = SelectedEntryUpdateForm(instance=self.entry, data=data)
@@ -310,6 +312,8 @@ class SelectedEntryUpdateFormTests(TestSetupMixin, TestCase):
         self.entry.category = 'DOU'
         self.entry.save()
         data = {
+            'song': 'Song title',
+            'biography': 'About me',
             'category': 'DOU',
             'submitted': 'Submit'
         }
@@ -318,8 +322,8 @@ class SelectedEntryUpdateFormTests(TestSetupMixin, TestCase):
         self.assertEqual(
             form.errors,
             {
-                'partner_name': ['This field is required'],
-                'partner_email': ['This field is required'],
+                'partner_name': ['This field is required.'],
+                'partner_email': ['This field is required.'],
             }
         )
 
@@ -327,6 +331,8 @@ class SelectedEntryUpdateFormTests(TestSetupMixin, TestCase):
         self.entry.category = 'DOU'
         self.entry.save()
         data = {
+            'song': 'Song title',
+            'biography': 'About me',
             'submitted': 'Submit',
             'partner_name': 'Test user',
             'partner_email': self.user.email
@@ -347,6 +353,9 @@ class SelectedEntryUpdateFormTests(TestSetupMixin, TestCase):
         self.entry.save()
         mommy.make(EmailAddress, user=self.user, email='other@test.com')
         data = {
+
+            'song': 'Song title',
+            'biography': 'About me',
             'submitted': 'Submit',
             'partner_name': 'Test user',
             'partner_email': 'other@test.com'
@@ -366,6 +375,8 @@ class SelectedEntryUpdateFormTests(TestSetupMixin, TestCase):
         self.entry.category = 'DOU'
         self.entry.save()
         data = {
+            'song': 'Song title',
+            'biography': 'About me',
             'submitted': 'Submit',
             'partner_name': 'Test user',
             'partner_email': 'nouser@unknown.com'
@@ -388,6 +399,8 @@ class SelectedEntryUpdateFormTests(TestSetupMixin, TestCase):
             User, username='partner', email='partner@test.com'
         )
         data = {
+            'song': 'Song title',
+            'biography': 'About me',
             'submitted': 'Submit',
             'partner_name': 'Test user',
             'partner_email': partner.email
@@ -413,6 +426,8 @@ class SelectedEntryUpdateFormTests(TestSetupMixin, TestCase):
         mommy.make(Entry, category='DOU', user=partner)
 
         data = {
+            'song': 'Song title',
+            'biography': 'About me',
             'submitted': 'Submit',
             'partner_name': 'Test user',
             'partner_email': partner.email
@@ -438,6 +453,8 @@ class SelectedEntryUpdateFormTests(TestSetupMixin, TestCase):
         mommy.make(OnlineDisclaimer, user=partner)
 
         data = {
+            'song': 'Song title',
+            'biography': 'About me',
             'submitted': 'Submit',
             'partner_name': 'Test user',
             'partner_email': partner.email

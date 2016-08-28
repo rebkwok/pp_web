@@ -101,3 +101,14 @@ tr > td.selection_status_td {
 .undecided-status {
     background-color: rgba(125, 125, 125, 0.2);
 }
+
+.table-btn.notify-btn {
+    width: 5em;
+    font-size: 75%;
+    margin: 0;
+}
+
+span.unnotified {
+    color: red;
+    font-weight: bold;
+}

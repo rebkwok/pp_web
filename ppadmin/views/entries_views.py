@@ -3,13 +3,12 @@ import logging
 from django.conf import settings
 
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import Group, User
 from django.contrib import messages
 
 from django.core.urlresolvers import reverse
-from django.db.models import Q
 from django.shortcuts import get_object_or_404, \
     HttpResponseRedirect, render_to_response
+from django.template.response import TemplateResponse
 from django.views.generic import DetailView, ListView
 
 from braces.views import LoginRequiredMixin
@@ -20,6 +19,7 @@ from ppadmin.views.helpers import staff_required, StaffUserMixin
 
 from activitylog.models import ActivityLog
 from entries.models import Entry, CATEGORY_CHOICES_DICT
+from entries.email_helpers import send_pp_email
 
 
 logger = logging.getLogger(__name__)
@@ -95,16 +95,14 @@ class EntryDetailView(LoginRequiredMixin,  StaffUserMixin,  DetailView):
         return get_object_or_404(Entry, entry_ref=self.kwargs['ref'])
 
 
-class EntrySelectionListView(LoginRequiredMixin,  StaffUserMixin,  ListView):
-    model = Entry
-    template_name = 'ppadmin/entries_selection_list.html'
-    context_object_name = 'entries'
-    paginate_by = 30
+class SelectionMixin(object):
+
+    def dispatch(self, request, *args, **kwargs):
+        self.cat_filter = self.request.GET.get('cat_filter', 'all')
+        self.hide_rejected = self.request.GET.get('hide_rejected', False)
+        return super(SelectionMixin, self).dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
-        cat_filter = self.request.GET.get('cat_filter', 'all')
-        hide_rejected = self.request.GET.get('hide_rejected', False)
-
         queryset = Entry.objects.select_related('user')\
             .filter(
                 entry_year=settings.CURRENT_ENTRY_YEAR,
@@ -115,28 +113,36 @@ class EntrySelectionListView(LoginRequiredMixin,  StaffUserMixin,  ListView):
             )\
             .order_by('category', 'user__first_name')
 
-        if cat_filter != 'all':
-            queryset = queryset.filter(category=cat_filter)
+        if self.cat_filter != 'all':
+            queryset = queryset.filter(category=self.cat_filter)
 
-        if hide_rejected:
+        if self.hide_rejected:
             queryset = queryset.exclude(status='rejected')
 
         return queryset
 
     def get_context_data(self, **kwargs):
-        cat_filter = self.request.GET.get('cat_filter', 'all')
-        hide_rejected = self.request.GET.get('hide_rejected', False)
-        ctx = super(EntrySelectionListView, self).get_context_data(**kwargs)
+        ctx = super(SelectionMixin, self).get_context_data(**kwargs)
         ctx.update({
             'filter_form': EntrySelectionFilterForm(
                 initial={
-                    'cat_filter': cat_filter, 'hide_rejected': hide_rejected
+                    'cat_filter': self.cat_filter,
+                    'hide_rejected': self.hide_rejected
                 }
             ),
-            'doubles': cat_filter == 'DOU',
-            'category': cat_filter
+            'doubles': self.cat_filter == 'DOU',
+            'category': self.cat_filter
         })
         return ctx
+
+
+class EntrySelectionListView(
+    LoginRequiredMixin,  StaffUserMixin,  SelectionMixin, ListView
+):
+    model = Entry
+    template_name = 'ppadmin/entries_selection_list.html'
+    context_object_name = 'entries'
+    paginate_by = 30
 
 
 @login_required
@@ -175,12 +181,132 @@ def toggle_selection(request, entry_id, decision=None):
 
 @login_required
 @staff_required
-def notify_users(request):
-    unnotified_entries = Entry.objects.select_related('user').filter(
-        status__in=['selected', 'rejected'], withdrawn=False,
-        notified=False
+def notify_users(request, selection_type):
+    if selection_type == "selected":
+        unnotified_entries = Entry.objects.select_related('user').filter(
+            status='selected', withdrawn=False, notified=False
+        ).order_by('category')
+    elif selection_type == "rejected":
+        unnotified_entries = Entry.objects.select_related('user').filter(
+            status='rejected', withdrawn=False, notified=False
+        ).order_by('category')
+    else:
+        unnotified_entries = Entry.objects.select_related('user').filter(
+            status__in=['selected', 'rejected'], withdrawn=False,
+            notified=False
+        ).order_by('category')
+
+    if request.method == 'GET':
+        context = {'entries': unnotified_entries}
+        return TemplateResponse(
+            request, 'ppadmin/notify_users_list.html', context
+        )
+        # GET: show list of users to be notified - categpry and status
+
+    elif request.method == 'POST':
+        ok_sending = []
+        problem_sending = []
+        for entry in unnotified_entries:
+            user = entry.user
+            ctx = {
+                'entry': entry,
+                'category': CATEGORY_CHOICES_DICT[entry.category]
+            }
+            sent = send_pp_email(
+                request,
+                'Semi-final results', ctx,
+                'ppadmin/email/selection_results.txt',
+                'ppadmin/email/selection_results.html',
+                [user.email]
+            )
+            if sent == 'OK':
+                entry.notified = True
+                entry.save()
+                ok_sending.append(
+                    '{} {}'.format(user.first_name, user.last_name)
+                )
+            else:
+                problem_sending.append(
+                    '{} {} ({})'.format(
+                        user.first_name, user.last_name,
+                        CATEGORY_CHOICES_DICT[entry.category]
+                    )
+                )
+
+        ActivityLog.objects.create(
+            log="Semi-final results notifications sent to {} by admin user "
+                "{}".format(
+                    ', '.join(ok_sending), request.user.username
+                )
+        )
+        if ok_sending:
+            messages.success(
+                request, 'Semi-final results notifications sent to {}'.format(
+                    ', '.join(ok_sending)
+                )
+            )
+        if problem_sending:
+            messages.error(
+                request, 'There was some problem sending semi-final results '
+                         'notification emails to the following '
+                         'users: {}'.format(
+                            ', '.join(problem_sending)
+                         )
+            )
+
+        return HttpResponseRedirect(reverse('ppadmin:entries_selection'))
+
+
+class EntryNotifiedListView(
+    LoginRequiredMixin,  StaffUserMixin,  SelectionMixin, ListView
+):
+    model = Entry
+    template_name = 'ppadmin/entries_notified_list.html'
+    context_object_name = 'entries'
+    paginate_by = 30
+
+    def get_queryset(self):
+        queryset = Entry.objects.select_related('user')\
+            .filter(
+                entry_year=settings.CURRENT_ENTRY_YEAR,
+                status__in=[
+                    'submitted', 'selected', 'selected_confirmed', 'rejected'
+                ],
+                withdrawn=False, notified=True
+            )\
+            .order_by('category', 'user__first_name')
+
+        if self.cat_filter != 'all':
+            queryset = queryset.filter(category=self.cat_filter)
+
+        if self.hide_rejected:
+            queryset = queryset.exclude(status='rejected')
+
+        return queryset
+
+
+@login_required
+@staff_required
+def toggle_selection_reset(request, entry_id, decision=None):
+    template = "ppadmin/includes/notified_status.txt"
+
+    entry = Entry.objects.select_related('user').get(id=entry_id)
+
+    old_notification_date = entry.notified_date
+    entry.notified = False
+    entry.notified_date = None
+    entry.save()
+
+    ActivityLog.objects.create(
+        log="Notified selected entry {entry_id} ({category}) - "
+            "user {username} reset by admin user {adminuser} and marked as "
+            "not notified (old notification date {date})".format(
+                entry_id=entry_id,
+                category=CATEGORY_CHOICES_DICT[entry.category],
+                username=entry.user.username,
+                adminuser=request.user.username,
+                date=old_notification_date.strftime('%d-%m-%y')
+            )
     )
 
-    # TODO
-    # GET: show list of users to be notified - categpry and status
-    # POST: send emails to unnotified users, redirect to selection list
+    return render_to_response(template, {'entry': entry})
