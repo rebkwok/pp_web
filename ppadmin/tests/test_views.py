@@ -1,4 +1,4 @@
-from datetime import date, datetime
+from datetime import datetime
 from model_mommy import mommy
 
 from django.contrib.auth.models import Group, User

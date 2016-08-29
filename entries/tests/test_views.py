@@ -434,6 +434,41 @@ class SelectedEntryUpdateViewTests(TestSetupLoginRequiredMixin, TestCase):
             'biography': 'About me'
         }
 
+    def test_redirect_if_not_selected(self):
+        entry = mommy.make(
+            Entry, user=self.user, category='INT', status='submitted'
+        )
+        url = reverse(
+            'entries:edit_selected_entry', args=(entry.entry_ref,)
+        )
+        self.client.login(username=self.user.username, password='test')
+        resp = self.client.get(url)
+        self.assertEqual(resp.status_code, 302)
+        self.assertIn(reverse('permission_denied'), resp.url)
+
+        entry.status = 'selected'
+        entry.save()
+        resp = self.client.get(url)
+        self.assertEqual(resp.status_code, 200)
+
+        entry.status = 'selected_confirmed'
+        entry.save()
+        resp = self.client.get(url)
+        self.assertEqual(resp.status_code, 200)
+
+        entry.withdrawn = True
+        entry.save()
+        resp = self.client.get(url)
+        self.assertEqual(resp.status_code, 302)
+        self.assertIn(reverse('permission_denied'), resp.url)
+
+        entry.withdrawn = False
+        entry.status = 'rejected'
+        entry.save()
+        resp = self.client.get(url)
+        self.assertEqual(resp.status_code, 302)
+        self.assertIn(reverse('permission_denied'), resp.url)
+
     def test_update_entry_and_save(self):
         self.client.login(username=self.user.username, password='test')
         data = self.post_data.copy()

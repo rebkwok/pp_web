@@ -34,8 +34,8 @@ class EntryListView(LoginRequiredMixin,  StaffUserMixin,  ListView):
 
     def get_queryset(self):
         user_filter = self.request.GET.get('user')
-        cat_filter = self.request.GET.get('cat_filter')
-        status_filter = self.request.GET.get('status_filter')
+        cat_filter = self.request.GET.get('cat_filter', 'all')
+        status_filter = self.request.GET.get('status_filter', 'all_excl')
         reset = self.request.GET.get('reset')
         queryset = Entry.objects.select_related('user')\
             .filter(entry_year=settings.CURRENT_ENTRY_YEAR)\
@@ -43,8 +43,7 @@ class EntryListView(LoginRequiredMixin,  StaffUserMixin,  ListView):
 
         if user_filter:
             queryset = queryset.filter(user__id=user_filter)
-        elif not (cat_filter and status_filter) or \
-                (status_filter == 'all_excl' and cat_filter == 'all') or \
+        elif (status_filter == 'all_excl' and cat_filter == 'all') or \
                 reset:
             # by default, exclude withdrawn and in progress
             queryset = queryset.filter(withdrawn=False)\
@@ -266,23 +265,8 @@ class EntryNotifiedListView(
     paginate_by = 30
 
     def get_queryset(self):
-        queryset = Entry.objects.select_related('user')\
-            .filter(
-                entry_year=settings.CURRENT_ENTRY_YEAR,
-                status__in=[
-                    'submitted', 'selected', 'selected_confirmed', 'rejected'
-                ],
-                withdrawn=False, notified=True
-            )\
-            .order_by('category', 'user__first_name')
-
-        if self.cat_filter != 'all':
-            queryset = queryset.filter(category=self.cat_filter)
-
-        if self.hide_rejected:
-            queryset = queryset.exclude(status='rejected')
-
-        return queryset
+        queryset = super(EntryNotifiedListView, self).get_queryset()
+        return queryset.filter(notified=True)
 
 
 @login_required

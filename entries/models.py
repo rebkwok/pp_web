@@ -72,7 +72,7 @@ class Entry(models.Model):
     withdrawn = models.BooleanField(default=False)
 
     song = models.CharField(max_length=255, blank=True, null=True)
-    video_url = models.URLField(blank=True, null=True)
+    video_url = models.URLField(blank=True, null=True, default='')
     biography = models.TextField(
         verbose_name='Short bio',
         help_text='How long have you been poling? Previous titles? Why you '
