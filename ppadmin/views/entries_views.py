@@ -216,7 +216,7 @@ def notify_users(request, selection_type):
                 'Semi-final results', ctx,
                 'ppadmin/email/selection_results.txt',
                 'ppadmin/email/selection_results.html',
-                [user.email]
+                to_list=[user.email]
             )
             if sent == 'OK':
                 entry.notified = True

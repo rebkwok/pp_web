@@ -1,16 +1,14 @@
-from datetime import datetime
+from mock import patch
 from model_mommy import mommy
 
-from django.contrib.auth.models import Group, User
+from django.conf import settings
+from django.contrib.auth.models import User
+from django.core import mail
 from django.core.urlresolvers import reverse
-from django.db.models import Q
 from django.test import TestCase
-from django.utils import timezone
 
-from accounts.models import OnlineDisclaimer
 from entries.models import Entry
-from activitylog.models import ActivityLog
-from .helpers import format_content, TestSetupStaffLoginRequiredMixin
+from .helpers import TestSetupStaffLoginRequiredMixin
 
 
 class EntryListViewTests(TestSetupStaffLoginRequiredMixin, TestCase):
@@ -472,3 +470,88 @@ class NotifiedSelectionResetTests(TestSetupStaffLoginRequiredMixin, TestCase):
         self.assertEqual(self.entry.status, 'selected')
         self.assertFalse(self.entry.notified)
         self.assertIsNone(self.entry.notified_date)
+
+
+class NotifyUsersTests(TestSetupStaffLoginRequiredMixin, TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        super(NotifyUsersTests, cls).setUpTestData()
+        cls.url = reverse('ppadmin:notify_users')
+
+    def setUp(self):
+        mommy.make(
+            Entry, status='selected', user__email='selected@test.com')
+        mommy.make(Entry, status='selected', notified=True)
+        mommy.make(Entry, status='submitted')
+        mommy.make(Entry, status='rejected', user__email='rejected@test.com')
+        mommy.make(Entry, status='rejected', notified=True)
+
+    def test_notify_selected_entries(self):
+        self.client.login(username=self.staff_user.username, password='test')
+
+        self.assertEqual(Entry.objects.filter(notified=True).count(), 2)
+        self.client.post(reverse('ppadmin:notify_selected_users'))
+
+        self.assertEqual(Entry.objects.filter(notified=True).count(), 3)
+        # 1 email sent
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].to, ['selected@test.com'])
+        self.assertIn('Congratulations!', mail.outbox[0].body)
+        self.assertNotIn('you have not been successful', mail.outbox[0].body)
+
+    def test_notify_rejected_entries(self):
+        self.client.login(username=self.staff_user.username, password='test')
+
+        self.assertEqual(Entry.objects.filter(notified=True).count(), 2)
+        self.client.post(reverse('ppadmin:notify_rejected_users'))
+
+        self.assertEqual(Entry.objects.filter(notified=True).count(), 3)
+        # 1 email sent
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].to, ['rejected@test.com'])
+        self.assertNotIn('Congratulations!', mail.outbox[0].body)
+        self.assertIn('you have not been successful', mail.outbox[0].body)
+
+    def test_notify_all_entries(self):
+        self.client.login(username=self.staff_user.username, password='test')
+
+        self.assertEqual(Entry.objects.filter(notified=True).count(), 2)
+        self.client.post(self.url)
+
+        self.assertEqual(Entry.objects.filter(notified=True).count(), 4)
+        # 2 email sent - 1 selected, 1 rejected
+        self.assertEqual(len(mail.outbox), 2)
+        rejected_mail = [
+            email for email in mail.outbox if email.to == ['rejected@test.com']
+            ]
+        selected_mail = [
+            email for email in mail.outbox if email.to == ['selected@test.com']
+            ]
+        self.assertEqual(len(rejected_mail), 1)
+        self.assertEqual(len(selected_mail), 1)
+        self.assertNotIn('Congratulations!', rejected_mail[0].body)
+        self.assertIn('Congratulations!', selected_mail[0].body)
+        self.assertIn('you have not been successful', rejected_mail[0].body)
+        self.assertNotIn('you have not been successful', selected_mail[0].body)
+
+    @patch('entries.email_helpers.EmailMultiAlternatives.send')
+    def test_problem_sending_emails(self, mock_send):
+        mock_send.side_effect = Exception('Error sending email')
+
+        self.client.login(username=self.staff_user.username, password='test')
+
+        self.assertEqual(Entry.objects.filter(notified=True).count(), 2)
+        resp = self.client.post(self.url, follow=True)
+
+        # notified has not changed
+        self.assertEqual(Entry.objects.filter(notified=True).count(), 2)
+        # No emails sent
+        self.assertEqual(len(mail.outbox), 0)
+
+        self.assertIn(
+            'There was some problem sending semi-final results notification '
+            'emails to the following users:',
+            resp.rendered_content
+        )
+
