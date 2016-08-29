@@ -76,11 +76,18 @@
 				<hr>
 				
 				<div class="col-lg-6">
-					<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. In interdum consectetur lorem id vehicula. In sit amet magna vestibulum, fringilla nisl in, mollis nisi. Sed tincidunt vitae ex non molestie. Nulla tortor tortor, consequat quis accumsan et, porttitor ut elit. Nullam nec vulputate lorem. In tincidunt magna mi, at dapibus nisi bibendum vitae. Etiam dapibus neque magna, eu auctor lectus semper at. Aenean luctus congue dolor, vel bibendum augue ultrices vel. Proin mollis tincidunt tincidunt. Etiam dictum laoreet porta. Nulla facilisi. isis ante. Vivamus id commodo magna. Sed luctus hendrerit leo vitae venenatis.</p>
+					<p>Pole Performance is a pole dance competition based in Scotland and is open to anyone.
+						The Watermelon Studio and Carousel Fitness wanted to create a competition where
+						the routine focused on the overall performance and not just the difficulty of tricks.
+					</p>
 				</div><!-- col-lg-6 -->
 				
 				<div class="col-lg-6">
-					<p>Proin odio augue, mollis a ex a, consequat sodales nisl. Aliquam convallis nulla non turpis tincidunt aliquet. Aenean sed risus nec turpis blandit finibus quis vel felis. Sed vel nibh eget augue elementum maximus ac ut nunc. Pellentesque ullamcorper massa purus, eu vehicula risus sagittis a. Aenean consequat euismod porta. In vulputate elit sit amet vehicula cursus. Ut sagittis blandit tempor. Suspendisse at nisl vel orci rutrum pretium in eu risus. Ut congue ultrices metus. In lobortis purus non diam sollicitudin vestibulum.</p>
+					<p>We wanted to create a competition where each routine was a true performance,
+						from the choreography right down to the costumes.
+						Our first competition ran in March 2016 which was a huge success and we hope to
+						run for many more years.
+					</p>
 				</div><!-- col-lg-6 -->
 			</div><!-- row -->
 		</div><!-- container -->
@@ -90,7 +97,7 @@
 			<div class="container">
 				<h1>ENTRIES OPEN SEPTEMBER 2016</h1>
 				<hr>
-				<div class="centered"><a href="{% url 'entries:entries_home' %}" class="btn btn-large btn-purple">Enter now</a></div>
+				{% if entries_open %}<div class="centered"><a href="{% url 'entries:entries_home' %}" class="btn btn-large btn-purple">Further Information</a></div>{% endif %}
 			</div><!-- container -->
 		</section><!-- section -->
 		
@@ -104,11 +111,13 @@
 				<hr>
 				<br>
 				<div class="col-lg-offset-2 col-lg-8">
-					<p>In iaculis non enim ut pretium. Proin ullamcorper congue magna. Nullam cursus massa id sem consectetur, eget ornare urna dictum. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Aenean sem felis, posuere sed dolor et, pharetra rutrum odio. Nam tincidunt, augue eu posuere pulvinar, orci dolor dictum est, sed mattis erat risus vel dolor. In consectetur sodales diam et mollis. Duis tortor metus, congue at elementum at, tempus id risus. Duis quis augue elementum, molestie neque accumsan, vestibulum nibh. Donec eget volutpat dui, sed placerat ex. Nulla malesuada commodo justo, at sagittis sem maximus eget.
-					</p>
-					<p>Aliquam at accumsan eros. Etiam non hendrerit dui. Phasellus consectetur ornare turpis, vitae rutrum tortor viverra accumsan. Morbi nec odio dolor. In scelerisque diam nec tortor ullamcorper ultrices. Vestibulum vel viverra sapien. In suscipit tincidunt augue vel ultricies. Nam et diam tincidunt, feugiat metus quis, blandit ex. Maecenas gravida vulputate tincidunt. Cras varius nulla a nulla ornare hendrerit.
-					</p>
-					<div class="centered"><a href="{% url 'entries:entries_home' %}" class="btn btn-large btn-purple">Enter now</a></div>
+					<p>Initial application is by video entry. Entries close at midnight on 1st November 2016.
+						Videos must not exceed 3 minutes and must not be edited. 6 people from
+						mens/professional/beginners and 8 from intermediate/advanced/doubles category
+						with the highest scores will perform live at the finals at Carnegie Hall, Dunfermline on 12th
+						March 2017. </p>
+					<p>More details can be found in the <a href="{% url 'entries:entries_home' %}">Competitors' section</a>. </p>
+					<div class="centered"><a href="{% url 'entries:entries_home' %}" class="btn btn-large btn-purple">Enter</a></div>
 				</div><!-- col-lg -->
 			</div><!-- row -->
 
@@ -118,9 +127,10 @@
 		<!-- ==== SECTION DIVIDER2 -->
 		<section class="section-divider textdivider divider2">
 			<div class="container">
-				<h1>SOME OTHER HEADING</h1>
-				<hr>
-				<p>Some other brief sound bite here.</p>
+				<h1></h1>
+				<!--<hr>-->
+				<br><br>
+				<p></p>
 			</div><!-- container -->
 		</section><!-- section -->
 
@@ -128,37 +138,38 @@
 		<div class="container" id="judges" name="judges">
 		<br>
 			<div class="row white centered">
-				<h1 class="centered">JUDGES</h1>
+				<h1 class="centered">JUDGES & COMPÈRE</h1>
 				<hr>
 				<br>
 				<br>
-				<div class="col-lg-3 col-md-3 col-sm-6 centered">
-					<img class="img img-circle" src="{% static 'web/images/judgeA.jpg' %}" height="120px" width="120px" alt="">
+				<div class="col-lg-3 col-md-3 col-sm-4 centered">
+					<img class="img img-circle" src="{% static 'web/images/question-mark.png' %}" height="120px" width="120px" alt="">
 					<br>
-					<h4><b>Judge A</b></h4>
-					<p>Brief bio of Judge A</p>
+					<h4><b></b></h4>
+					<p>To be confirmed</p>
 				</div><!-- col-lg-3 -->
 				
-				<div class="col-lg-3 col-md-3 col-sm-6 centered">
-					<img class="img img-circle" src="{% static 'web/images/judgeB.jpg' %}" height="120px" width="120px" alt="">
+				<div class="col-lg-3 col-md-3 col-sm-4 centered">
+					<img class="img img-circle" src="{% static 'web/images/question-mark.png' %}" height="120px" width="120px" alt="">
 					<br>
-					<h4><b>Judge B</b></h4>
-					<p>Brief bio of Judge B</p>
+					<h4><b></b></h4>
+					<p>To be confirmed</p>
 				</div><!-- col-lg-3 -->
 				
-				<div class="col-lg-3 col-md-3 col-sm-6 centered">
-					<img class="img img-circle" src="{% static 'web/images/judgeC.jpg' %}" height="120px" width="120px" alt="">
+				<div class="col-lg-3 col-md-3 col-sm-4 centered">
+					<img class="img img-circle" src="{% static 'web/images/question-mark.png' %}" height="120px" width="120px" alt="">
 					<br>
-					<h4><b>Judge C</b></h4>
-					<p>Brief bio of Judge C</p>
+					<h4><b></b></h4>
+					<p>To be confirmed</p>
 				</div><!-- col-lg-3 -->
-				
-				<div class="col-lg-3 col-md-3 col-sm-6 centered">
-					<img class="img img-circle" src="{% static 'web/images/judgeD.jpg' %}" height="120px" width="120px" alt="">
+
+				<div class="col-lg-3 col-md-3 col-sm-4 centered">
+					<img class="img img-circle" src="{% static 'web/images/question-mark.png' %}" height="120px" width="120px" alt="">
 					<br>
-					<h4><b>Judge D</b></h4>
-					<p>Brief bio of Judge D</p>
+					<h4><b></b></h4>
+					<p>To be confirmed</p>
 				</div><!-- col-lg-3 -->
+
 				
 			</div><!-- row -->
 		</div><!-- container -->
@@ -173,7 +184,7 @@
 
 				<div class="col-lg-6">
 					<div class="col-lg-4 centered">
-						<p><img class="img" src="{% static 'web/images/watermelon_logo.png' %}" width="100px" height="auto"></p>
+						<p><a href="http://thewatermelonstudio.co.uk"><img class="img" src="{% static 'web/images/watermelon_logo.png' %}" width="100px" height="auto"></a></p>
 					</div>
 					<div class="col-lg-8">
 						<h2 class="centered">The Watermelon Studio</h2>
@@ -183,7 +194,7 @@
 
 				<div class="col-lg-6">
 					<div class="col-lg-4 centered">
-						<p><img class="img" src="{% static 'web/images/carousel_logo.jpg' %}" width="100px" height="auto"></p>
+						<p><a href="http://carouselfitness.co.uk"><img class="img" src="{% static 'web/images/carousel_logo.jpg' %}" width="100px" height="auto"></a></p>
 					</div>
 					<div class="col-lg-8">
 						<h2 class="centered">Carousel Fitness</h2>
@@ -401,12 +412,10 @@
 				<hr>
 				<br>
 				<div class="col-lg-4 col-lg-offset-4">
-					<p><span class="icon icon-home"></span> Address<br/>
-						<span class="icon icon-phone"></span> 0131 xxx xxxx <br/>
-						<span class="icon icon-mobile"></span> 077xx xxx xxxx <br/>
-						<span class="icon icon-envelop"></span> <a href="mailto:{{ pp_email }}">{{ pp_email }}</a> <br/>
-						<span class="icon icon-twitter"></span> <a href="#"> @poleperformance </a> <br/>
-						<span class="icon icon-facebook"></span> <a href="https://www.facebook.com/Pole-Performance-Competition-111934239163033/"> Pole Peformance Competition </a> <br/>
+					<p><span class="icon icon-envelop"></span> <a href="mailto:{{ pp_email }}">{{ pp_email }}</a> <br/>
+						<span class="icon icon-facebook"></span> <a href="https://www.facebook.com/Pole-Performance-Competition-111934239163033/"> Pole Peformance Competition</a> <br/>
+						<span class="icon icon-globe"></span> <a href="http://thewatermelonstudio.co.uk/"> The Watermelon Studio</a> <br/>
+						<span class="icon icon-globe"></span> <a href="http://carouselfitness.co.uk/"> Carousel Fitness</a> <br/>
 					</p>
 				</div><!-- col -->
 
