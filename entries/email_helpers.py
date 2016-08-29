@@ -8,7 +8,8 @@ from activitylog.models import ActivityLog
 
 def send_pp_email(
         request,
-        subject, ctx, template_txt, template_html, to_list,
+        subject, ctx, template_txt, template_html,
+        prefix=settings.ACCOUNT_EMAIL_SUBJECT_PREFIX, to_list=[],
         from_email=settings.DEFAULT_FROM_EMAIL, cc_list=[],
         bcc_list=[], reply_to_list=[settings.DEFAULT_STUDIO_EMAIL]
 ):
@@ -16,7 +17,7 @@ def send_pp_email(
     ctx.update({'host': host})
     try:
         msg = EmailMultiAlternatives(
-            subject,
+            '{} {}'.format(prefix, subject),
             get_template(
                 template_txt).render(
                     ctx

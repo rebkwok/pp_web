@@ -1,4 +1,3 @@
-{% block messagecontent %}
 Pole Performance 2017 Semi Finals
 -------------------------------------------
 {% if entry.status == 'selected' %}
@@ -15,6 +14,5 @@ Provide additional entry information: {{ host }}/entries/myentries/{{ entry.entr
 Thank you for your application to Pole Performance 2017.  Unfortunately you have not been successful in securing a place in the following category:
 - {{ category }}
 {% endif %}
-{% endblock %}
 
 {% include "account/email/footer.txt" %}

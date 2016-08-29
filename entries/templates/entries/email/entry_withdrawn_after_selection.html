@@ -1,0 +1,17 @@
+{% extends 'email_base.html' %}
+
+{% load static %}
+{% block messagecontent %}
+<h2>Pole Performance 2017 Finals: ENTRY WITHDRAWN</h2>
+
+    <p>You have withdrawn your entry to the Pole Performance {{ entry.entry_year }} FINALS for the following category:</p>
+    <p><strong>{{ category }}</strong></p>
+
+    <p>As this withdrawal is after you accepted your place in the finals, you will need to pay the
+        withdrawal fee.  If you have not already paid this, you can check the status of your
+        entry on the website and pay there.  Please note that if this fee is not paid, you will not
+        be able to enter Pole Performance in the future.</br>
+        <a href="{{ host }}{% url 'entries:user_entries' %}">{{ host }}{% url 'entries:user_entries' %}</a>
+    </p>
+
+{% endblock %}

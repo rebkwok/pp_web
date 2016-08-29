@@ -1,0 +1,24 @@
+{% extends 'email_base.html' %}
+
+{% load static %}
+{% block messagecontent %}
+<h2>Pole Performance 2017 Finals Entry Confirmation</h2>
+
+    <p>Thank you for confirming acceptance of your entry to the Pole Performance {{ entry.entry_year }} FINALS for the following category:</p>
+    <p><strong>{{ category }}</strong></p>
+
+    <p>You can check/update your information and check the status of your
+        entry on the website.  If you haven't done so already, please make your
+        payment for the entry fee.</br>
+        <a href="{{ host }}{% url 'entries:user_entries' %}">{{ host }}{% url 'entries:user_entries' %}</a>
+    </p>
+    <p>
+    Please also provide your song choice and short biography.</br>
+    <a href="{{ host }}{% url 'entries:edit_selected_entry' entry.entry_ref %}">{{ host }}{% url 'entries:edit_selected_entry' entry.entry_ref %}</a>
+    </p>
+
+    <p>
+    Please note that if you withdraw from the Finals, you will be required to pay a withdrawal fee.
+    </p>
+
+{% endblock %}

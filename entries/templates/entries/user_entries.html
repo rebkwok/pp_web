@@ -6,7 +6,9 @@
 
 
 <div class="container-fluid row extra-top-margin">
-    <div class="pull-right"><a class="btn btn-purple {% if not user|has_disclaimer %}disabled{% endif %}" href="{% url 'entries:create_entry' %}">Start new entry</a></div>
+    <div class="pull-right"><a class="btn btn-purple {% if not user|has_disclaimer or not entries_open %}disabled{% endif %}" href="{% url 'entries:create_entry' %}">Start new entry</a></br>
+        <span class="helptext">{% if not entries_open %}Entries are not open{% elif not user|has_disclaimer %}Please complete a <a href="{% url 'accounts:disclaimer_form' %}">waiver</a> before entering{% endif %}</span>
+    </div>
 
     <h1>Entries</h1>
 

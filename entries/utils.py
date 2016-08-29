@@ -1,5 +1,7 @@
+from datetime import datetime
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.utils import timezone
 
 from accounts.models import has_disclaimer
 
@@ -29,3 +31,11 @@ def check_partner_email(email):
         ok = has_disc and not already_entered
 
     return result, ok
+
+
+def entries_open():
+    open_date = datetime.strptime(settings.ENTRIES_OPEN_DATE, "%d/%m/%Y")
+    open_date = open_date.replace(tzinfo=timezone.utc)
+    close_date = datetime.strptime(settings.ENTRIES_CLOSE_DATE, "%d/%m/%Y")
+    close_date = close_date.replace(tzinfo=timezone.utc)
+    return open_date < timezone.now() < close_date

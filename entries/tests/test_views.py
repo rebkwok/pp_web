@@ -1,7 +1,10 @@
+from mock import patch
 from model_mommy import mommy
 
+from django.conf import settings
 from django.test import TestCase, override_settings
 from django.contrib.auth.models import User
+from django.core import mail
 from django.core.urlresolvers import reverse
 
 from accounts.models import OnlineDisclaimer
@@ -23,13 +26,17 @@ class EntryHomeTests(TestSetupMixin, TestCase):
         resp = self.client.get(self.url)
         self. assertEqual(resp.status_code, 200)
 
-    @override_settings(ENTRIES_OPEN=True)
+    @override_settings(
+        ENTRIES_OPEN_DATE="01/01/2016", ENTRIES_CLOSE_DATE="01/01/2200"
+    )
     def test_entries_open(self):
         resp = self.client.get(self.url)
         self.assertIn('ENTER NOW', str(resp.content))
 
-    @override_settings(ENTRIES_OPEN=False)
-    def test_entries_open(self):
+    @override_settings(
+        ENTRIES_OPEN_DATE="01/01/2010", ENTRIES_CLOSE_DATE="01/01/2016"
+    )
+    def test_entries_closed(self):
         resp = self.client.get(self.url)
         self.assertNotIn('ENTER NOW', str(resp.content))
 
@@ -238,8 +245,10 @@ class EntryCreateViewTests(TestSetupLoginRequiredMixin, TestCase):
         self.assertEqual(resp.status_code, 302)
         self.assertEqual(Entry.objects.count(), 1)
         self.assertEqual( resp.url, reverse('entries:user_entries'))
+        # no emails on save
+        self.assertEqual(len(mail.outbox), 0)
 
-    def test_first_submission_redirects_to_payment_view(self):
+    def test_first_submission_redirects_to_payment_view_and_emails_user(self):
         self.assertFalse(Entry.objects.exists())
         self.client.login(username=self.user.username, password='test')
         data = self.post_data.copy()
@@ -252,12 +261,15 @@ class EntryCreateViewTests(TestSetupLoginRequiredMixin, TestCase):
 
         self.assertEqual(resp.status_code, 302)
         self.assertEqual(Entry.objects.count(), 1)
+        entry = Entry.objects.first()
         self.assertEqual(
-            resp.url,
-            reverse(
-                'entries:video_payment',
-                args=[Entry.objects.first().entry_ref]
-            )
+            resp.url, reverse('entries:video_payment', args=[entry.entry_ref])
+        )
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].to, [entry.user.email])
+        self.assertEqual(
+            mail.outbox[0].subject,
+            '{} Entry submitted'.format(settings.ACCOUNT_EMAIL_SUBJECT_PREFIX)
         )
 
     def test_change_category(self):
@@ -374,6 +386,35 @@ class EntryUpdateViewTests(TestSetupLoginRequiredMixin, TestCase):
         self.assertEqual(self.entry.category, 'INT')
         self.assertEqual(self.entry.status, 'in_progress')
         self.assertEqual(self.entry.video_url, 'http://foo.com')
+
+    def test_first_submission_redirects_to_payment_and_emails_user(self):
+        entry = mommy.make(
+            Entry, user=self.user, category='ADV', status='in_progress'
+        )
+        url = reverse('entries:edit_entry', args=(entry.entry_ref,))
+        self.client.login(username=self.user.username, password='test')
+
+        # update and save
+        data = {'stage_name': 'Me', 'category': 'ADV', 'saved': 'Save'}
+        self.client.post(url, data)
+        self.assertEqual(len(mail.outbox), 0)
+
+        # submit
+        del data['saved']
+        data.update({'video_url': 'http://foo.com', 'submitted': 'Submit'})
+
+        self.client.post(url, data)
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].to, [entry.user.email])
+        self.assertEqual(
+            mail.outbox[0].subject,
+            '{} Entry submitted'.format(settings.ACCOUNT_EMAIL_SUBJECT_PREFIX)
+        )
+
+        # update and submit again; no further email sent
+        data.update({'stage_name': 'My new name'})
+        self.client.post(url, data)
+        self.assertEqual(len(mail.outbox), 1)
 
 
 class SelectedEntryUpdateViewTests(TestSetupLoginRequiredMixin, TestCase):
@@ -505,6 +546,62 @@ class EntryWithdrawViewTests(TestSetupLoginRequiredMixin, TestCase):
         entry.refresh_from_db()
         self.assertEqual(entry.status, 'selected_confirmed')
         self.assertTrue(entry.withdrawn)
+
+    def test_emails(self):
+        """
+        Email sent to PP if status is selected or selected_confirmed; email to
+        PP only if selected
+        """
+        self.client.login(username=self.user.username, password='test')
+        entry = mommy.make(
+            Entry, user=self.user, category='ADV', status='submitted',
+        )
+        self.client.post(
+            reverse('entries:withdraw_entry', args=(entry.entry_ref,)),
+            {'id': entry.id}
+        )
+        entry.refresh_from_db()
+        self.assertTrue(entry.withdrawn)
+        self.assertEqual(len(mail.outbox), 0)
+
+        entry.withdrawn = False
+        entry.status = 'selected'
+        entry.save()
+
+        self.client.post(
+            reverse('entries:withdraw_entry', args=(entry.entry_ref,)),
+            {'id': entry.id}
+        )
+        entry.refresh_from_db()
+        self.assertTrue(entry.withdrawn)
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].to, [settings.DEFAULT_STUDIO_EMAIL])
+        self.assertEqual(
+            mail.outbox[0].subject,
+            '{} Entry withdrawn'.format(settings.ACCOUNT_EMAIL_SUBJECT_PREFIX)
+        )
+
+        entry.withdrawn = False
+        entry.status = 'selected_confirmed'
+        entry.save()
+
+        self.client.post(
+            reverse('entries:withdraw_entry', args=(entry.entry_ref,)),
+            {'id': entry.id}
+        )
+        entry.refresh_from_db()
+        self.assertTrue(entry.withdrawn)
+        self.assertEqual(len(mail.outbox), 3)
+        self.assertEqual(mail.outbox[1].to, [entry.user.email])
+        self.assertEqual(mail.outbox[2].to, [settings.DEFAULT_STUDIO_EMAIL])
+        self.assertEqual(
+            mail.outbox[1].subject,
+            '{} Entry withdrawn'.format(settings.ACCOUNT_EMAIL_SUBJECT_PREFIX)
+        )
+        self.assertEqual(
+            mail.outbox[2].subject,
+            '{} Entry withdrawn'.format(settings.ACCOUNT_EMAIL_SUBJECT_PREFIX)
+        )
 
 
 class VideoPaymentViewTests(TestSetupLoginRequiredMixin, TestCase):

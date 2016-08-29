@@ -16,6 +16,7 @@ from payments.forms import PayPalPaymentsListForm, PayPalPaymentsEntryForm
 from payments.models import create_entry_paypal_transaction
 
 from .forms import EntryCreateUpdateForm, SelectedEntryUpdateForm
+from .email_helpers import send_pp_email
 from .models import CATEGORY_CHOICES_DICT, Entry, VIDEO_ENTRY_FEES, \
     SELECTED_ENTRY_FEES, WITHDRAWAL_FEE
 from .utils import check_partner_email
@@ -163,6 +164,17 @@ class EntryMixin(object):
         entry.save()
 
         if first_submission:
+            ctx = {
+                'entry': entry,
+                'category': CATEGORY_CHOICES_DICT[entry.category]
+            }
+            send_pp_email(
+                self.request, 'Entry submitted', ctx,
+                'entries/email/entry_submitted.txt',
+                'entries/email/entry_submitted.html',
+                to_list=[self.request.user.email]
+            )
+
             ActivityLog.objects.create(
                 log="Entry {entry_id} ({category}) - user {username} - "
                     "{action}".format(
@@ -333,6 +345,33 @@ class EntryWithdrawView(LoginRequiredMixin, generic.UpdateView):
 
         messages.success(self.request, self.success_message)
 
+        if entry.status == 'selected_confirmed':
+            # Email User
+            ctx = {
+                'entry': entry,
+                'category': CATEGORY_CHOICES_DICT[entry.category],
+            }
+            send_pp_email(
+                self.request, 'Entry withdrawn', ctx,
+                'entries/email/entry_withdrawn_after_selection.txt',
+                'entries/email/entry_withdrawn_after_selection.html',
+                to_list=[self.request.user.email]
+            )
+
+        if entry.status in ["selected", 'selected_confirmed']:
+            # email PP
+            ctx = {
+                'entry': entry,
+                'category': CATEGORY_CHOICES_DICT[entry.category],
+                'status_at_withdrawal': 'selected'
+            }
+            send_pp_email(
+                self.request, 'Entry withdrawn', ctx,
+                'entries/email/entry_withdrawn_after_selection_to_pp.txt',
+                'entries/email/entry_withdrawn_after_selection_to_pp.html',
+                to_list=[settings.DEFAULT_STUDIO_EMAIL]
+            )
+
         ActivityLog.objects.create(
             log="Entry {entry_id} ({category}) - status {status} - user {username} - "
                 "withdrawn".format(
@@ -424,6 +463,18 @@ class EntryConfirmView(LoginRequiredMixin, generic.UpdateView):
         entry = form.save(commit=False)
         entry.status = "selected_confirmed"
         entry.save()
+
+        # Email User
+        ctx = {
+            'entry': entry,
+            'category': CATEGORY_CHOICES_DICT[entry.category],
+        }
+        send_pp_email(
+            self.request, 'Finals place confirmed', ctx,
+            'entries/email/entry_confirmed.txt',
+            'entries/email/entry_confirmed.html',
+            to_list=[self.request.user.email]
+        )
 
         ActivityLog.objects.create(
             log="Selected entry {entry_id} ({category}) - user {username} - "

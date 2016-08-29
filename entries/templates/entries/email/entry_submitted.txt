@@ -1,0 +1,9 @@
+Pole Performance 2017 Semi Finals
+------------------------------------------------
+Thank you for your entry to Pole Performance {{ entry.entry_year }} for the following category:
+- {{ category }}
+
+You can check/update your information and check the status of your entry on the website.  Please note that your entry is not considered complete until payment for the video entry fee has been received.
+{{ host }}/entries/myentries
+
+{% include "account/email/footer.txt" %}

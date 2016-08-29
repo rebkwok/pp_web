@@ -1,0 +1,5 @@
+Pole Performance 2017 Finals: ENTRY WITHDRAWN
+
+The following entry has been withdrawn AFTER {{ status_at_withdrawal|upper }}:
+
+ - {{ entry.user.first_name }} {{  entry.user.last_name }} - {{ category }}

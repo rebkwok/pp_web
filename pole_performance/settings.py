@@ -136,6 +136,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'entries.context_processors.pp_email',
+                'entries.context_processors.entries_open',
             ],
             'loaders': [
                 'apptemplates.Loader',
@@ -304,7 +305,8 @@ if 'test' in sys.argv:  # use local cache for tests
     }
 
 
-ENTRIES_OPEN = env('ENTRIES_OPEN')
+ENTRIES_OPEN_DATE = env('ENTRIES_OPEN_DATE')
+ENTRIES_CLOSE_DATE = env('ENTRIES_CLOSE_DATE')
 
 CURRENT_ENTRY_YEAR = env('CURRENT_ENTRY_YEAR')
 
