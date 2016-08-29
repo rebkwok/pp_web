@@ -366,3 +366,109 @@ class EntryNotifiedListViewTests(TestSetupStaffLoginRequiredMixin, TestCase):
         resp = self.client.get(self.url)
         self.assertEqual(resp.context_data['entries'].count(), 1)
         self.assertIn(notified, resp.context_data['entries'])
+
+
+class ToggleSelectionTests(TestSetupStaffLoginRequiredMixin, TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        super(ToggleSelectionTests, cls).setUpTestData()
+        cls.entry = mommy.make(Entry, status='submitted')
+        cls.url = reverse('ppadmin:toggle_selected', args=[cls.entry.id])
+
+    def setUp(self):
+        self.submitted_entry = mommy.make(Entry, status='submitted')
+        self.selected_entry = mommy.make(Entry, status='selected')
+        self.rejected_entry = mommy.make(Entry, status='rejected')
+        self.selected_confirmed = mommy.make(Entry, status='selected_confirmed')
+
+    def select_url(self, entry):
+        return reverse('ppadmin:toggle_selected', args=[entry.id])
+
+    def reject_url(self, entry):
+        return reverse('ppadmin:toggle_rejected', args=[entry.id])
+
+    def undecided_url(self, entry):
+        return reverse('ppadmin:toggle_undecided', args=[entry.id])
+
+    def test_toggle_selected(self):
+        self.assertEqual(self.submitted_entry.status, 'submitted')
+        self.assertEqual(self.rejected_entry.status, 'rejected')
+
+        self.client.login(username=self.staff_user.username, password='test')
+
+        self.client.post(self.select_url(self.submitted_entry))
+        self.submitted_entry.refresh_from_db()
+        self.assertEqual(self.submitted_entry.status, 'selected')
+
+        self.client.post(self.select_url(self.rejected_entry))
+        self.rejected_entry.refresh_from_db()
+        self.assertEqual(self.rejected_entry.status, 'selected')
+
+    def test_toggle_rejected(self):
+        self.assertEqual(self.submitted_entry.status, 'submitted')
+        self.assertEqual(self.selected_entry.status, 'selected')
+
+        self.client.login(username=self.staff_user.username, password='test')
+
+        self.client.post(self.reject_url(self.submitted_entry))
+        self.submitted_entry.refresh_from_db()
+        self.assertEqual(self.submitted_entry.status, 'rejected')
+
+        self.client.post(self.reject_url(self.selected_entry))
+        self.selected_entry.refresh_from_db()
+        self.assertEqual(self.selected_entry.status, 'rejected')
+
+    def test_toggle_undecided(self):
+        self.assertEqual(self.selected_entry.status, 'selected')
+        self.assertEqual(self.rejected_entry.status, 'rejected')
+
+        self.client.login(username=self.staff_user.username, password='test')
+
+        self.client.post(self.undecided_url(self.selected_entry))
+        self.selected_entry.refresh_from_db()
+        self.assertEqual(self.selected_entry.status, 'submitted')
+
+        self.client.post(self.undecided_url(self.rejected_entry))
+        self.rejected_entry.refresh_from_db()
+        self.assertEqual(self.rejected_entry.status, 'submitted')
+
+    def test_cannot_change_selected_confirmed(self):
+        self.assertEqual(self.selected_confirmed.status, 'selected_confirmed')
+
+        self.client.login(username=self.staff_user.username, password='test')
+
+        self.client.post(self.undecided_url(self.selected_confirmed))
+        self.selected_confirmed.refresh_from_db()
+        self.assertEqual(self.selected_confirmed.status, 'selected_confirmed')
+
+        self.client.post(self.select_url(self.selected_confirmed))
+        self.selected_confirmed.refresh_from_db()
+        self.assertEqual(self.selected_confirmed.status, 'selected_confirmed')
+
+        self.client.post(self.reject_url(self.selected_confirmed))
+        self.selected_confirmed.refresh_from_db()
+        self.assertEqual(self.selected_confirmed.status, 'selected_confirmed')
+
+
+class NotifiedSelectionResetTests(TestSetupStaffLoginRequiredMixin, TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        super(NotifiedSelectionResetTests, cls).setUpTestData()
+        cls.entry = mommy.make(Entry, status='selected', notified=True)
+        cls.url = reverse('ppadmin:notified_selection_reset', args=[cls.entry.id])
+
+    def test_reset_notified_selection(self):
+        self.assertEqual(self.entry.status, 'selected')
+        self.assertTrue(self.entry.notified)
+        self.assertIsNotNone(self.entry.notified_date)
+
+        self.client.login(username=self.staff_user.username, password='test')
+        self.client.post(self.url)
+
+        self.entry.refresh_from_db()
+        # status stays the same, notified and notified date are rest
+        self.assertEqual(self.entry.status, 'selected')
+        self.assertFalse(self.entry.notified)
+        self.assertIsNone(self.entry.notified_date)

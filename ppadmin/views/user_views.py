@@ -102,30 +102,32 @@ class UserListView(LoginRequiredMixin,  StaffUserMixin,  ListView):
 @staff_required
 def toggle_subscribed(request,  user_id):
     user_to_change = User.objects.get(id=user_id)
-    group, _ = Group.objects.get_or_create(name='subscribed')
-    subscribed = group in user_to_change.groups.all()
-    if subscribed:
-        group.user_set.remove(user_to_change)
-        ActivityLog.objects.create(
-            log="User {} {} ({}) unsubscribed from mailing list by "
-                "admin user {}".format(
-                user_to_change.first_name,
-                user_to_change.last_name,
-                user_to_change.username,
-                request.user.username
+
+    if request.method == 'POST':
+        group, _ = Group.objects.get_or_create(name='subscribed')
+        subscribed = group in user_to_change.groups.all()
+        if subscribed:
+            group.user_set.remove(user_to_change)
+            ActivityLog.objects.create(
+                log="User {} {} ({}) unsubscribed from mailing list by "
+                    "admin user {}".format(
+                    user_to_change.first_name,
+                    user_to_change.last_name,
+                    user_to_change.username,
+                    request.user.username
+                )
             )
-        )
-    else:
-        group.user_set.add(user_to_change)
-        ActivityLog.objects.create(
-            log="User {} {} ({}) subscribed to mailing list by "
-                "admin user {}".format(
-                user_to_change.first_name,
-                user_to_change.last_name,
-                user_to_change.username,
-                request.user.username
+        else:
+            group.user_set.add(user_to_change)
+            ActivityLog.objects.create(
+                log="User {} {} ({}) subscribed to mailing list by "
+                    "admin user {}".format(
+                    user_to_change.first_name,
+                    user_to_change.last_name,
+                    user_to_change.username,
+                    request.user.username
+                )
             )
-        )
     return render_to_response(
         "ppadmin/includes/subscribed_button.txt",
         {"user": user_to_change}
@@ -144,24 +146,25 @@ class MailingListView(LoginRequiredMixin, StaffUserMixin, ListView):
 
 def unsubscribe(request, user_id):
     user_to_change = User.objects.get(id=user_id)
-    group = Group.objects.get(name='subscribed')
-    group.user_set.remove(user_to_change)
-    messages.success(
-        request,
-        "User {} {} ({}) unsubscribed from mailing list.".format(
-            user_to_change.first_name,
-            user_to_change.last_name,
-            user_to_change.username
-        )
-    )
-    ActivityLog.objects.create(
-        log="User {} {} ({}) unsubscribed from mailing list by "
-            "admin user {}".format(
-            user_to_change.first_name,
-            user_to_change.last_name,
-            user_to_change.username,
-            request.user.username
+    if request.method == 'POST':
+        group = Group.objects.get(name='subscribed')
+        group.user_set.remove(user_to_change)
+        messages.success(
+            request,
+            "User {} {} ({}) unsubscribed from mailing list.".format(
+                user_to_change.first_name,
+                user_to_change.last_name,
+                user_to_change.username
             )
-    )
-    user_to_change.save()
+        )
+        ActivityLog.objects.create(
+            log="User {} {} ({}) unsubscribed from mailing list by "
+                "admin user {}".format(
+                user_to_change.first_name,
+                user_to_change.last_name,
+                user_to_change.username,
+                request.user.username
+                )
+        )
+        user_to_change.save()
     return HttpResponseRedirect(reverse('ppadmin:mailing_list'))

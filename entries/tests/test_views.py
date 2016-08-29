@@ -755,7 +755,7 @@ class DoublePartnerCheckTests(TestSetupMixin, TestCase):
         return reverse('entries:check_partner') + '?email=' + email
 
     def test_partner_exists_and_has_disclaimer(self):
-        resp = self.client.get(self.get_url(self.user_with_disclaimer.email))
+        resp = self.client.post(self.get_url(self.user_with_disclaimer.email))
         self.assertIn(
             'Doubles partner registered: Yes',
             format_content(str(resp.content)),

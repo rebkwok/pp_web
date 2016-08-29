@@ -148,32 +148,32 @@ class EntrySelectionListView(
 @staff_required
 def toggle_selection(request, entry_id, decision=None):
     template = "ppadmin/includes/selection_status.txt"
-
     entry = Entry.objects.select_related('user').get(id=entry_id)
 
-    if not entry.status == "selected_confirmed":
-        if entry.status != decision:
-            old_status = entry.status
-            if decision == "selected":
-                entry.status = 'selected'
-            elif decision == "rejected":
-                entry.status = 'rejected'
-            elif decision == "undecided":
-                entry.status = 'submitted'
-            entry.save()
+    if request.method == "POST":
+        if not entry.status == "selected_confirmed":
+            if entry.status != decision:
+                old_status = entry.status
+                if decision == "selected":
+                    entry.status = 'selected'
+                elif decision == "rejected":
+                    entry.status = 'rejected'
+                elif decision == "undecided":
+                    entry.status = 'submitted'
+                entry.save()
 
-            ActivityLog.objects.create(
-                log="Entry {entry_id} ({category}) - user {username} - "
-                    "changed from {old_status} to {decision} by admin "
-                    "user {adminuser}".format(
-                        entry_id=entry_id,
-                        category=CATEGORY_CHOICES_DICT[entry.category],
-                        username=entry.user.username,
-                        old_status=old_status,
-                        decision=decision,
-                        adminuser=request.user.username
-                    )
-            )
+                ActivityLog.objects.create(
+                    log="Entry {entry_id} ({category}) - user {username} - "
+                        "changed from {old_status} to {decision} by admin "
+                        "user {adminuser}".format(
+                            entry_id=entry_id,
+                            category=CATEGORY_CHOICES_DICT[entry.category],
+                            username=entry.user.username,
+                            old_status=old_status,
+                            decision=decision,
+                            adminuser=request.user.username
+                        )
+                )
 
     return render_to_response(template, {'entry': entry})
 
@@ -271,26 +271,25 @@ class EntryNotifiedListView(
 
 @login_required
 @staff_required
-def toggle_selection_reset(request, entry_id, decision=None):
+def notified_selection_reset(request, entry_id, decision=None):
     template = "ppadmin/includes/notified_status.txt"
-
     entry = Entry.objects.select_related('user').get(id=entry_id)
+    if request.method == "POST":
+        old_notification_date = entry.notified_date
+        entry.notified = False
+        entry.notified_date = None
+        entry.save()
 
-    old_notification_date = entry.notified_date
-    entry.notified = False
-    entry.notified_date = None
-    entry.save()
-
-    ActivityLog.objects.create(
-        log="Notified selected entry {entry_id} ({category}) - "
-            "user {username} reset by admin user {adminuser} and marked as "
-            "not notified (old notification date {date})".format(
-                entry_id=entry_id,
-                category=CATEGORY_CHOICES_DICT[entry.category],
-                username=entry.user.username,
-                adminuser=request.user.username,
-                date=old_notification_date.strftime('%d-%m-%y')
-            )
-    )
+        ActivityLog.objects.create(
+            log="Notified selected entry {entry_id} ({category}) - "
+                "user {username} reset by admin user {adminuser} and marked as "
+                "not notified (old notification date {date})".format(
+                    entry_id=entry_id,
+                    category=CATEGORY_CHOICES_DICT[entry.category],
+                    username=entry.user.username,
+                    adminuser=request.user.username,
+                    date=old_notification_date.strftime('%d-%m-%y')
+                )
+        )
 
     return render_to_response(template, {'entry': entry})

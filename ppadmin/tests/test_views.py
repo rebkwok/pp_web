@@ -302,7 +302,7 @@ class UserListViewTests(TestSetupStaffLoginRequiredMixin, TestCase):
 
         self.assertIn(subscribed, subscribed_user.groups.all())
         self.client.login(username=self.staff_user.username, password='test')
-        self.client.get(
+        self.client.post(
             reverse('ppadmin:toggle_subscribed', args=[subscribed_user.id])
         )
 
@@ -310,7 +310,7 @@ class UserListViewTests(TestSetupStaffLoginRequiredMixin, TestCase):
         self.assertNotIn(subscribed, subscribed_user.groups.all())
 
         self.assertNotIn(subscribed, unscubscribed_user.groups.all())
-        self.client.get(
+        self.client.post(
             reverse(
                 'ppadmin:toggle_subscribed', args=[unscubscribed_user.id]
             )
@@ -326,13 +326,12 @@ class MailingListViewTests(TestSetupStaffLoginRequiredMixin, TestCase):
         super(MailingListViewTests, cls).setUpTestData()
         cls.url = reverse('ppadmin:mailing_list')
 
-
     def test_unsubscribe(self):
         subscribed = Group.objects.get(name='subscribed')
 
         self.assertIn(subscribed, self.user.groups.all())
         self.client.login(username=self.staff_user.username, password='test')
-        resp = self.client.get(
+        resp = self.client.post(
             reverse('ppadmin:unsubscribe', args=[self.user.id])
         )
 

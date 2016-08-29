@@ -5,7 +5,7 @@ from .user_views import MailingListView, toggle_subscribed, unsubscribe, \
     UserListView
 from .entries_views import EntryDetailView, EntryListView, \
     EntrySelectionListView, EntryNotifiedListView, toggle_selection, \
-    toggle_selection_reset, notify_users
+    notified_selection_reset, notify_users
 
 __all__ = [
     'ActivityLogListView',
@@ -13,5 +13,5 @@ __all__ = [
     'EntryNotifiedListView',
     'DisclaimerDeleteView', 'DisclaimerUpdateView', 'user_disclaimer',
     'MailingListView', 'toggle_subscribed', 'unsubscribe, ''UserListView',
-    'toggle_selection', 'toggle_selection_reset', 'notify_users',
+    'toggle_selection', 'notified_selection_reset', 'notify_users',
 ]

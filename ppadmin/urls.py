@@ -4,7 +4,7 @@ from ppadmin.views import user_disclaimer, DisclaimerUpdateView, \
     DisclaimerDeleteView, ActivityLogListView, toggle_subscribed, \
     MailingListView, unsubscribe, UserListView, EntryListView, \
     EntryDetailView, EntryNotifiedListView, \
-    EntrySelectionListView, toggle_selection, toggle_selection_reset, \
+    EntrySelectionListView, toggle_selection, notified_selection_reset, \
     notify_users
 
 
@@ -35,23 +35,23 @@ urlpatterns = [
         {'selection_type': 'all'}, name="notify_users"),
     url(
         r'^entries/(?P<entry_id>\d+)/toggle_selection/selected/$',
-        toggle_selection, {'decision': 'selected'}
+        toggle_selection, {'decision': 'selected'}, name='toggle_selected'
     ),
     url(
         r'^entries/(?P<entry_id>\d+)/toggle_selection/rejected/$',
-        toggle_selection, {'decision': 'rejected'}
+        toggle_selection, {'decision': 'rejected'}, name='toggle_rejected'
     ),
     url(
         r'^entries/(?P<entry_id>\d+)/toggle_selection/undecided/$',
-        toggle_selection, {'decision': 'undecided'}
+        toggle_selection, {'decision': 'undecided'}, name='toggle_undecided'
     ),
     url(
         r'^entries/notified/$', EntryNotifiedListView.as_view(),
         name="entries_notified"
     ),
     url(
-        r'^entries/(?P<entry_id>\d+)/toggle_selection_reset/$',
-        toggle_selection_reset
+        r'^entries/(?P<entry_id>\d+)/notified_selection_reset/$',
+        notified_selection_reset, name='notified_selection_reset'
     ),
     url(
         r'^entries/(?P<ref>[\w-]+)/$', EntryDetailView.as_view(), name="entry"
