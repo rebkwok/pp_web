@@ -211,7 +211,7 @@ class CustomSignUpViewTests(TestSetupMixin, TestCase):
              'dob': '01 Jan 1990', 'address': '1 test st',
              'postcode': 'TEST1', 'phone': '123445',
              'username': 'testuser', 'email': 'testuser@test.com',
-             'password1': 'testuser', 'password2': 'testuser'
+             'password1': 'dj34nmadkl24', 'password2': 'dj34nmadkl24'
          }
 
     def test_get_signup_view(self):

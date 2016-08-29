@@ -4,6 +4,7 @@ from dateutil.relativedelta import relativedelta
 
 from django import forms
 from django.contrib.auth.models import User
+from django.contrib.auth.password_validation import validate_password
 
 from accounts import validators as account_validators
 from accounts.models import OnlineDisclaimer, WAIVER_TERMS, UserProfile
@@ -31,6 +32,10 @@ class AccountFormMixin(object):
                     self.add_error(
                         'dob', 'You must be 18 or over to register'
                     )
+
+        # password = self.cleaned_data.get('password1')
+        # if password:
+        #     validate_password(self.cleaned_data['password1'])
 
 
 class SignupForm(AccountFormMixin, forms.Form):
@@ -87,7 +92,7 @@ class SignupForm(AccountFormMixin, forms.Form):
         profile_data = self.cleaned_data.copy()
         non_profile_fields = [
             'first_name', 'last_name', 'password1', 'password2', 'username',
-            'confirmation_key', 'email'
+            'email'
         ]
         for field in non_profile_fields:
             del profile_data[field]
