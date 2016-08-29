@@ -66,10 +66,7 @@ def format_status_admin(entry):
         add_text = " (withdrawn)"
     elif entry.status == "selected":
         add_text = " - NOT CONFIRMED"
-    elif (
-            (entry.status == "submitted" and not entry.video_entry_paid) or
-            (entry.status =="selected" and not entry.selected_entry_paid)
-    ):
+    elif entry.status == "submitted" and not entry.video_entry_paid:
         add_text = " (pending payment)"
     elif entry.status == "selected_confirmed":
         add_text1 = ''

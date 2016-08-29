@@ -93,7 +93,6 @@ class EntryListViewTests(TestSetupStaffLoginRequiredMixin, TestCase):
         for entry in [beg1, beg2]:
             self.assertIn(entry, resp.context_data['entries'])
 
-
     def test_status_filter(self):
         """
         Default view shows current year only; excludes in progress and withdrawn
@@ -231,6 +230,68 @@ class EntryListViewTests(TestSetupStaffLoginRequiredMixin, TestCase):
             self.assertIn(entry, resp.context_data['entries'])
         for entry in [old_entry, in_progress, withdrawn]:
             self.assertNotIn(entry, resp.context_data['entries'])
+
+    def test_status_display(self):
+        entry = mommy.make(
+            Entry, status='submitted', category='BEG', withdrawn=True
+        )
+        self.client.login(username=self.staff_user.username, password='test')
+        resp = self.client.get(self.url, {'status_filter': 'withdrawn'})
+        self.assertIn('Submitted (withdrawn)', resp.rendered_content)
+
+        entry.status = 'submitted'
+        entry.withdrawn = False
+        entry.save()
+        resp = self.client.get(self.url)
+        self.assertIn('Submitted (pending payment)', resp.rendered_content)
+
+        entry.video_entry_paid = True
+        entry.save()
+        resp = self.client.get(self.url)
+        self.assertIn('Submitted', resp.rendered_content)
+        self.assertNotIn('Submitted (pending payment)', resp.rendered_content)
+
+        entry.status = 'selected'
+        entry.save()
+        resp = self.client.get(self.url)
+        self.assertIn('Selected - NOT CONFIRMED', resp.rendered_content)
+
+        entry.status = 'selected_confirmed'
+        entry.save()
+        resp = self.client.get(self.url)
+        self.assertIn(
+            'Selected - confirmed (pending payment &amp; info)', resp.rendered_content
+        )
+
+        entry.selected_entry_paid = True
+        entry.save()
+        resp = self.client.get(self.url)
+        self.assertIn(
+            'Selected - confirmed (pending info)', resp.rendered_content
+        )
+
+        entry.selected_entry_paid = False
+        entry.biography = "About"
+        entry.song = 'song'
+        entry.save()
+        resp = self.client.get(self.url)
+        self.assertIn(
+            'Selected - confirmed (pending payment)', resp.rendered_content
+        )
+
+        entry.selected_entry_paid = True
+        entry.save()
+        resp = self.client.get(self.url)
+        self.assertIn('Selected - confirmed', resp.rendered_content)
+        self.assertNotIn(
+            'Selected - confirmed (pending info)', resp.rendered_content
+        )
+        self.assertNotIn(
+            'Selected - confirmed (pending payment &amp; info)', resp.rendered_content
+        )
+        self.assertNotIn(
+            'Selected - confirmed (pending payment)', resp.rendered_content
+        )
 
 
 class EntryDetailViewTests(TestSetupStaffLoginRequiredMixin, TestCase):
