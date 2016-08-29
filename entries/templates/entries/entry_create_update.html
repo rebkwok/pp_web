@@ -47,7 +47,7 @@
                     {% if field.name == 'category' %}
                         <span class="submitted-entry-field col-sm-10">{{ form.instance.category | format_category }}</span>
                         <span class="hide">{{ field }}</span>
-                    {% elif field.name == 'video_url' %}
+                    {% elif field.name == 'video_url' and not entries_open %}
                         <span class="submitted-entry-field col-sm-10 ">
                             <a href="{{ form.instance.video_url }}">{{ form.instance.video_url }}</a>
                         </span>
@@ -59,6 +59,8 @@
                     {{ field }}
                 {% endif %}
             <span class="helptext col-sm-10 col-xs-12">{{ field.help_text }}</span>
+            {% if field.name == 'video_url' and form.instance.video_url and entries_open %}
+                <span class="helptext col-sm-10 col-xs-12">Current URL: <a href="{{ form.instance.video_url }}">{{ form.instance.video_url }}</a></span>{% endif %}
             </div>
             {% if field.errors %}
                 <div class="col-sm-10 col-sm-offset-2 col-xs-12">
@@ -88,8 +90,7 @@
         <div class="col-xs-12 vspace vspace-below">
             {% if not form.already_submitted %}
             <br>Click Save to save your data without submitting your entry yet. Click Submit to submit your entry.</br>
-                Please note that category and video URL cannot be edited after submission.
-            <strong>Please check you have entered your video URL correctly!</strong>
+                Please note that the category cannot be edited after submission.
             </p>
             <input class="btn btn-purple" name='saved' type="submit" value="Save for later" />
             {% endif %}

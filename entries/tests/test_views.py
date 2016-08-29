@@ -187,6 +187,9 @@ class EntryListViewTests(TestSetupLoginRequiredMixin, TestCase):
         )
 
 
+@override_settings(
+        ENTRIES_OPEN_DATE="01/01/2016", ENTRIES_CLOSE_DATE="01/01/2200"
+    )
 class EntryCreateViewTests(TestSetupLoginRequiredMixin, TestCase):
 
     @classmethod
@@ -199,6 +202,13 @@ class EntryCreateViewTests(TestSetupLoginRequiredMixin, TestCase):
             'category': 'BEG',
             'saved': 'Save'
         }
+
+    def test_cant_access_outside_entries_open_period(self):
+        self.client.login(username=self.user.username, password='test')
+        with override_settings(ENTRIES_CLOSE_DATE="01/01/2016"):
+            resp = self.client.get(self.url)
+            self.assertEqual(resp.status_code, 302)
+            self.assertIn(reverse('permission_denied'), resp.url)
 
     def test_create_entry_and_save(self):
         self.assertFalse(Entry.objects.exists())

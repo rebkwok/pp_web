@@ -19,7 +19,7 @@ from .forms import EntryCreateUpdateForm, SelectedEntryUpdateForm
 from .email_helpers import send_pp_email
 from .models import CATEGORY_CHOICES_DICT, Entry, VIDEO_ENTRY_FEES, \
     SELECTED_ENTRY_FEES, WITHDRAWAL_FEE
-from .utils import check_partner_email
+from .utils import check_partner_email, entries_open
 
 """
 Enter Now link --> Entry form page
@@ -213,14 +213,19 @@ class EntryMixin(object):
         return reverse('entries:user_entries')
 
 
-class EntryCreateView(LoginRequiredMixin, EntryMixin, generic.CreateView):
+class EntryCreateView(EntryMixin, LoginRequiredMixin, generic.CreateView):
     model = Entry
     template_name = 'entries/entry_create_update.html'
     form_class = EntryCreateUpdateForm
     success_message = 'Your entry has been {}'
 
+    def dispatch(self, request, *args, **kwargs):
+        if not entries_open():
+            return HttpResponseRedirect(reverse('permission_denied'))
+        return super(EntryMixin, self).dispatch(request, *args, **kwargs)
 
-class EntryUpdateView(LoginRequiredMixin, EntryMixin, generic.UpdateView):
+
+class EntryUpdateView(EntryMixin, LoginRequiredMixin, generic.UpdateView):
 
     model = Entry
     template_name = 'entries/entry_create_update.html'

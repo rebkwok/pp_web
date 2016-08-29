@@ -1,7 +1,7 @@
 from model_mommy import  mommy
 
 from django.contrib.auth.models import User
-from django.test import TestCase
+from django.test import TestCase, override_settings
 
 from allauth.account.models import EmailAddress
 
@@ -122,13 +122,20 @@ class EntryCreateUpdateFormTests(TestSetupMixin, TestCase):
 
         self.assertEqual(cat.widget.choices, list(CATEGORY_CHOICES))
 
-    def test_category_and_video_url_hidden_for_submitted(self):
+    def test_category_hidden_for_submitted(self):
         entry = mommy.make(Entry, user=self.user, status='submitted')
         form = EntryCreateUpdateForm(
             instance=entry, user=self.user, initial_data={}
         )
         self.assertEqual(
             form.fields['category'].widget.attrs['class'], 'hide'
+        )
+
+    @override_settings(ENTRIES_CLOSE_DATE="01/01/2016")
+    def test_video_url_hidden_if_entries_closed(self):
+        entry = mommy.make(Entry, user=self.user, status='submitted')
+        form = EntryCreateUpdateForm(
+            instance=entry, user=self.user, initial_data={}
         )
         self.assertEqual(
             form.fields['video_url'].widget.attrs['class'], 'hide'

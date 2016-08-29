@@ -3,7 +3,7 @@ from django import forms
 from allauth.account.models import EmailAddress
 
 from .models import Entry, CATEGORY_CHOICES
-from .utils import check_partner_email
+from .utils import check_partner_email, entries_open
 
 
 class EntryFormMixin(object):
@@ -87,9 +87,11 @@ class EntryCreateUpdateForm(EntryFormMixin, forms.ModelForm):
                              "select it"
 
         if self.instance.id and self.instance.status != 'in_progress':
-            # disallow editing of category and video url after entry submitted
+            # disallow editing of category after entry submitted
             self.already_submitted = True
             self.fields['category'].widget.attrs.update({'class': 'hide'})
+        if not entries_open():
+            # disallow editing of video url after entries closed
             self.fields['video_url'].widget.attrs.update({'class': 'hide'})
         self.show_doubles = False
         if self.instance.id and self.instance.category == 'DOU':

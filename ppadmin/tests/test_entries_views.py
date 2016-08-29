@@ -309,7 +309,6 @@ class EntrySelectionListViewTests(TestSetupStaffLoginRequiredMixin, TestCase):
         super(EntrySelectionListViewTests, cls).setUpTestData()
         cls.url = reverse('ppadmin:entries_selection')
 
-
     def test_in_progress_and_withdrawn_excluded(self):
         """
         Default view shows current year only; excludes in progress and withdrawn
