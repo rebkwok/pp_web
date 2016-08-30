@@ -3,7 +3,7 @@ from django.views.generic import RedirectView
 from ppadmin.views import user_disclaimer, DisclaimerUpdateView, \
     DisclaimerDeleteView, ActivityLogListView, toggle_subscribed, \
     MailingListView, unsubscribe, UserListView, EntryListView, \
-    EntryDetailView, EntryNotifiedListView, \
+    EntryDetailView, EntryNotifiedListView, email_users_view, \
     EntrySelectionListView, toggle_selection, notified_selection_reset, \
     notify_users
 
@@ -64,6 +64,13 @@ urlpatterns = [
         toggle_subscribed, name='toggle_subscribed'
     ),
     url(r'^users/mailing-list/$', MailingListView.as_view(), name='mailing_list'),
+    url(
+        r'^users/mailing-list/send$', email_users_view, {'mailing_list': True},
+        name='send_mailing_list'
+    ),
+    url(
+        r'^users/email-users/$', email_users_view, name='email_users'
+    ),
     url(
         r'^users/(?P<user_id>\d+)/mailing-list/unsubscribe$',
         unsubscribe, name='unsubscribe'

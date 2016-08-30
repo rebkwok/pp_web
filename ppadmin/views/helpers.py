@@ -40,8 +40,3 @@ class StaffUserMixin(object):
         if not user_is_staff:
             return HttpResponseRedirect(reverse('permission_denied'))
         return super(StaffUserMixin, self).dispatch(request, *args, **kwargs)
-
-
-def url_with_querystring(path, **kwargs):
-    return path + '?' + urllib.parse.urlencode(kwargs)
-

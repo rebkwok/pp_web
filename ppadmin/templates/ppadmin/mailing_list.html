@@ -11,7 +11,7 @@
 
         {% if users %}
             <div>
-                <a href="#"><div class="btn table-btn btn-purple">Email mailing list</div></a>
+                <a href="{% url 'ppadmin:send_mailing_list' %}"><div class="btn table-btn btn-purple">Email mailing list</div></a>
             </div>
 
             <div class="row vspace">

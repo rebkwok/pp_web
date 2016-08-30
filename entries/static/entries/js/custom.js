@@ -36,4 +36,16 @@ jQuery(document).ready(function () {
         }
     });
 
+    jQuery('#select-all').click(function (event) {  //on click
+        if (this.checked) { // check select status
+            jQuery('.select-checkbox').each(function () { //loop through each checkbox
+                this.checked = true;  //select all checkboxes with class "select-checkbox"
+            });
+        } else {
+            jQuery('.select-checkbox').each(function () { //loop through each checkbox
+                this.checked = false; //deselect all checkboxes with class "select-checkbox"
+            });
+        }
+    });
+
 });

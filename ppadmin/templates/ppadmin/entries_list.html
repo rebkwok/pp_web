@@ -26,7 +26,18 @@
 
                     <div class="table-responsive">
                         <table class="table tablesorter" id="sortTable">
+                        <form class="filter-row" action="{% url 'ppadmin:email_users' %}" method="post">
+                        {% csrf_token %}
                             <thead>
+                            <tr class="filter-row compress">
+                                    <td class="filter-row" colspan=7>
+                                        <div class="pull-right">
+                                                <input class="btn table-btn btn-purple" name="email_selected" type="submit" value="Email selected" /><br/>
+                                                <label class="helptext" for="select-all">Select/unselect all</label>
+                                            <input class="regular-checkbox ppadmin-list" id="select-all" type="checkbox"><label for="select-all" }}></label>
+                                        </div>
+                                    </td>
+                                </tr>
                             <tr class="default">
                                 <th class="table-center">User <span class="fa fa-sort"></span></br><span class="ppadmin-help">Click to view details</span></th>
                                 <th class="table-center">Email</th>
@@ -34,6 +45,7 @@
                                 <th class="table-center">Doubles</br>partner</th>
                                 <th class="table-center">Status <span class="fa fa-sort"></span></th>
                                 <th class="table-center">Video URL</th>
+                                <th class="table-center">Email user</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -46,6 +58,10 @@
                                     <td class="table-center ppadmin-tbl">{% if entry.category == 'DOU' %}{{ entry.partner_name }}{% else %}N/A{% endif %}</td>
                                     <td class="table-center ppadmin-tbl {{ entry|status_class }}">{{ entry | format_status_admin }}</td>
                                     <td class="table-center ppadmin-tbl"><a href="{{ entry.video_url }}">{{ entry.video_url|abbr_url }}</a></td>
+                                    <td class="table-center ppadmin-tbl">
+                                        <input class="regular-checkbox ppadmin-list select-checkbox" id="email_user_{{ entry.user.id }}" name="emailusers" value="{{ entry.user.id }}" type="checkbox">
+                                        <label for="email_user_{{ entry.user.id }}"></label>
+                                    </td>
                                 </tr>
                                 {% endfor %}
                             {% else %}
@@ -75,6 +91,7 @@
                             {% endif %}
 
                             </tbody>
+                        </form>
                         </table>
                     </div>
                 </div>

@@ -17,7 +17,9 @@ def send_pp_email(
     ctx.update({'host': host})
     try:
         msg = EmailMultiAlternatives(
-            '{} {}'.format(prefix, subject),
+            '{}{}'.format(
+                '{} '.format(prefix) if prefix else '', subject
+            ),
             get_template(
                 template_txt).render(
                     ctx
