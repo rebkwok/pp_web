@@ -1,0 +1,16 @@
+{% load static %}
+{% block messagecontent %}
+<h2>Selected Entries Automatically Withdrawn</h2>
+
+<p>The following selected entries were not confirmed and/or entry fee paid within 7 days of notification and have been automatically withdrawn.  Users have been notified.</p>
+{% for entry in entries_to_withdraw %}
+    <p><strong>{{ entry.category }} - {{ entry.user }}</strong>
+    <ul>
+        <li>Confirmed: {{ entry.confirmed }}</li>
+        <li>Entry fee paid: {{ entry.paid }}</li>
+        <li>Notified date: {{ entry.notified_date }}</li>
+    </ul>
+    </p>
+{% endfor %}
+
+{% endblock %}

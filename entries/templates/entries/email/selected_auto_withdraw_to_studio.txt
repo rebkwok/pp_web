@@ -1,0 +1,11 @@
+Selected Entries Automatically Withdrawn
+---------------------------------------------------------
+The following selected entries were not confirmed and/or entry fee paid within 7 days of notification and have been automatically withdrawn.  Users have been notified.
+{% for entry in entries_to_withdraw %}
+{{ entry.category }} - {{ entry.user }}
+  - Confirmed: {{ entry.confirmed }}
+  - Entry fee paid: {{ entry.paid }}
+  - Notified date: {{ entry.notified_date }}
+{% endfor %}
+
+{% include "account/email/footer.txt" %}

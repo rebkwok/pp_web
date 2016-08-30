@@ -40,17 +40,17 @@
                             </div>
                             <div class="col-xs-12">
                                 <label class="col-xs-6 col-sm-5">
-                                    Video submission paid
+                                    Video submission fee
                                 </label>
                                 <div class="col-xs-6 col-sm-7">
                                     {% if entry.instance.video_entry_paid %}<span class="fa fa-check success"></span>
-                                    {% elif entry.paypal_video_form %}Click Paypal button to make payment{% include 'payments/video_payment.html' %}
+                                    {% elif entry.paypal_video_form %}{% include 'payments/video_payment.html' %}
                                     {% else %}<span class="fa fa-times fail"></span>{% endif %}
                                 </div>
                             </div>
                             <div class="col-xs-12">
                                 <label class="col-xs-6 col-sm-5">
-                                    Selection entry paid
+                                    Selection entry fee
                                 </label>
                                 <div class="col-xs-6 col-sm-7">
                                     {% if entry.instance.status == 'selected' or entry.instance.status == 'selected_confirmed' %}

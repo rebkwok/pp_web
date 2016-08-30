@@ -4,11 +4,13 @@ before closing date
 RUNS ONCE ONLY ON A SPECIFIED DATE (THE CLOSING DATE) - SET AS AT IN CRON
 """
 from django.conf import settings
+from django.core.mail import send_mail
 from django.core.management.base import BaseCommand
+from django.utils.safestring import mark_safe
 
 from activitylog.models import ActivityLog
 
-from ...models import Entry
+from ...models import Entry, CATEGORY_CHOICES_DICT
 from ...email_helpers import send_pp_email
 
 
@@ -26,6 +28,7 @@ class Command(BaseCommand):
         for entry in entries:
             ctx = {
                 'entry': entry,
+                'category': CATEGORY_CHOICES_DICT[entry.category],
                 'entry_close_date': settings.ENTRIES_CLOSE_DATE,
             }
             send_pp_email(
@@ -42,6 +45,22 @@ class Command(BaseCommand):
                     )
             self.stdout.write(msg)
             ActivityLog.objects.create(log='CRON: {}'.format(msg))
+
+            # sent support notification
+            send_mail('{} Pre-closing date warnings sent'.format(
+                settings.ACCOUNT_EMAIL_SUBJECT_PREFIX
+            ),
+                mark_safe('Pre-closing date warnings sent for {}'.format(
+                    ', '.join([
+                        '{username} - {category} - id {id} - {status}'.format(
+                            username=entry.user.username,
+                            category=entry.category,
+                            id=entry.id, status=entry.status)
+                        for entry in entries]))
+                ),
+                settings.DEFAULT_FROM_EMAIL,
+                [settings.SUPPORT_EMAIL],
+                fail_silently=True)
         else:
             self.stdout.write(
                 'No warning emails to send for in progress/unpaid submitted ' \

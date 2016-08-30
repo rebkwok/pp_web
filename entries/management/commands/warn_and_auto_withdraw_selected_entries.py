@@ -11,8 +11,8 @@ from django.core.management.base import BaseCommand
 
 from activitylog.models import ActivityLog
 
-from ..models import Entry
-from ..email_helpers import send_pp_email
+from ...models import Entry, CATEGORY_CHOICES_DICT, STATUS_CHOICES_DICT
+from ...email_helpers import send_pp_email
 
 
 class Command(BaseCommand):
@@ -26,26 +26,31 @@ class Command(BaseCommand):
             withdrawn=False,
             status__in=['selected', 'selected_confirmed'],
             selected_entry_paid=False
-        )
+        ).order_by('category')
 
         to_warn = []
         to_withdraw = []
         for entry in selected_unpaid_entries:
             warn_datetime = entry.notified_date + timedelta(days=5)
-            cancel_datetime = entry.notified_date + timedelta(days=7)
-            if warn_datetime > timezone.now() and not entry.reminder_sent:
+            withdrawal_datetime = entry.notified_date + timedelta(days=7)
+            if timezone.now() > warn_datetime and not entry.reminder_sent:
                 # only email once; ignore if reminder_sent flag on entry
                 entry.reminder_sent = True
                 entry.save()
                 to_warn.append(entry)
-            elif cancel_datetime > timezone.now():
+            elif timezone.now() > withdrawal_datetime:
                 entry.withdrawn = True
                 entry.save()
                 to_withdraw.append(entry)
 
         # email warnings to users
         for entry in to_warn:
-            ctx = {'entry': entry}
+            ctx = {
+                'entry': entry,
+                'category': CATEGORY_CHOICES_DICT[entry.category],
+                'withdrawal_datetime': withdrawal_datetime.strftime('%d %b %Y')
+            }
+
             send_pp_email(
                 None, 'Action needed to keep place in Pole Performance Finals',
                 ctx, 'entries/email/selected_auto_warn.txt',
@@ -55,22 +60,37 @@ class Command(BaseCommand):
 
         # withdraw email to users
         for entry in to_withdraw:
-            ctx = {'entry': entry}
+            ctx = {
+                'entry': entry,
+                'category': CATEGORY_CHOICES_DICT[entry.category]
+            }
             send_pp_email(
                 None, 'Your unconfirmed/unpaid entry was automatically withdrawn',
-                ctx, 'entries/email/selected_auto_cancel.txt',
-                'entries/email/selected_auto_cancel.html',
+                ctx, 'entries/email/selected_auto_withdraw.txt',
+                'entries/email/selected_auto_withdraw.html',
                 to_list=[entry.user.email]
             )
 
         # withdraw email to PP
         if to_withdraw:
-            ctx = {'entries_to_withdraw': to_withdraw}
+            entries_to_withdraw = [
+                {
+                    'user': '{} {}'.format(
+                        entry.user.first_name, entry.user.last_name
+                    ),
+                    'category': CATEGORY_CHOICES_DICT[entry.category].upper(),
+                    'confirmed': 'No' if
+                    STATUS_CHOICES_DICT[entry.status] == 'selected' else 'Yes',
+                    'paid': 'Yes' if entry.selected_entry_paid else 'No',
+                    'notified_date': entry.notified_date.strftime('%d %b %Y')
+                } for entry in to_withdraw
+                ]
+            ctx = {'entries_to_withdraw': entries_to_withdraw}
             send_pp_email(
                 None, 'Unconfirmed/unpaid selected entries automatically '
                       'withdrawn',
-                ctx, 'entries/email/selected_auto_cancel_to_studio.txt',
-                'entries/email/selected_auto_cancel_to_studio.html',
+                ctx, 'entries/email/selected_auto_withdraw_to_studio.txt',
+                'entries/email/selected_auto_withdraw_to_studio.html',
                 to_list=[settings.DEFAULT_STUDIO_EMAIL]
             )
 

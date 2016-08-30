@@ -1,0 +1,25 @@
+{% load static %}
+{% block messagecontent %}
+<h2>Pole Performance 2017 FINALS</h2>
+
+{% if entry.status == 'selected' %}
+    <p>You have not yet confirmed your place in the Pole Performance finals for
+        category:</p>
+{% else %}
+    <p>You have not yet paid your entry fee for the Pole Performance finals for
+        category::</p>
+{% endif %}
+    <ul><li><strong>{{ category }}</strong></li></ul>
+
+    <p>
+        If you have not confirmed and paid your entry fee by {{ withdraw_datetime }},
+        your entry will be automatically withdrawn and your place offered to
+        another competitor.
+    </p>
+
+    <p>
+        Please log on to the Pole Performance website to
+        {% if entry.status == 'selected' %}confirm and {% endif %}make your payment.
+    </p>
+
+{% endblock %}

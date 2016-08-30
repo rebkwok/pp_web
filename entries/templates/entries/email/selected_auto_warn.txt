@@ -1,0 +1,11 @@
+Pole Performance 2017 FINALS
+----------------------------------------
+{% if entry.status == 'selected' %}You have not yet confirmed your place in the Pole Performance finals for category:
+{% else %}You have not yet paid your entry fee for the Pole Performance finals for category:{% endif %}
+- {{ category }}
+
+If you have not confirmed and paid your entry fee by {{ withdraw_datetime }}, your entry will be automatically withdrawn and your place offered to another competitor.
+
+Please log on to the Pole Performance website to {% if entry.status == 'selected' %}confirm and {% endif %}make your payment.
+
+{% include "account/email/footer.txt" %}

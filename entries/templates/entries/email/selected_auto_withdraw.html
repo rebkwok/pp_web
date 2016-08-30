@@ -1,0 +1,10 @@
+{% load static %}
+{% block messagecontent %}
+<h2>Pole Performance 2017 Entry Withdrawn</h2>
+{% if entry.status == 'selected' %}
+<p>You have not confirmed your place in the Pole Performance 2017 Finals for the following category within 7 days of notfication, and your entry has now been withdrawn:</p>
+{% else %}
+<p>The entry fee payment for your entry for the following category has not been received within 7 days of notfication, and your entry has now been withdrawn:</p>
+{% endif %}
+<ul><li><strong>{{ category }}</strong></li></ul>
+{% endblock %}
