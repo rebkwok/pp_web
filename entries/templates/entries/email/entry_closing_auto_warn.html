@@ -1,0 +1,18 @@
+{% load static %}
+{% block messagecontent %}
+<h2>Pole Performance 2017 Entries Close On {{ entry_close_date }}</h2>
+
+{% if entry.status == 'in_progress' %}
+    <p>You have an entry still in progress and not submitted for the following category:</p>
+{% else %}
+    <p>You have submitted an entry for the following category but payment for the
+    video entry fee has not been received:</p>
+{% endif %}
+    <ul><li><strong>{{ category }}</strong><</li>/ul>
+
+    <p>Your entry will only be considered if submitted and paid by the
+        closing date. Any unpaid entries will be automatically withdrawn on
+        this date.
+    </p>
+
+{% endblock %}

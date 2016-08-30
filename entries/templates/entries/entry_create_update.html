@@ -94,7 +94,10 @@
             </p>
             <input class="btn btn-purple" name='saved' type="submit" value="Save for later" />
             {% endif %}
-            <input class="btn btn-purple" name='submitted' type="submit" value="Submit" />
+{#            Disable submit button for NEW submissions only if entries are closed #}
+            <input class="btn btn-purple" {% if not entries_open and not form.already_submitted %}disabled{% endif %}
+                   name='submitted' type="submit" value="{% if form.already_submitted %}Update{% else %}Submit{% endif %}" />
+            {% if not entries_open %}<span class="helptext">Entries are now closed</span>{% endif %}
         </div>
 
     </form>

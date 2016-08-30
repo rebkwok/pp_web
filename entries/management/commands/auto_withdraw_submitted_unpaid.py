@@ -1,0 +1,42 @@
+"""
+Withdraw submitted/video enry unpaid entries on closing date
+Email user
+RUNS ONCE ONLY ON A SPECIFIED DATE - SET AS AT IN CRON
+"""
+from django.conf import settings
+from django.core.management.base import BaseCommand
+
+from activitylog.models import ActivityLog
+
+from ..models import Entry
+from ..email_helpers import send_pp_email
+
+class Command(BaseCommand):
+    help = 'Withdraw unpaid submitted entries on closing date and email user'
+
+    def handle(self, *args, **options):
+        entries = Entry.objects.filter(
+            entry_year=settings.CURRENT_ENTRY_YEAR,
+            withdrawn=False, status='submitted', video_entry_paid=False
+        )
+
+        for entry in entries:
+            entry.withdrawn = True
+            entry.save()
+            ctx = {'entry': entry}
+            send_pp_email(
+                None, 'Your unpaid entry was automatically withdrawn',
+                ctx, 'entries/email/entry_closed_auto_withdraw.txt',
+                'entries/email/entry_closed_auto_withdraw.html',
+                to_list=[entry.user.email]
+            )
+
+        if entries:
+            msg = 'Unpaid submitted entries on closing date were withdrawn ' \
+                  'and users notified: {}'.format(
+                    [entry.id for entry in entries]
+                  )
+            self.stdout.write(msg)
+            ActivityLog.objects.create(log='CRON: {}'.format(msg))
+        else:
+            self.stdout.write('No unpaid submitted entries to withdraw')

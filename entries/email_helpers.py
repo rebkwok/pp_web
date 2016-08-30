@@ -13,8 +13,9 @@ def send_pp_email(
         from_email=settings.DEFAULT_FROM_EMAIL, cc_list=[],
         bcc_list=[], reply_to_list=[settings.DEFAULT_STUDIO_EMAIL]
 ):
-    host = 'http://{}'.format(request.META.get('HTTP_HOST'))
-    ctx.update({'host': host})
+    if request:
+        host = 'http://{}'.format(request.META.get('HTTP_HOST'))
+        ctx.update({'host': host})
     try:
         msg = EmailMultiAlternatives(
             '{}{}'.format(
