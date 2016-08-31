@@ -69,6 +69,25 @@ class ManagementCommandsTests(TestCase):
                 )
         )
 
+    def test_no_warnings_to_send(self):
+        mommy.make(
+            Entry, status='selected', user__email='test_in_progress@test.com'
+        )
+        mommy.make(
+            Entry, status='submitted', video_entry_paid=True,
+            user__email='test_unpaid@test.com'
+        )
+        management.call_command('email_warnings')
+
+        # Nothing to send
+        self.assertEqual(len(mail.outbox), 0)
+
+        self.assertEqual(
+            self.output.getvalue(),
+            'No warning emails to send for in progress/unpaid submitted ' \
+            'entries pre-closing date\n'
+        )
+
     def test_withdraw_submitted_unpaid(self):
         in_progress = mommy.make(
             Entry, status='in_progress', user__email='test_in_progress@test.com'
@@ -108,6 +127,23 @@ class ManagementCommandsTests(TestCase):
         for entry in [submitted_unpaid, submitted_unpaid1]:
             self.assertTrue(entry.withdrawn)
 
+    def test_no_submitted_entries_to_withdraw(self):
+        mommy.make(
+            Entry, status='selected', user__email='test_in_progress@test.com'
+        )
+        mommy.make(
+            Entry, status='submitted', video_entry_paid=True,
+            user__email='test_unpaid@test.com'
+        )
+        management.call_command('auto_withdraw_submitted_unpaid')
+
+        # Nothing to send
+        self.assertEqual(len(mail.outbox), 0)
+
+        self.assertEqual(
+            self.output.getvalue(),
+            'No unpaid submitted entries to withdraw\n'
+        )
 
     @patch('entries.management.commands.warn_and_auto_withdraw_selected_entries.'
         'timezone')
@@ -257,6 +293,42 @@ class ManagementCommandsTests(TestCase):
             self.assertNotIn(entry.user.email, to_emails)
             self.assertFalse(entry.withdrawn)
 
+    @patch(
+        'entries.management.commands.warn_and_auto_withdraw_selected_entries.'
+        'timezone')
+    def test_no_selected_entries_to_warn_or_withdraw(self, mock_tz):
+        """
+        Selected unconfirmed and selected_confirmed unpaid get automatically
+        withdrawn and users notified 7 days after notification date
+        """
+        mock_tz.now.return_value = datetime(
+            2016, 2, 20, 19, 0, tzinfo=timezone.utc
+        )
+
+        # notified 6 days ago, reminders already sent
+        mommy.make(
+            Entry, status='selected', notified=True,
+            notified_date=datetime(2016, 2, 14, 19, 0, tzinfo=timezone.utc),
+            reminder_sent=True, user__email='unconfirmed@test.com'
+        )
+        # reminded > 7 days ago, paid, never reminded
+        mommy.make(
+            Entry, status='selected_confirmed', notified=True,
+            selected_entry_paid=True,
+            notified_date=datetime(2016, 2, 10, 18, 0, tzinfo=timezone.utc),
+            reminder_sent=False, user__email='confirmed_paid1@test.com',
+        )
+        management.call_command('warn_and_auto_withdraw_selected_entries')
+
+        # Nothing to send
+        self.assertEqual(len(mail.outbox), 0)
+
+        self.assertEqual(
+            ActivityLog.objects.latest('id').log,
+            'CRON: Auto warn/withdraw selected unconfirmed/unpaid '
+            'run: no action required'
+        )
+
     def test_setup_test_data(self):
         self.assertFalse(User.objects.exists())
         self.assertFalse(Entry.objects.exists())
@@ -265,3 +337,5 @@ class ManagementCommandsTests(TestCase):
 
         self.assertEqual(User.objects.count(), 5)
         self.assertEqual(Entry.objects.count(), 6)
+
+
