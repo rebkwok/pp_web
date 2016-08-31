@@ -31,7 +31,7 @@ var processToggleSelected = function()  {
 
    $.ajax(
        {
-          url: '/ppadmin/entries/' + entry_id + '/toggle_selection/selected',
+          url: '/ppadmin/entries/' + entry_id + '/toggle_selection/selected/',
           dataType: 'html',
           type : "POST", // http method
           success: processResult
