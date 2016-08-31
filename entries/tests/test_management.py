@@ -256,3 +256,12 @@ class ManagementCommandsTests(TestCase):
         ]:
             self.assertNotIn(entry.user.email, to_emails)
             self.assertFalse(entry.withdrawn)
+
+    def test_setup_test_data(self):
+        self.assertFalse(User.objects.exists())
+        self.assertFalse(Entry.objects.exists())
+
+        management.call_command('setup_test_data')
+
+        self.assertEqual(User.objects.count(), 5)
+        self.assertEqual(Entry.objects.count(), 6)
