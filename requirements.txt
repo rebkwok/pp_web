@@ -18,3 +18,4 @@ django-debug-toolbar==1.5
 django-crispy-forms==1.6.0
 django-apptemplates==1.2
 shortuuid==0.4.3
+whitenoise==3.2.1
