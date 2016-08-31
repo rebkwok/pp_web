@@ -207,12 +207,12 @@ MEDIA_ROOT = root('media')
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = 'poleperformanceweb@gmail.com'
+EMAIL_HOST_USER = 'poleperformance.web@gmail.com'
 EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD', None)
 if EMAIL_HOST_PASSWORD is None:  # pragma: no cover
     print("No email host password provided!")
 EMAIL_PORT = 587
-DEFAULT_FROM_EMAIL = 'poleperformanceweb@gmail.com'
+DEFAULT_FROM_EMAIL = 'poleperformance.web@gmail.com'
 DEFAULT_STUDIO_EMAIL = env('DEFAULT_STUDIO_EMAIL')
 SUPPORT_EMAIL = 'rebkwok@gmail.com'
 
