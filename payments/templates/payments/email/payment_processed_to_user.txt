@@ -3,7 +3,7 @@ Dear {{ user }},
 Your payment to {{ paypal_email }} has now been processed.
 
 Entry ref: {{ obj.entry_ref }}
-Payment for: {{ payment_type }} fee
+Payment for: {{ payment_type }}
 Invoice number: {{ invoice_id }}
 
 {% include "account/email/footer.txt" %}
