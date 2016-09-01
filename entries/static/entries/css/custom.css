@@ -8,6 +8,12 @@ body {
     margin-top: 0;
     margin-bottom: 0;
     padding: 0;
+    line-height: 1.4;
+    font-size: 16px;
+}
+
+p {
+    line-height: 1.4;
 }
 
 #container {
@@ -21,8 +27,21 @@ body {
 
 #body {
    padding-bottom:45px;   /* Height of the footer */
-    margin-left: 60px;
-    margin-right: 60px;
+    margin-left: 40px;
+    margin-right: 40px;
+}
+
+@media(max-width: 480px){
+    #body {
+        margin-left: 5px;
+        margin-right: 5px;
+    }
+    h1 {font-size: 30px;}
+    h2 {font-size: 20px;}
+    h4 {font-size: 15px;}
+    p {font-size: 14px;}
+    li {font-size: 14px;}
+
 }
 #footer {
    position:absolute;
@@ -32,7 +51,7 @@ body {
 }
 
 .account-nav {
-    padding-right: 30px;
+    padding-right: 40px;
 }
 
 .account-menu {
@@ -87,7 +106,7 @@ div .errortext {
     margin-top: 0;
 }
 
-.disclaimer-form .control-label, .disclaimer-form label {
+.control-label, .disclaimer-form .control-label, .disclaimer-form label {
     font-size: small;
 }
 
@@ -237,6 +256,9 @@ div.partner-info-box > .partner-info-text {
 @media (max-width: 600px) {
     .entries-panel {
         font-size: small;
+        margin: 0;
+        padding-left: 0;
+        padding-right: 0;
     }
 }
 

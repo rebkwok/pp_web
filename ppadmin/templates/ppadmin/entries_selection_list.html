@@ -9,7 +9,7 @@
         <h2>Submitted Entries: {% if category != 'all' %}{{ category|format_category }}{% else %}All categories{% endif %}</h2>
 
         <h4>Note: after an entry has been selected/rejected and the user notified, it is no longer possible to update its
-            status on this page. If you need to do this (e.g. if a previously rejected entry is now to be selected), go to the
+            status on this page. If you need to do this, go to the
             <a href="{% url 'ppadmin:entries_notified' %}">notified list</a> first to reset.
         </h4>
         <div class=row>

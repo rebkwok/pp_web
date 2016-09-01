@@ -16,7 +16,7 @@
         {% if user.is_authenticated %}<li><a href="{% url 'entries:user_entries' %}" class="smoothScroll">My entries</a></li>{% endif %}
     </ul>
 
-    <ul class="nav navbar-nav pull-right account-nav">
+    <ul class="nav navbar-nav {% if pull-right account-nav">
         {% if request.user.is_authenticated %}
         <li class="dropdown">
             <div class="welcome-menu">{{request.user}}</div>

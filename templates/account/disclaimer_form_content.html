@@ -21,31 +21,31 @@
        </div>
 
        <div class="form-group">
-           <label class="control-label col-xs-2" for="emergency_contact_name_id">{{ form.emergency_contact_name.label }}{% if form.emergency_contact_name.field.required %}*{% endif %}</label>
-           <div class="col-xs-10 {% if form.emergency_contact_name.errors %}error-info{% endif %}">{{ form.emergency_contact_name }}</div>
-           <div class="studioadmin-help col-xs-10 col-xs-offset-2">{{ form.emergency_contact_name.help_text }}</div>
+           <label class="control-label col-xs-3" for="emergency_contact_name_id">{{ form.emergency_contact_name.label }}{% if form.emergency_contact_name.field.required %}*{% endif %}</label>
+           <div class="col-xs-9 {% if form.emergency_contact_name.errors %}error-info{% endif %}">{{ form.emergency_contact_name }}</div>
+           <div class="helptext col-xs-10 col-xs-offset-2">{{ form.emergency_contact_name.help_text }}</div>
             {% if form.emergency_contact_name.errors %}
-                <div class="col-xs-10 col-xs-offset-2">
+                <div class="col-xs-9 col-xs-offset-3">
                     {{ form.emergency_contact_name.errors }}
                 </div>
             {% endif %}
        </div>
        <div class="form-group">
-           <label class="control-label col-xs-2" for="emergency_contact_relationship_id">{{ form.emergency_contact_relationship.label }}{% if form.emergency_contact_relationship.field.required %}*{% endif %}</label>
-           <div class="col-xs-10 {% if form.emergency_contact_relationship.errors %}error-info{% endif %}">{{ form.emergency_contact_relationship }}</div>
-           <div class="studioadmin-help col-xs-10 col-xs-offset-2">{{ form.emergency_contact_relationship.help_text }}</div>
+           <label class="control-label col-xs-3" for="emergency_contact_relationship_id">{{ form.emergency_contact_relationship.label }}{% if form.emergency_contact_relationship.field.required %}*{% endif %}</label>
+           <div class="col-xs-9 {% if form.emergency_contact_relationship.errors %}error-info{% endif %}">{{ form.emergency_contact_relationship }}</div>
+           <div class="helptext col-xs-9 col-xs-offset-3">{{ form.emergency_contact_relationship.help_text }}</div>
             {% if form.emergency_contact_relationship.errors %}
-                <div class="col-xs-10 col-xs-offset-2">
+                <div class="col-xs-9 col-xs-offset-3">
                     {{ form.emergency_contact_relationship.errors }}
                 </div>
             {% endif %}
        </div>
        <div class="form-group">
-           <label class="control-label col-xs-2" for="emergency_contact_phone_id">{{ form.emergency_contact_phone.label }}{% if form.emergency_contact_phone.field.required %}*{% endif %}</label>
-           <div class="col-xs-10 {% if form.emergency_contact_phone.errors %}error-info{% endif %}">{{ form.emergency_contact_phone }}</div>
-           <div class="studioadmin-help col-xs-10 col-xs-offset-2">{{ form.emergency_contact1_phone.help_text }}</div>
+           <label class="control-label col-xs-3" for="emergency_contact_phone_id">{{ form.emergency_contact_phone.label }}{% if form.emergency_contact_phone.field.required %}*{% endif %}</label>
+           <div class="col-xs-9 {% if form.emergency_contact_phone.errors %}error-info{% endif %}">{{ form.emergency_contact_phone }}</div>
+           <div class="helptext col-xs-9 col-xs-offset-3">{{ form.emergency_contact1_phone.help_text }}</div>
             {% if form.emergency_contact_phone.errors %}
-                <div class="col-xs-10 col-xs-offset-2">
+                <div class="col-xs-9 col-xs-offset-3">
                     {{ form.emergency_contact_phone.errors }}
                 </div>
             {% endif %}
@@ -60,7 +60,7 @@
                 {% if form.terms_accepted.errors %} {{ form.terms_accepted.errors }}{% endif %}
            </div>
 
-           <div class="studioadmin-help col-xs-10 col-xs-offset-2">{{ form.terms_accepted.help_text }}</div>
+           <div class="helptext col-xs-9 col-xs-offset-3">{{ form.terms_accepted.help_text }}</div>
        </div>
 
        <div class="form-group">
@@ -70,7 +70,7 @@
                     {{ form.password }} {% if form.password.errors %}{{ form.password.errors }}{% endif %}
                 </div>
            </div>
-           <div class="studioadmin-help col-xs-10 col-xs-offset-2">{{ form.password.help_text }}</div>
+           <div class="helptext col-xs-9 col-xs-offset-3">{{ form.password.help_text }}</div>
        </div>
 
         <div class="col-xs-12 vspace"><input class="btn btn-purple" type="submit" value="Submit" /></div>

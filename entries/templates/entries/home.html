@@ -4,24 +4,28 @@
 
     {% block content %}
 
-    <div class="extra-top-margin">
+    <div class="extra-top-margin row">
+        <div class="col-xs-12">
+            <div class="pull-right">
             {% if not user.is_authenticated %}
-                <div class="pull-right">To enter or view your previous entries,
-                    please <a href="{% url 'login' %}?next=/entries/">log in</a> or <a href="{% url 'account_signup' %}?next=/entries/">sign up</a> for a new account.</div><br/>
+                To enter or view your previous entries,
+                    please <a href="{% url 'login' %}?next=/entries/">log in</a> or <a href="{% url 'account_signup' %}?next=/entries/">sign up</a> for a new account.<br/>
             {% endif %}
             {% if entries_open %}
-                <div class="pull-right" {% if not user.is_authenticated %} data-toggle="tooltip" data-placement="left" title="Log in to enter"{% endif %}>
+                <span class="pull-right" {% if not user.is_authenticated %} data-toggle="tooltip" data-placement="left" title="Log in to enter"{% endif %}>
                 <a {% if not user.is_authenticated %}class="btn btn-purple disabled"
-                   {% else %}class="btn btn-purple"{% endif %} href="{% url 'entries:user_entries' %}">ENTER NOW</a></div>
+                   {% else %}class="btn btn-purple"{% endif %} href="{% url 'entries:user_entries' %}">ENTER NOW</a></span>
             {% else %}
-                <div class="pull-right">
+                <span class="pull-right">
                     ENTRIES ARE NOT CURRENTLY OPEN<br>
                     Entries open: {{ entries_open_date }}<br>
                     Entries close: {{ entries_close_date }}
-                </div>
+                </span>
             {% endif %}
+            </div>
+        </div>
 
-
+        <div class="col-xs-12">
         <h1 id="entry-info">Entry Information for Competitors</h1>
 
         <h2>Semi Finals - Video Entry</h2>
@@ -145,6 +149,7 @@
              Facebook. Please note, you will be required to provide further entry information should you
              make it through to the final.</p>
 
+        </div>
     </div>
     {% endblock content %}
 
