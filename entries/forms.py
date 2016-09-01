@@ -1,4 +1,5 @@
 from django import forms
+from django.conf import settings
 
 from allauth.account.models import EmailAddress
 
@@ -176,6 +177,11 @@ class SelectedEntryUpdateForm(EntryFormMixin, forms.ModelForm):
             self.fields['partner_name'].required = True
         self.fields['biography'].required = True
         self.fields['song'].required = True
+        self.fields['song']\
+            .help_text = "Please email an .mp3 of your song to {} as soon as " \
+                         "possible".format(
+            settings.DEFAULT_STUDIO_EMAIL
+        )
 
     def clean(self):
         super(SelectedEntryUpdateForm, self).clean()

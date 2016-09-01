@@ -63,7 +63,13 @@ def abbr_url(url):
 def format_status_admin(entry):
     add_text = ''
     if entry.withdrawn:
-        add_text = " (withdrawn)"
+        if entry.status == "selected_confirmed":
+            if entry.withdrawal_fee_paid:
+                add_text = " (withdrawn-paid)"
+            else:
+                add_text = " (withdrawn-unpaid)"
+        else:
+            add_text = " (withdrawn)"
     elif entry.status == "selected":
         add_text = " - NOT CONFIRMED"
     elif entry.status == "submitted" and not entry.video_entry_paid:

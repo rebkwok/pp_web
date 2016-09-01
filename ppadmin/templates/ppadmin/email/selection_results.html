@@ -2,7 +2,7 @@
 
 {% load static %}
 {% block messagecontent %}
-<h2>Pole Performance 2017 Semi Finals</h2>
+<h2>Pole Performance {{ entry.entry_year }} Semi Finals</h2>
 
 {% if entry.status == 'selected' %}
     <h3>Congratulations!</h3>
@@ -13,7 +13,9 @@
 
     <p>Please follow the link below to confirm your place and pay your entry fee.
         You will also now need to provide your song choice and short biography for
-        for your performance at the finals.</p>
+        for your performance at the finals.  Please send an .mp3 of your song
+        as soon as possible.
+    </p>
 
     <p>You have 7 days from the date of this email to confirm your place.  If you have
         not confirm and paid your entry fee by this time, your entry will be
@@ -24,8 +26,9 @@
        Provide additional entry information: <a href="{{ host }}{% url 'entries:edit_selected_entry' entry.entry_ref %}">{{ host }}{% url 'entries:edit_selected_entry' entry.entry_ref %}</a>
     </p>
 {% else %}
-    <p>Thank you for your application to Pole Performance 2017.  Unfortunately you have
-    not been successful in securing a place in the following category:</p>
+    <p>Thank you for your application to Pole Performance {{ entry.entry_year }}.
+        Unfortunately you have not been successful in securing a place in the
+        following category:</p>
     <p><strong>{{ category }}</strong></p>
 {% endif %}
 {% endblock %}

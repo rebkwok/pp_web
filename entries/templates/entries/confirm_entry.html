@@ -16,6 +16,8 @@
             biography.  Please go to the My Entries page and click Edit to provide this information.
             </p>
 
+            <p>Please email an .mp3 of your song to {{ pp_email }} as soon as possible</p>
+
         <form action="" method="post">{% csrf_token %}
             <input class="btn btn-danger" type="submit" value="Confirm entry" />
             <a href="{% url 'entries:user_entries' %}"><div class="btn btn-warning">Back</div></a>

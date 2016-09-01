@@ -292,6 +292,22 @@ class EntryListViewTests(TestSetupStaffLoginRequiredMixin, TestCase):
             'Selected - confirmed (pending payment)', resp.rendered_content
         )
 
+        entry.status = "selected_confirmed"
+        entry.withdrawn = True
+        entry.withdrawal_fee_paid = False
+        entry.save()
+        resp = self.client.get(self.url, {'status_filter': 'withdrawn'})
+        self.assertIn(
+            'Selected - confirmed (withdrawn-unpaid)', resp.rendered_content
+        )
+
+        entry.withdrawal_fee_paid = True
+        entry.save()
+        resp = self.client.get(self.url, {'status_filter': 'withdrawn'})
+        self.assertIn(
+            'Selected - confirmed (withdrawn-paid)', resp.rendered_content
+        )
+
 
 class EntryDetailViewTests(TestSetupStaffLoginRequiredMixin, TestCase):
 
