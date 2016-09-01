@@ -22,7 +22,7 @@ env = environ.Env(DEBUG=(bool, False),
                   HEROKU=(bool, False),
                   ENTRIES_OPEN=(bool, False)
                   )
-environ.Env.read_env(root('pole_performance/.env'))  # reading .env file
+environ.Env.read_env(root('poleperformance/.env'))  # reading .env file
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = root()
@@ -121,7 +121,7 @@ ACCOUNT_LOGOUT_REDIRECT_URL ="/entries"
 SOCIALACCOUNT_QUERY_EMAIL = True
 
 
-ROOT_URLCONF = 'pole_performance.urls'
+ROOT_URLCONF = 'poleperformance.urls'
 
 TEMPLATES = [
     {
@@ -150,7 +150,7 @@ TEMPLATES = [
 #     'auth.user': lambda o: "/users/%s/" % o.username,
 # }
 
-WSGI_APPLICATION = 'pole_performance.wsgi.application'
+WSGI_APPLICATION = 'poleperformance.wsgi.application'
 
 
 # Database
@@ -235,7 +235,7 @@ if not env('HEROKU') and not env('TRAVIS'):  # pragma: no cover
             'file_app': {
                 'level': 'INFO',
                 'class': 'logging.handlers.RotatingFileHandler',
-                'filename': os.path.join(LOG_FOLDER, 'pole_performance.log'),
+                'filename': os.path.join(LOG_FOLDER, 'poleperformance.log'),
                 'maxBytes': 1024*1024*5,  # 5 MB
                 'backupCount': 5,
                 'formatter': 'verbose'
