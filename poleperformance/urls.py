@@ -40,7 +40,7 @@ if settings.HEROKU:  # pragma: no cover
     urlpatterns += static(
         settings.STATIC_URL, document_root=settings.STATIC_ROOT
     )
-
-if settings.DEBUG:  # pragma: no cover
-    import debug_toolbar
-    urlpatterns.append(url(r'^__debug__/', include(debug_toolbar.urls)))
+#
+# if settings.DEBUG:  # pragma: no cover
+#     import debug_toolbar
+#     urlpatterns.append(url(r'^__debug__/', include(debug_toolbar.urls)))
