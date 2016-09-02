@@ -78,6 +78,7 @@ MIDDLEWARE_CLASSES = [
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -309,8 +310,11 @@ ENTRIES_CLOSE_DATE = env('ENTRIES_CLOSE_DATE')
 
 CURRENT_ENTRY_YEAR = env('CURRENT_ENTRY_YEAR')
 
-# if DEBUG and 'test' not in sys.argv:  # pragma: no cover
-#     ENABLE_DEBUG_TOOLBAR = True
-#     DEBUG_TOOLBAR_CONFIG = {
-#         "SHOW_TOOLBAR_CALLBACK": show_toolbar,
-#     }
+
+if DEBUG and 'test' not in sys.argv:  # pragma: no cover
+    def show_toolbar(request):
+        return True
+    DEBUG_TOOLBAR_PATCH_SETTINGS = False
+    DEBUG_TOOLBAR_CONFIG = {
+        "SHOW_TOOLBAR_CALLBACK": show_toolbar,
+    }

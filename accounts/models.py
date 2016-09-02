@@ -24,7 +24,7 @@ def has_disclaimer(user):
     cache_key = disclaimer_cache_key(user)
     # get disclaimer from cache
     cached_disclaimer = cache.get(cache_key)
-    if cached_disclaimer:
+    if cached_disclaimer is not None:
         cached_disclaimer = bool(cached_disclaimer)
     else:
         cached_disclaimer = bool(

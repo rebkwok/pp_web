@@ -97,6 +97,9 @@ class ProfileTests(TestSetupMixin, TestCase):
         )
         cls.url = reverse('accounts:profile')
 
+    def setUp(self):
+        cache.clear()
+
     def test_profile_view(self):
         self.client.login(username=self.user.username, password='test')
         resp = self.client.get(self.url)

@@ -1,6 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import Group
 from django.contrib import messages
+from django.core.cache import cache
 from django.shortcuts import render, HttpResponseRedirect, get_object_or_404
 from django.views.generic import UpdateView, CreateView
 from django.contrib.auth.models import User
@@ -15,6 +16,8 @@ from allauth.account.views import LoginView, SignupView
 from accounts.forms import DisclaimerForm, ProfileForm
 from accounts.models import has_disclaimer, UserProfile
 from activitylog.models import ActivityLog
+
+from ppadmin.models import subscribed_cache_key
 
 
 def profile(request):
@@ -136,6 +139,7 @@ def subscribe_view(request):
     if request.method == 'POST':
         group = Group.objects.get(name='subscribed')
         if 'subscribe' in request.POST:
+            cache.set(subscribed_cache_key(request.user), True, None)
             group.user_set.add(request.user)
             messages.success(
                 request, 'You have been subscribed to the mailing list'
@@ -148,6 +152,7 @@ def subscribe_view(request):
                     )
             )
         elif 'unsubscribe' in request.POST:
+            cache.set(subscribed_cache_key(request.user), False, None)
             group.user_set.remove(request.user)
             messages.success(
                 request, 'You have been unsubscribed from the mailing list'

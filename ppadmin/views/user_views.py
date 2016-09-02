@@ -3,7 +3,7 @@ import logging
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import Group, User
 from django.contrib import messages
-
+from django.core.cache import cache
 from django.core.urlresolvers import reverse
 from django.db.models import Q
 from django.shortcuts import HttpResponseRedirect, render_to_response
@@ -12,7 +12,7 @@ from django.views.generic import ListView
 from braces.views import LoginRequiredMixin
 
 from ppadmin.forms import UserListSearchForm
-
+from ppadmin.models import subscribed_cache_key
 from ppadmin.views.helpers import staff_required, StaffUserMixin
 from activitylog.models import ActivityLog
 
@@ -26,12 +26,11 @@ NAME_FILTERS = (
 )
 
 
-def _get_name_filter_available(search_text):
-    queryset = User.objects.filter(
-        Q(first_name__icontains=search_text) |
-        Q(last_name__icontains=search_text) |
-        Q(username__icontains=search_text)
-    )
+def _get_name_filter_available(queryset):
+
+    names_list = queryset.distinct().values_list('first_name', flat=True)
+    letter_set = set([name[0].lower() for name in names_list if name])
+
     name_filter_options = []
     for option in NAME_FILTERS:
         if option == "All":
@@ -40,8 +39,7 @@ def _get_name_filter_available(search_text):
             name_filter_options.append(
                 {
                     'value': option,
-                    'available': queryset.filter(first_name__istartswith=option)
-                    .exists()
+                    'available': option.lower() in letter_set
                 }
             )
     return name_filter_options
@@ -77,16 +75,15 @@ class UserListView(LoginRequiredMixin,  StaffUserMixin,  ListView):
         return queryset
 
     def get_context_data(self):
+        queryset = self.get_queryset()
         context = super(UserListView,  self).get_context_data()
         context['search_submitted'] = self.request.GET.get('search_submitted')
         context['active_filter'] = self.request.GET.get('filter',  'All')
         search_text = self.request.GET.get('search',  '')
         reset = self.request.GET.get('reset')
-        context['filter_options'] = _get_name_filter_available(
-            '' if reset else search_text
-        )
+        context['filter_options'] = _get_name_filter_available(queryset)
 
-        num_results = self.get_queryset().count()
+        num_results = queryset.count()
         total_users = User.objects.count()
 
         if reset:
@@ -105,9 +102,10 @@ def toggle_subscribed(request,  user_id):
 
     if request.method == 'POST':
         group, _ = Group.objects.get_or_create(name='subscribed')
-        subscribed = group in user_to_change.groups.all()
-        if subscribed:
+        # subscribed = group in user_to_change.groups.all()
+        if user_to_change.subscribed():
             group.user_set.remove(user_to_change)
+            cache.set(subscribed_cache_key(user_to_change), False, None)
             ActivityLog.objects.create(
                 log="User {} {} ({}) unsubscribed from mailing list by "
                     "admin user {}".format(
@@ -119,6 +117,7 @@ def toggle_subscribed(request,  user_id):
             )
         else:
             group.user_set.add(user_to_change)
+            cache.set(subscribed_cache_key(user_to_change), True, None)
             ActivityLog.objects.create(
                 log="User {} {} ({}) subscribed to mailing list by "
                     "admin user {}".format(
@@ -146,25 +145,25 @@ class MailingListView(LoginRequiredMixin, StaffUserMixin, ListView):
 
 def unsubscribe(request, user_id):
     user_to_change = User.objects.get(id=user_id)
-    if request.method == 'POST':
-        group = Group.objects.get(name='subscribed')
-        group.user_set.remove(user_to_change)
-        messages.success(
-            request,
-            "User {} {} ({}) unsubscribed from mailing list.".format(
-                user_to_change.first_name,
-                user_to_change.last_name,
-                user_to_change.username
+    group = Group.objects.get(name='subscribed')
+    group.user_set.remove(user_to_change)
+    cache.set(subscribed_cache_key(user_to_change), False, None)
+    messages.success(
+        request,
+        "User {} {} ({}) unsubscribed from mailing list.".format(
+            user_to_change.first_name,
+            user_to_change.last_name,
+            user_to_change.username
+        )
+    )
+    ActivityLog.objects.create(
+        log="User {} {} ({}) unsubscribed from mailing list by "
+            "admin user {}".format(
+            user_to_change.first_name,
+            user_to_change.last_name,
+            user_to_change.username,
+            request.user.username
             )
-        )
-        ActivityLog.objects.create(
-            log="User {} {} ({}) unsubscribed from mailing list by "
-                "admin user {}".format(
-                user_to_change.first_name,
-                user_to_change.last_name,
-                user_to_change.username,
-                request.user.username
-                )
-        )
-        user_to_change.save()
+    )
+    user_to_change.save()
     return HttpResponseRedirect(reverse('ppadmin:mailing_list'))

@@ -2,6 +2,7 @@ from datetime import datetime
 from model_mommy import mommy
 
 from django.contrib.auth.models import Group, User
+from django.core.cache import cache
 from django.core.urlresolvers import reverse
 from django.db.models import Q
 from django.test import TestCase
@@ -134,7 +135,7 @@ class ActivityLogListViewTests(TestSetupStaffLoginRequiredMixin, TestCase):
         )
         self.assertEqual(len(resp.context_data['logs']), 10)
 
-
+from django.core.cache import cache
 class UserListViewTests(TestSetupStaffLoginRequiredMixin, TestCase):
 
     @classmethod
@@ -294,29 +295,28 @@ class UserListViewTests(TestSetupStaffLoginRequiredMixin, TestCase):
                 self.assertFalse(opt['available'])
 
     def test_change_mailing_list(self):
-        subscribed_user = mommy.make(User)
-        unscubscribed_user = mommy.make(User)
+        user = mommy.make(User)
         subscribed = Group.objects.get(name='subscribed')
-        # remove unsubscribed user (users added on creation)
-        subscribed.user_set.remove(unscubscribed_user)
 
-        self.assertIn(subscribed, subscribed_user.groups.all())
+        self.assertIn(subscribed, user.groups.all())
         self.client.login(username=self.staff_user.username, password='test')
+
+        # unsubscribe
         self.client.post(
-            reverse('ppadmin:toggle_subscribed', args=[subscribed_user.id])
+            reverse('ppadmin:toggle_subscribed', args=[user.id])
         )
 
-        subscribed_user.refresh_from_db()
-        self.assertNotIn(subscribed, subscribed_user.groups.all())
+        user.refresh_from_db()
+        self.assertNotIn(subscribed, user.groups.all())
 
-        self.assertNotIn(subscribed, unscubscribed_user.groups.all())
+        # subscribe again
         self.client.post(
             reverse(
-                'ppadmin:toggle_subscribed', args=[unscubscribed_user.id]
+                'ppadmin:toggle_subscribed', args=[user.id]
             )
         )
-        unscubscribed_user.refresh_from_db()
-        self.assertIn(subscribed, unscubscribed_user.groups.all())
+        user.refresh_from_db()
+        self.assertIn(subscribed, user.groups.all())
 
 
 class MailingListViewTests(TestSetupStaffLoginRequiredMixin, TestCase):

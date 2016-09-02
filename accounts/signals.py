@@ -6,6 +6,7 @@ from django.dispatch import receiver
 from activitylog.models import ActivityLog
 from accounts.models import disclaimer_cache_key, has_disclaimer, \
     OnlineDisclaimer
+from ppadmin.models import subscribed_cache_key
 
 
 @receiver(post_save, sender=User)
@@ -19,6 +20,7 @@ def user_post_save(sender, instance, created, *args, **kwargs):
         )
         group, _ = Group.objects.get_or_create(name='subscribed')
         group.user_set.add(instance)
+        cache.set(subscribed_cache_key(instance), True, None)
         ActivityLog.objects.create(
             log='New user {} added to mailing list'.format(instance.username)
         )
