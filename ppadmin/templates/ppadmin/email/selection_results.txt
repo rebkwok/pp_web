@@ -6,7 +6,7 @@ Congratulations!
 We are pleased to offer you a place in the Pole Performance Competition {{ entry.entry_year }} Finals in the following category:
 - {{ category }}
 
-Please follow the link below to confirm your place and pay your entry fee.  You will also now need to provide your song choice and short biography for your performance at the finals.  Please send an .mp3 of your song as soon as possible.
+Please follow the link below to confirm your place and pay your entry fee.  You will also now need to provide your song choice and short biography for your performance at the finals.  Please email your song in .mp3 format as soon as possible.
 
 Confirm entry: {{ host }}/entries/myentries/{{ entry.entry_ref }}/confirm
 Provide additional entry information: {{ host }}/entries/myentries/{{ entry.entry_ref }}/selected/edit

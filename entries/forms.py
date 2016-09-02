@@ -178,8 +178,8 @@ class SelectedEntryUpdateForm(EntryFormMixin, forms.ModelForm):
         self.fields['biography'].required = True
         self.fields['song'].required = True
         self.fields['song']\
-            .help_text = "Please email an .mp3 of your song to {} as soon as " \
-                         "possible".format(
+            .help_text = "Please email your song in .mp3 format to {} as " \
+                         "soon as possible".format(
             settings.DEFAULT_STUDIO_EMAIL
         )
 
