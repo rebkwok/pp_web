@@ -317,12 +317,3 @@ ENTRIES_OPEN_DATE = env('ENTRIES_OPEN_DATE')
 ENTRIES_CLOSE_DATE = env('ENTRIES_CLOSE_DATE')
 
 CURRENT_ENTRY_YEAR = env('CURRENT_ENTRY_YEAR')
-
-
-if DEBUG and 'test' not in sys.argv:  # pragma: no cover
-    def show_toolbar(request):
-        return True
-    DEBUG_TOOLBAR_PATCH_SETTINGS = False
-    DEBUG_TOOLBAR_CONFIG = {
-        "SHOW_TOOLBAR_CALLBACK": show_toolbar,
-    }
