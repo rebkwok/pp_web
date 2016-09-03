@@ -9,14 +9,14 @@
 {% endblock %}
 
 {% block nav_content %}
-    <ul class="nav navbar-nav">
-        <li><a href="{% url 'entries:entries_home' %}#entry-info" class="smoothScroll">Entry Information</a></li>
-        <li><a href="{% url 'entries:entries_home' %}#categories" class="smoothScroll">Categories</a></li>
-        <li><a href="{% url 'entries:entries_home' %}#tc" class="smoothScroll">T & C</a></li>
-        {% if user.is_authenticated %}<li><a href="{% url 'entries:user_entries' %}" class="smoothScroll">My entries</a></li>{% endif %}
+    <ul class="nav navbar-nav pull-left">
+        <li><a href="{% url 'entries:entries_home' %}#entry-info" >Entry Information</a></li>
+        <li><a href="{% url 'entries:entries_home' %}#categories" >Categories</a></li>
+        <li><a href="{% url 'entries:entries_home' %}#tc" >T & C</a></li>
+        {% if user.is_authenticated %}<li><a href="{% url 'entries:user_entries' %}">My entries</a></li>{% endif %}
     </ul>
 
-    <ul class="nav navbar-nav {% if pull-right account-nav">
+    <ul class="nav navbar-nav pull-right account-nav">
         {% if request.user.is_authenticated %}
         <li class="dropdown">
             <div class="welcome-menu">{{request.user}}</div>
