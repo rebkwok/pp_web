@@ -665,3 +665,7 @@ border: none;
 .table-center {
     text-align: center;
 }
+
+a > .noncoloured-link {
+    color: #555;
+}
