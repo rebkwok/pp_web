@@ -9,7 +9,7 @@ urlpatterns = [
         name='update_profile'
     ),
     url(
-        r'^disclaimer/$', DisclaimerCreateView.as_view(),
+        r'^waiver/$', DisclaimerCreateView.as_view(),
         name='disclaimer_form'
     ),
     url(

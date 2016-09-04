@@ -4,7 +4,6 @@ from dateutil.relativedelta import relativedelta
 
 from django import forms
 from django.contrib.auth.models import User
-from django.contrib.auth.password_validation import validate_password
 
 from accounts import validators as account_validators
 from accounts.models import OnlineDisclaimer, WAIVER_TERMS, UserProfile
@@ -32,10 +31,6 @@ class AccountFormMixin(object):
                     self.add_error(
                         'dob', 'You must be 18 or over to register'
                     )
-
-        # password = self.cleaned_data.get('password1')
-        # if password:
-        #     validate_password(self.cleaned_data['password1'])
 
 
 class SignupForm(AccountFormMixin, forms.Form):
@@ -190,12 +185,14 @@ class DisclaimerForm(forms.ModelForm):
 
         widgets = {
             'emergency_contact_name': forms.TextInput(
-                attrs={'class': 'form-control'}
+                attrs={
+                    'class': 'form-control', 'autofocus': 'autofocus'
+                }
             ),
             'emergency_contact_relationship': forms.TextInput(
                 attrs={'class': 'form-control'}
             ),
             'emergency_contact_phone': forms.TextInput(
-                attrs={'class': 'form-control'}
+                attrs={'class': 'form-control'},
             ),
         }
