@@ -18,8 +18,8 @@
             {% else %}
                 <span class="pull-right">
                     ENTRIES ARE NOT CURRENTLY OPEN<br>
-                    Entries open: {{ entries_open_date }}<br>
-                    Entries close: {{ entries_close_date }}
+                    Entries open: {{ entries_open_date|date:"d M Y" }}<br>
+                    Entries close: {{ entries_close_date|date:"d M Y" }}
                 </span>
             {% endif %}
             </div>
@@ -31,7 +31,7 @@
         <h2>Semi Finals - Video Entry</h2>
 
         <p>Please upload your video to YouTube or similar and submit a link to your video with your entry.
-            Entries close at midnight on 10th November 2016.</p>
+            Entries close at midnight on {{ entries_close_date|date:"d M Y" }}.</p>
 
         <p>Videos must show a routine to a song, must not exceed 3 minutes and must not be
             edited. A video of a previous performance can be used as entry.
