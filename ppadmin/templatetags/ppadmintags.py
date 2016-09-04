@@ -39,8 +39,8 @@ def abbr_name(name):
         return mark_safe(
             "{}-</br>{}".format(split_name[0], '-'.join(split_name[1:]))
         )
-    if len(name) > 12:
-        return mark_safe("{}-</br>{}".format(name[:8], name[8:]))
+    if len(name) > 18:
+        return mark_safe("{}-</br>{}".format(name[:15], name[15:]))
     return name
 
 

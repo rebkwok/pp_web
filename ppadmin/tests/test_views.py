@@ -165,18 +165,18 @@ class UserListViewTests(TestSetupStaffLoginRequiredMixin, TestCase):
 
     def test_abbreviations_for_long_names(self):
         """
-        Names > 12 characters are split to 2 lines; names with hyphens are
+        Names > 18 characters are split to 2 lines; names with hyphens are
         split on the first hyphen
         """
         mommy.make(
             User,
-            first_name='namewithmorethan12characters',
+            first_name='namewithmorethan18characters',
             last_name='name-with-three-hyphens'
         )
         self.client.login(username=self.staff_user.username, password='test')
         resp = self.client.get(self.url)
         self.assertIn(
-            'namewith-</br>morethan12characters', resp.rendered_content
+            'namewithmoretha-</br>n18characters', resp.rendered_content
         )
         self.assertIn('name-</br>with-three-hyphens', resp.rendered_content)
 
