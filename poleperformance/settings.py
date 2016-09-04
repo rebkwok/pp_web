@@ -197,13 +197,13 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
-STATICFILES_DIRS = (root('static'),)
 STATIC_URL = '/static/'
 
 STATIC_ROOT = root('collected-static')
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = root('media')
+
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_USE_TLS = True
@@ -219,53 +219,52 @@ SUPPORT_EMAIL = 'rebkwok@gmail.com'
 
 
 # #####LOGGING######
-if not env('HEROKU') and not env('TRAVIS'):  # pragma: no cover
-    LOG_FOLDER = env('LOG_FOLDER')
+LOG_FOLDER = env('LOG_FOLDER')
 
-    LOGGING = {
-        'version': 1,
-        'disable_existing_loggers': False,
-        'formatters': {
-            'verbose': {
-                'format': '[%(levelname)s] - %(asctime)s - %(name)s - '
-                          '%(message)s',
-                'datefmt': '%Y-%m-%d %H:%M:%S',
-            }
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '[%(levelname)s] - %(asctime)s - %(name)s - '
+                      '%(message)s',
+            'datefmt': '%Y-%m-%d %H:%M:%S',
+        }
+    },
+    'handlers': {
+        'file_app': {
+            'level': 'INFO',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(LOG_FOLDER, 'poleperformance.log'),
+            'maxBytes': 1024*1024*5,  # 5 MB
+            'backupCount': 5,
+            'formatter': 'verbose'
         },
-        'handlers': {
-            'file_app': {
-                'level': 'INFO',
-                'class': 'logging.handlers.RotatingFileHandler',
-                'filename': os.path.join(LOG_FOLDER, 'poleperformance.log'),
-                'maxBytes': 1024*1024*5,  # 5 MB
-                'backupCount': 5,
-                'formatter': 'verbose'
-            },
-            'console': {
-                'level': 'DEBUG',
-                'class': 'logging.StreamHandler',
-                'formatter': 'verbose'
-            }
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose'
+        }
+    },
+    'loggers': {
+        '': {
+            'handlers': ['console', 'file_app'],
+            'level': 'WARNING',
+            'propagate': True,
         },
-        'loggers': {
-            '': {
-                'handlers': ['console', 'file_app'],
-                'level': 'WARNING',
-                'propagate': True,
-            },
-            'accounts': {
-                'handlers': ['console', 'file_app'],
-                'level': 'INFO',
-                'propagate': False,
-            },
-            'web': {
-                'handlers': ['console', 'file_app'],
-                'level': 'INFO',
-                'propagate': False,
-            },
+        'accounts': {
+            'handlers': ['console', 'file_app'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'web': {
+            'handlers': ['console', 'file_app'],
+            'level': 'INFO',
+            'propagate': False,
+        },
 
-        },
-    }
+    },
+}
 
 # ####HEROKU#######
 
