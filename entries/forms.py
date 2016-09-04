@@ -91,7 +91,9 @@ class EntryCreateUpdateForm(EntryFormMixin, forms.ModelForm):
             # disallow editing of category after entry submitted
             self.already_submitted = True
             self.fields['category'].widget.attrs.update({'class': 'hide'})
-        if not entries_open():
+
+        is_open, _, _ = entries_open()
+        if not is_open:
             # disallow editing of video url after entries closed
             self.fields['video_url'].widget.attrs.update({'class': 'hide'})
         self.show_doubles = False
