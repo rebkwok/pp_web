@@ -4,3 +4,4 @@
 venv
 ansible/vagrant.retry
 .env
+*.DS_Store
