@@ -7,7 +7,7 @@
     <div class="extra-top-margin row">
         <div class="col-xs-12">
             <div class="pull-right">
-            {% if not user.is_authenticated %}
+            {% if not user.is_authenticated and entries_open %}
                 To enter or view your previous entries,
                     please <a href="{% url 'login' %}?next=/entries/">log in</a> or <a href="{% url 'account_signup' %}?next=/entries/">sign up</a> for a new account.<br/>
             {% endif %}
