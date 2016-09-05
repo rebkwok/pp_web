@@ -137,7 +137,7 @@ class ProfileTests(TestSetupMixin, TestCase):
         resp = self.client.get(self.url)
         self.assertIn("Completed", str(resp.content))
         self.assertNotIn("Not completed", str(resp.content))
-        self.assertNotIn("/accounts/disclaimer", str(resp.content))
+        self.assertNotIn("/accounts/waiver", str(resp.content))
 
         self.client.login(
             username=self.user_with_online_disclaimer.username, password='test'
@@ -145,14 +145,14 @@ class ProfileTests(TestSetupMixin, TestCase):
         resp = self.client.get(self.url)
         self.assertIn("Completed", str(resp.content))
         self.assertNotIn("Not completed", str(resp.content))
-        self.assertNotIn("/accounts/disclaimer", str(resp.content))
+        self.assertNotIn("/accounts/waiver", str(resp.content))
 
         self.client.login(
             username=self.user_no_disclaimer.username, password='test'
         )
         resp = self.client.get(self.url)
         self.assertIn("Not completed", str(resp.content))
-        self.assertIn("/accounts/disclaimer", str(resp.content))
+        self.assertIn("/accounts/waiver", str(resp.content))
 
 
 class CustomLoginViewTests(TestSetupMixin, TestCase):
