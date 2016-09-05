@@ -77,7 +77,7 @@ I am deemed physically fit to participate in exercise and have no health or hear
 
 I give permission for my photo to be taken and used for advertisement and promotional purposes for Pole Performance.
 
-I agree to the above T&amp;C’s and release of liability. I have fully read and understood all information given to me by Pole Performance and free and  voluntarily sign without any inducement.
+I agree to the above T & C’s and release of liability. I have fully read and understood all information given to me by Pole Performance and free and  voluntarily sign without any inducement.
 """
 
 
