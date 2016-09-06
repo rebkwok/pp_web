@@ -96,7 +96,7 @@
 			<div class="container">
 				<h1>ENTRIES OPEN SEPTEMBER 2016</h1>
 				<hr>
-				{% if entries_open %}<div class="centered"><a href="{% url 'entries:entries_home' %}" class="btn btn-large btn-purple">Further Information</a></div>{% endif %}
+				<div class="centered"><a href="{% url 'entries:entries_home' %}" class="btn btn-large btn-purple">Further Information</a></div>
 			</div><!-- container -->
 		</section><!-- section -->
 		
@@ -116,7 +116,7 @@
 						with the highest scores will perform live at the finals at Carnegie Hall, Dunfermline on 12th
 						March 2017. </p>
 					<p>More details can be found in the <a href="{% url 'entries:entries_home' %}">Competitors' section</a>. </p>
-					<div class="centered"><a href="{% url 'entries:entries_home' %}" class="btn btn-large btn-purple">Enter</a></div>
+					{% if entries_open %}<div class="centered"><a href="{% url 'entries:entries_home' %}" class="btn btn-large btn-purple">Enter</a></div>{% endif %}
 				</div><!-- col-lg -->
 			</div><!-- row -->
 
@@ -141,28 +141,37 @@
 				<hr>
 				<br>
 				<br>
-				<div class="col-lg-3 col-md-3 col-xs-6 centered">
-					<img class="img img-circle" src="{% static 'web/images/question-mark.png' %}" height="120px" width="120px" alt="">
-					<br>
-					<h4><b></b></h4>
-					<p>To be confirmed</p>
-				</div><!-- col-lg-3 -->
-				
-				<div class="col-lg-3 col-md-3 col-xs-6 centered">
-					<img class="img img-circle" src="{% static 'web/images/question-mark.png' %}" height="120px" width="120px" alt="">
-					<br>
-					<h4><b></b></h4>
-					<p>To be confirmed</p>
-				</div><!-- col-lg-3 -->
-				
-				<div class="col-lg-3 col-md-3 col-xs-6 centered">
-					<img class="img img-circle" src="{% static 'web/images/question-mark.png' %}" height="120px" width="120px" alt="">
-					<br>
-					<h4><b></b></h4>
-					<p>To be confirmed</p>
-				</div><!-- col-lg-3 -->
+                <div class="col-sm-12">
+					<div class="col-sm-4 centered">
+                        <img class="img img-circle" src="{% static 'web/images/tiff.jpg' %}" height="150px" width="150px" alt="">
+                    </div>
+					<div class="col-sm-8">
+						<h4 class="centered"><b>Tiff Finney - Compère</b></h4>
+                        <p>Tiff has performed for thousand of people whether it be at
+                        Club Noir or on Britain's Got Talent. As well as her amazing performances,
+                        workshops, and being an ambassador for Bad Kitty, Tiff also owns
+                        her own gorgeous studio called Pole Physique. And of course she was
+                        United Pole Artists "Bringing Sexy Back" Poster Model 2016.
+                        We are very excited to have her join us again as our compère
+                        for Pole Performance 2017!</p>
+                    </div>
+				</div></br></br><!-- col-md-6 -->
 
-				<div class="col-lg-3 col-md-3 col-xs-6 centered">
+				<div class="col-lg-4 col-md-4 col-xs-4 centered">
+					<img class="img img-circle" src="{% static 'web/images/question-mark.png' %}" height="120px" width="120px" alt="">
+					<br>
+					<h4><b></b></h4>
+					<p>To be confirmed</p>
+				</div><!-- col-lg-3 -->
+				
+				<div class="col-lg-4 col-md-4 col-xs-4 centered">
+					<img class="img img-circle" src="{% static 'web/images/question-mark.png' %}" height="120px" width="120px" alt="">
+					<br>
+					<h4><b></b></h4>
+					<p>To be confirmed</p>
+				</div><!-- col-lg-3 -->
+				
+				<div class="col-lg-4 col-md-4 col-xs-4 centered">
 					<img class="img img-circle" src="{% static 'web/images/question-mark.png' %}" height="120px" width="120px" alt="">
 					<br>
 					<h4><b></b></h4>
