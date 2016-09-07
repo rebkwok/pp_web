@@ -211,9 +211,9 @@ def payment_received(sender, **kwargs):
     paypal_trans = obj_dict['paypal_trans']
 
     try:
-        if ipn_obj.receiver_email != settings.DEFAULT_PAYPAL_EMAIL:
+        if ipn_obj.business != settings.DEFAULT_PAYPAL_EMAIL:
             ipn_obj.set_flag(
-                "Invalid receiver_email (%s)" % ipn_obj.receiver_email
+                "Invalid receiver_email (%s)" % ipn_obj.business
             )
             ipn_obj.save()
             raise PayPalTransactionError(ipn_obj.flag_info)

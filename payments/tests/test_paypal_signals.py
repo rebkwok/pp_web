@@ -40,7 +40,7 @@ IPN_POST_PARAMS = {
     "custom": b"video 1",
     "payer_status": b"verified",
     "payment_status": b"Completed",
-    "business": b"poleperformance%40hotmail.com",
+    "business": b(TEST_RECEIVER_EMAIL),
     "quantity": b"1",
     "verify_sign": b"An5ns1Kso7MWUdW4ErQKJJJ4qi4-AqdZy6dD.sGO3sDhTf1wAbuO2IZ7",
     "payer_email": b"test_user@gmail.com",
@@ -842,9 +842,9 @@ class PaypalSignalsTests(TestCase):
         self.assertEqual(ppipn.flag_info, 'Invalid postback. (INVALID)')
 
     @patch('paypal.standard.ipn.models.PayPalIPN._postback')
-    def test_paypal_notify_with_mismatched_receiver_email(self, mock_postback):
+    def test_paypal_notify_with_mismatched_business(self, mock_postback):
         """
-        Test that error is raised if receiver email doesn't match object's
+        Test that error is raised if business doesn't match object's
         paypal_email. Warning mail sent to support.
         """
         mock_postback.return_value = b"VERIFIED"
@@ -858,7 +858,7 @@ class PaypalSignalsTests(TestCase):
                 'custom': b('video {}'.format(entry.id)),
                 'invoice': b(pptrans.invoice_id),
                 'txn_id': b'test_txn_id',
-                'receiver_email': b'fake@test.com'
+                'business': b'fake@test.com'
             }
         )
         self.assertIsNone(pptrans.transaction_id)
