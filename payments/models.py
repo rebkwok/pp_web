@@ -74,7 +74,7 @@ class PaypalEntryTransaction(models.Model):
 
 
 def send_processed_payment_emails(
-        payment_type_verbose, paypal_trans, user, obj
+        payment_type_verbose, paypal_trans, user, obj, amount
 ):
     ctx = {
         'user': " ".join([user.first_name, user.last_name]),
@@ -82,7 +82,8 @@ def send_processed_payment_emails(
         'obj': obj,
         'invoice_id': paypal_trans.invoice_id,
         'paypal_transaction_id': paypal_trans.transaction_id,
-        'paypal_email': settings.DEFAULT_PAYPAL_EMAIL
+        'paypal_email': settings.DEFAULT_PAYPAL_EMAIL,
+        'fee': amount
     }
 
     # send email to user
@@ -283,9 +284,9 @@ def payment_received(sender, **kwargs):
                     paypal_trans.id
                     )
             )
-
             send_processed_payment_emails(
-                payment_type_verbose, paypal_trans, obj.user, obj
+                payment_type_verbose, paypal_trans, obj.user, obj,
+                str(ipn_obj.mc_gross)
             )
 
             if not ipn_obj.invoice:
