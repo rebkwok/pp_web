@@ -43,9 +43,9 @@
                                     Video submission fee
                                 </label>
                                 <div class="col-xs-6 col-sm-7">
-                                    {% if entry.instance.video_entry_paid %}<span class="fa fa-check success"></span>
+                                    {% if entry.instance.video_entry_paid %}<span class="complete">Paid</span>
                                     {% elif entry.paypal_video_form %}{% include 'payments/video_payment.html' %}
-                                    {% else %}<span class="fa fa-times fail"></span>{% endif %}
+                                    {% else %}<span class="incomplete">Not paid</span>{% endif %}
                                 </div>
                             </div>
                             <div class="col-xs-12">
@@ -54,9 +54,9 @@
                                 </label>
                                 <div class="col-xs-6 col-sm-7">
                                     {% if entry.instance.status == 'selected' or entry.instance.status == 'selected_confirmed' %}
-                                        {% if entry.instance.selected_entry_paid %}<span class="fa fa-check success"></span>
+                                        {% if entry.instance.selected_entry_paid %}<span class="complete">Paid</span>
                                         {% elif entry.paypal_selected_form %}{% include 'payments/selected_payment.html' %}
-                                        {% else %}<span class="fa fa-times fail"></span>{% endif %}
+                                        {% else %}<span class="incomplete">Not paid</span>{% endif %}
                                     {% else %}
                                         N/A
                                     {% endif %}
@@ -64,12 +64,12 @@
                             </div>
                             <div class="col-xs-12">
                                 <label class="col-xs-6 col-sm-5">
-                                    Selection data complete
+                                    Additional entry data
                                 </label>
                                 <div class="col-xs-6 col-sm-7">
                                     {% if entry.instance.status == 'selected' or entry.instance.status == 'selected_confirmed' %}
-                                        {% if entry.instance.song and entry.instance.biography %}<span class="fa fa-check success"></span>
-                                        {% else %}<span class="fa fa-times fail"></span>{% endif %}
+                                        {% if entry.instance.song and entry.instance.biography %}<span class="complete">Complete</span>
+                                        {% else %}<span class="incomplete">Pending</span>{% endif %}
                                     {% else %}
                                         N/A
                                     {% endif %}
