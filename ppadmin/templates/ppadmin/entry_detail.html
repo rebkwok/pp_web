@@ -4,16 +4,17 @@
 
 {% block content %}
 <div class="container-fluid">
+    <div><a href="{% url 'ppadmin:entries' %}">All entries</a></div>
     <h1>Entry Details: {{ entry.user.first_name }} {{ entry.user.last_name }} - {{ entry.category |format_category }}</h1>
-
         <div class="panel-group">
             <div class="panel panel-default">
                 <div class="panel-heading">User Details</div>
                 <div class="panel-body">
-                    Address: {{ entry.user.profile.address }}</br>
-                    Postcode: {{ entry.user.profile.postcode }}</br>
-                    Phone: {{ entry.user.profile.phone }}</br>
-                    Pole School: {{ entry.user.profile.phone }}
+                    Address: {{ entry.user.profile.address }}<br>
+                    Postcode: {{ entry.user.profile.postcode }}<br>
+                    Phone: {{ entry.user.profile.phone }}<br>
+                    Pole School: {% if entry.user.profile.pole_school %}{{ entry.user.profile.pole_school }}{% endif %}<br>
+                    Stage Name: {% if entry.stage_name %}{{ entry.stage_name }}{% endif %}
                 </div>
             </div>
             <div class="panel panel-default">
@@ -32,7 +33,7 @@
             <div class="panel panel-default">
                 <div class="panel-heading">Doubles Partner</div>
                 <div class="panel-body">
-                    {{ entry.partner_name }} {{ entry.partner_email }}</a>
+                    {{ entry.partner_name }} {{ entry.partner_email }}
                 </div>
             </div>
             {% endif %}
@@ -50,7 +51,6 @@
                 </div>
             </div>
             {% endif %}
-            <div><a href="{% url 'ppadmin:entries' %}">All entries</a></div>
         </div>
 
 
