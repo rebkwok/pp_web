@@ -680,3 +680,15 @@ a > .noncoloured-link {
         padding-top: 2px;
     }
 }
+
+img.sponsor-img {
+        width: auto;
+        height: 80px;
+    }
+
+@media (max-width: 480px) {
+    img.sponsor-img {
+        width: auto;
+        height: 60px;
+    }
+}
