@@ -21,10 +21,15 @@ CATEGORY_CHOICES = (
     ('INT', 'Intermediate'),
     ('ADV', 'Advanced'),
     ('PRO', 'Professional'),
-    ('DOU', 'Doubles'),
     ('MEN', 'Mens'),
+    ('DOU', 'Doubles'),
 )
 CATEGORY_CHOICES_DICT = dict(CATEGORY_CHOICES)
+
+LATE_ENTRY_CATEGORY_CHOICES = (
+    ('MEN', 'Mens'),
+    ('DOU', 'Doubles'),
+)
 
 VIDEO_ENTRY_FEES = {
     'BEG': 10,

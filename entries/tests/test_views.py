@@ -27,14 +27,17 @@ class EntryHomeTests(TestSetupMixin, TestCase):
         self. assertEqual(resp.status_code, 200)
 
     @override_settings(
-        ENTRIES_OPEN_DATE="01/01/2016", ENTRIES_CLOSE_DATE="01/01/2200"
+        ENTRIES_OPEN_DATE="01/01/2016",
+        ENTRIES_CLOSE_DATE="01/01/2200",
+        LATE_CATEGORIES_ENTRIES_CLOSE_DATE="01/02/2200"
     )
     def test_entries_open(self):
         resp = self.client.get(self.url)
         self.assertIn('ENTER NOW', str(resp.content))
 
     @override_settings(
-        ENTRIES_OPEN_DATE="01/01/2010", ENTRIES_CLOSE_DATE="01/01/2016"
+        ENTRIES_OPEN_DATE="01/01/2010",
+        LATE_CATEGORIES_ENTRIES_CLOSE_DATE="01/01/2016"
     )
     def test_entries_closed(self):
         resp = self.client.get(self.url)
@@ -188,7 +191,9 @@ class EntryListViewTests(TestSetupLoginRequiredMixin, TestCase):
 
 
 @override_settings(
-        ENTRIES_OPEN_DATE="01/01/2016", ENTRIES_CLOSE_DATE="01/01/2200"
+        ENTRIES_OPEN_DATE="01/01/2016",
+        ENTRIES_CLOSE_DATE="01/01/2200",
+        LATE_CATEGORIES_ENTRIES_CLOSE_DATE="01/01/2200"
     )
 class EntryCreateViewTests(TestSetupLoginRequiredMixin, TestCase):
 
@@ -205,7 +210,10 @@ class EntryCreateViewTests(TestSetupLoginRequiredMixin, TestCase):
 
     def test_cant_access_outside_entries_open_period(self):
         self.client.login(username=self.user.username, password='test')
-        with override_settings(ENTRIES_CLOSE_DATE="01/01/2016"):
+        with override_settings(
+                LATE_CATEGORIES_ENTRIES_CLOSE_DATE="01/01/2016",
+                ENTRIES_CLOSE_DATE="01/01/2016"
+        ):
             resp = self.client.get(self.url)
             self.assertEqual(resp.status_code, 302)
             self.assertIn(reverse('permission_denied'), resp.url)

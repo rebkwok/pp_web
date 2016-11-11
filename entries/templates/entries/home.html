@@ -12,26 +12,38 @@
                     please <a href="{% url 'login' %}?next=/entries/">log in</a> or <a href="{% url 'account_signup' %}?next=/entries/">sign up</a> for a new account.<br/>
             {% endif %}
             {% if entries_open %}
-                <span class="pull-right" {% if not user.is_authenticated %} data-toggle="tooltip" data-placement="left" title="Log in to enter"{% endif %}>
+                <span class="pull-right col-xs-12" {% if not user.is_authenticated %} data-toggle="tooltip" data-placement="left" title="Log in to enter"{% endif %}>
                 <a {% if not user.is_authenticated %}class="btn btn-purple disabled"
                    {% else %}class="btn btn-purple"{% endif %} href="{% url 'entries:user_entries' %}">ENTER NOW</a></span>
+
             {% else %}
                 <span class="pull-right">
                     ENTRIES ARE NOT CURRENTLY OPEN<br>
                     Entries open: {{ entries_open_date|date:"d M Y" }}<br>
-                    Entries close: {{ entries_close_date|date:"d M Y" }}
+                    Entries close: {{ late_entries_close_date|date:"d M Y" }}
                 </span>
             {% endif %}
             </div>
         </div>
 
         <div class="col-xs-12">
+            <div class="pull-right">
+                {% if entries_open %}
+                        Entries close: {{ entries_close_date|date:"d M Y" }} ({{ early_categories }})<br/>
+                        Entries close: {{ late_entries_close_date|date:"d M Y" }} ({{ late_categories }})
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="col-xs-12">
+
         <h1 id="entry-info">Entry Information for Competitors</h1>
 
         <h2>Semi Finals - Video Entry</h2>
 
         <p>Please upload your video to YouTube or similar and submit a link to your video with your entry.
-            Entries close at midnight on {{ entries_close_date|date:"d M Y" }}.</p>
+            Entries close at midnight on {{ entries_close_date|date:"d M Y" }} ({{ early_categories }}) and
+            {{ late_entries_close_date|date:"d M Y" }} ({{ late_categories }}).</p>
 
         <p>Videos must show a routine to a song, must not exceed 3 minutes and must not be
             edited. A video of a previous performance can be used as entry.

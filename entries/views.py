@@ -220,7 +220,7 @@ class EntryCreateView(EntryMixin, LoginRequiredMixin, generic.CreateView):
     success_message = 'Your entry has been {}'
 
     def dispatch(self, request, *args, **kwargs):
-        is_open, _, _ = entries_open()
+        is_open = entries_open()
         if not is_open:
             return HttpResponseRedirect(reverse('permission_denied'))
         return super(EntryMixin, self).dispatch(request, *args, **kwargs)

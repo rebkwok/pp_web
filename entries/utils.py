@@ -33,12 +33,25 @@ def check_partner_email(email):
     return result, ok
 
 
-def entries_open():
-    open_date = datetime.strptime(settings.ENTRIES_OPEN_DATE, "%d/%m/%Y")
+def is_open(open_date, close_date):
+    open_date = datetime.strptime(open_date, "%d/%m/%Y")
     open_date = open_date.replace(tzinfo=timezone.utc)
-    close_date = datetime.strptime(settings.ENTRIES_CLOSE_DATE, "%d/%m/%Y")
+    close_date = datetime.strptime(close_date, "%d/%m/%Y")
     close_date = close_date.replace(
         hour=23, minute=59, microsecond=999999, tzinfo=timezone.utc
     )
-
     return open_date < timezone.now() < close_date, open_date, close_date
+
+
+def all_entries_open():
+    return is_open(settings.ENTRIES_OPEN_DATE, settings.ENTRIES_CLOSE_DATE)
+
+
+def late_categories_entries_open():
+    return is_open(
+        settings.ENTRIES_OPEN_DATE, settings.LATE_CATEGORIES_ENTRIES_CLOSE_DATE
+    )
+
+
+def entries_open():
+    return all_entries_open()[0] or late_categories_entries_open()[0]

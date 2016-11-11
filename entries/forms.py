@@ -3,8 +3,10 @@ from django.conf import settings
 
 from allauth.account.models import EmailAddress
 
-from .models import Entry, CATEGORY_CHOICES
-from .utils import check_partner_email, entries_open
+from .models import Entry, CATEGORY_CHOICES, LATE_ENTRY_CATEGORY_CHOICES
+from .utils import (
+    check_partner_email, all_entries_open, late_categories_entries_open
+)
 
 
 class EntryFormMixin(object):
@@ -79,6 +81,14 @@ class EntryCreateUpdateForm(EntryFormMixin, forms.ModelForm):
             (self.instance.id and choice[0] == self.instance.category)
         ]
 
+        # remove all categories except mens and doubles after first close date
+        if late_categories_entries_open()[0] and not all_entries_open()[0]:
+            cat_choices = [
+                choice for choice in LATE_ENTRY_CATEGORY_CHOICES if choice[0]
+                not in user_cats or
+                (self.instance.id and choice[0] == self.instance.category)
+            ]
+
         self.fields['category'].widget.choices = cat_choices
 
         if user_cats:
@@ -91,8 +101,15 @@ class EntryCreateUpdateForm(EntryFormMixin, forms.ModelForm):
             # disallow editing of category after entry submitted
             self.already_submitted = True
             self.fields['category'].widget.attrs.update({'class': 'hide'})
+        else:
+            self.already_submitted = False
 
-        is_open, _, _ = entries_open()
+        late_categories = [cat[0] for cat in LATE_ENTRY_CATEGORY_CHOICES]
+        if self.instance.id and (self.instance.category not in late_categories):
+            is_open, _, _ = all_entries_open()
+        else:
+            is_open, _, _ = late_categories_entries_open()
+
         if not is_open:
             # disallow editing of video url after entries closed
             self.fields['video_url'].widget.attrs.update({'class': 'hide'})

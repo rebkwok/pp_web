@@ -9,7 +9,6 @@ https://docs.djangoproject.com/en/1.9/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.9/ref/settings/
 """
-import dj_database_url
 import environ
 import os
 import sys
@@ -136,7 +135,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'entries.context_processors.pp_email',
-                'entries.context_processors.entries_open',
+                'entries.context_processors.entries',
             ],
             'loaders': [
                 'apptemplates.Loader',
@@ -306,6 +305,7 @@ if 'test' in sys.argv:  # use local cache for tests
 
 ENTRIES_OPEN_DATE = env('ENTRIES_OPEN_DATE')
 ENTRIES_CLOSE_DATE = env('ENTRIES_CLOSE_DATE')
+LATE_CATEGORIES_ENTRIES_CLOSE_DATE = env('LATE_CATEGORIES_ENTRIES_CLOSE_DATE')
 
 CURRENT_ENTRY_YEAR = env('CURRENT_ENTRY_YEAR')
 

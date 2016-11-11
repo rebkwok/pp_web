@@ -12,6 +12,11 @@ from .helpers import TestSetupMixin
 from ..models import Entry, CATEGORY_CHOICES
 
 
+@override_settings(
+        ENTRIES_OPEN_DATE="01/01/2016",
+        ENTRIES_CLOSE_DATE="01/01/2200",
+        LATE_CATEGORIES_ENTRIES_CLOSE_DATE="01/02/2200"
+    )
 class EntryCreateUpdateFormTests(TestSetupMixin, TestCase):
 
     def test_save_form_valid(self):
@@ -292,6 +297,7 @@ class EntryCreateUpdateFormTests(TestSetupMixin, TestCase):
         mommy.make(Entry, user=user, category='INT')
         mommy.make(Entry, user=user, category='ADV')
         mommy.make(Entry, user=user, category='PRO')
+        mommy.make(Entry, user=user, category='MEN')
 
         form = EntryCreateUpdateForm(user=user, initial_data={})
         self.assertTrue(form.show_doubles)
