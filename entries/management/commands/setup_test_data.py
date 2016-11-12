@@ -38,6 +38,14 @@ class Command(BaseCommand):
             category='INT', user=users[1], status='in_progress'
         )
         Entry.objects.get_or_create(
+            category='INT', user=users[2], status='submitted',
+            video_entry_paid=True
+        )
+        Entry.objects.get_or_create(
+            category='INT', user=users[3], status='submitted',
+            video_entry_paid=True
+        )
+        Entry.objects.get_or_create(
             category='ADV', user=users[2], status='in_progress'
         )
         Entry.objects.get_or_create(
@@ -49,12 +57,16 @@ class Command(BaseCommand):
             video_entry_paid=True,
             video_url='https://www.youtube.com/watch?v=0Bmhjf0rKe8'
         )
-
         Entry.objects.get_or_create(
             category='DOU', user=users[0], status='submitted',
-            partner_name='{} {}'.format(
-                users[1].first_name, users[2].first_name
-            ),
+            partner_name='{}'.format(users[1].first_name),
             partner_email=users[1].email,
+            video_url='https://www.youtube.com/watch?v=Psv5dmrs3U0'
+        )
+        Entry.objects.get_or_create(
+            category='DOU', user=users[2], status='submitted',
+            partner_name='{}'.format(users[3].first_name),
+            partner_email=users[3].email,
+            video_entry_paid=True,
             video_url='https://www.youtube.com/watch?v=Psv5dmrs3U0'
         )

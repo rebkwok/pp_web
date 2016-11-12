@@ -1,4 +1,5 @@
 import sys
+import os
 
 from datetime import datetime, timedelta
 from io import StringIO
@@ -336,6 +337,50 @@ class ManagementCommandsTests(TestCase):
         management.call_command('setup_test_data')
 
         self.assertEqual(User.objects.count(), 5)
-        self.assertEqual(Entry.objects.count(), 6)
+        self.assertEqual(Entry.objects.count(), 9)
+
+    def test_export_entries(self):
+        management.call_command('setup_test_data')
+        management.call_command('export_entries', 'BEG')
+
+        self.assertEqual(
+            Entry.objects.filter(
+                category='BEG', status='submitted', withdrawn=False,
+                video_entry_paid=True
+            ).count(),
+            1
+        )
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].to, [settings.SUPPORT_EMAIL])
+        self.assertEqual(
+            mail.outbox[0].body, 'Submitted entry data attached. 1 entry.')
+
+        management.call_command('export_entries', 'INT')
+        self.assertEqual(
+            Entry.objects.filter(
+                category='INT', status='submitted', withdrawn=False,
+                video_entry_paid=True
+            ).count(),
+            2
+        )
+        self.assertEqual(len(mail.outbox), 2)
+        self.assertEqual(mail.outbox[1].to, [settings.SUPPORT_EMAIL])
+        self.assertEqual(
+            mail.outbox[1].body, 'Submitted entry data attached. 2 entries.')
+
+        # save file
+        filepath = os.path.join(os.getcwd(), 'test.csv')
+        management.call_command(
+            'export_entries', 'INT', file=filepath
+        )
+        self.assertFalse(os.path.exists(filepath))
+
+        management.call_command(
+            'export_entries', 'INT', file=filepath, save=True
+        )
+        self.assertTrue(os.path.exists(filepath))
+        # cleanup
+        os.unlink(filepath)
+
 
 
