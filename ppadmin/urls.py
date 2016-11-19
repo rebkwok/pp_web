@@ -57,7 +57,7 @@ urlpatterns = [
         r'^entries/(?P<ref>[\w-]+)/$', EntryDetailView.as_view(), name="entry"
     ),
     url(
-        r'activitylog/$', ActivityLogListView.as_view(), name='activitylog'
+        r'^activitylog/$', ActivityLogListView.as_view(), name='activitylog'
     ),
     url(
         r'^users/(?P<user_id>\d+)/toggle_subscribed/$',
