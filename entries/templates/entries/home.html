@@ -39,7 +39,11 @@
 
         <h1 id="entry-info">Entry Information for Competitors</h1>
 
-        <h2>Semi Finals - Video Entry</h2>
+        <a id="toggler" href="#" data-toggle="collapse" class="active" data-target="#semifinals">
+            <span class="fa fa-plus-square"></span>
+        </a><span class="semi-finals-title">Semi Finals - Video Entry</span>
+        <span id="semifinals" class="collapse">
+
 
         <p>Please upload your video to YouTube or similar and submit a link to your video with your entry.
             Entries close at midnight on {{ entries_close_date|date:"d M Y" }} ({{ early_categories }}) and
@@ -75,6 +79,7 @@
             an entry form specifying their partner's name and email.  The partner's email address will be used
             to check registration and waiver status and you will not be able to submit the entry until you have both
             completed the required information.</p>
+        </span>
 
         <h2>Finals</h2>
 

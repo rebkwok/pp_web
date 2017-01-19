@@ -269,3 +269,7 @@ th {
 .table-responsive > .table > tbody > tr > td {
     white-space: normal;
 }
+
+span.semi-finals-title {
+    font-size: x-large;
+}
