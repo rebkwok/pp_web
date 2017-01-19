@@ -5,6 +5,10 @@ from . import views
 urlpatterns = [
     url(r'^$', views.entries_home, name='entries_home'),
     url(
+        r'^judging-criteria/$', views.judging_criteria,
+        name='judging_criteria'
+    ),
+    url(
         r'^myentries/new/$', views.EntryCreateView.as_view(),
         name='create_entry'
     ),

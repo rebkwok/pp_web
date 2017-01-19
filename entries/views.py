@@ -1,10 +1,12 @@
+import os
+
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.urlresolvers import reverse
-from django.shortcuts import get_object_or_404, HttpResponseRedirect, \
-    render, render_to_response
-
+from django.http import FileResponse, Http404
+from django.shortcuts import get_object_or_404, HttpResponse, \
+    HttpResponseRedirect, render, render_to_response
 from django.template.response import TemplateResponse
 from django.views import generic
 
@@ -57,6 +59,18 @@ def permission_denied(request):
 
 def entries_home(request):
     return render(request, 'entries/home.html')
+
+
+def judging_criteria(request):
+    curr_dir = os.path.dirname(os.path.realpath(__file__))
+    file = 'files/Judges2017.pdf'
+    try:
+        return FileResponse(
+            open(os.path.join(curr_dir, file), 'rb'),
+            content_type='application/pdf'
+        )
+    except FileNotFoundError:
+        raise Http404()
 
 
 class EntryListView(LoginRequiredMixin, generic.ListView):
