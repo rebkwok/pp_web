@@ -1,10 +1,15 @@
 ---
+- name: Make virtual env
+  shell: virtualenv -p python3.4 venv
+  args:
+    chdir: "{{ project_root_path }}"
+
 - name: Setup Virtualenv
-  pip: virtualenv={{ virtualenv_path }} requirements={{ project_root_path }}/requirements.txt virtualenv_python=python3.4
+  pip:
+    virtualenv: "{{ virtualenv_path }}"
+    requirements: "{{ project_root_path }}/requirements.txt"
 
 - name: Install some dev tools
-  become: true
-  become_user: root
   pip: name={{ item }} virtualenv={{ virtualenv_path }}
   with_items:
     - ipdb
