@@ -3,18 +3,20 @@
 
 {% block nav_content %}
     <ul class="nav navbar-nav">
-			<li> <a href="#about" class="smoothScroll"> About</a></li>
-			<li> <a href="#entry-info" class="smoothScroll"> Entry Information</a></li>
+			<li> <a href="#about" class="smoothScroll hidden-sm"> About</a></li>
+			<li> <a href="#entry-info" class="smoothScroll"> Entry Info</a></li>
 			<li> <a href="#judges" class="smoothScroll"> Judges</a></li>
+			<li> <a href="#workshops" class="smoothScroll"> Workshops</a></li>
 			<li> <a href="#organisers" class="smoothScroll"> Organisers</a></li>
-			  <li> <a href="#gallery" class="smoothScroll hidden-sm"> 2016 Gallery</a></li>
+			  <li> <a href="#gallery" class="smoothScroll hidden-md hidden-sm"> 2016 Gallery</a></li>
             <li> <a href="#sponsors" class="smoothScroll hidden-sm"> Sponsors</a></li>
 			<li> <a href="#contact" class="smoothScroll hidden-sm"> Contact</a></li>
     </ul>
-	<ul class="nav navbar-nav hidden-xs hidden-md hidden-lg">
+	<ul class="nav navbar-nav hidden-xs hidden-lg">
 		<li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">More<span class="caret"></span></a>
           <ul class="dropdown-menu" role="menu">
+			  <li> <a href="#about" class="smoothScroll"> About</a></li>
             <li> <a href="#gallery" class="smoothScroll"> 2016 Gallery</a></li>
               <li> <a href="#sponsors" class="smoothScroll"> Sponsors</a></li>
 			  <li> <a href="#contact" class="smoothScroll"> Contact</a></li>
@@ -210,6 +212,26 @@
 			</div><!-- row -->
 		</div><!-- container -->
 
+	<!-- ==== WORKSHOPS ==== -->
+		<div class="container" id="workshops" name="workshops">
+			<div class="row white">
+			<br>
+				<h1 class="centered">WORKSHOPS</h1>
+				<h3 class="centered">AT THE WATERMELON STUDIO AND CAROUSEL FITNESS</h3>
+				<hr>
+
+				<div class="col-lg-offset-3 col-lg-6">
+					<ul>
+						<li>Tiff Finney - 28 Jan 2017 (The Watermelon Studio: book <a href="http://booking.thewatermelonstudio.co.uk/events">here</a>)</li>
+						<li>Jess Leanne Norris - 11 Mar 2017 (Carousel Fitness: book <a href="https://www.facebook.com/events/1846266452256306">here</a>)</li>
+						<li>Charlotte Robertson - 13 Mar 2017 (The Watermelon Studio: book <a href="http://booking.thewatermelonstudio.co.uk/events">here</a>)</li>
+						<li>Terri & Lisette - 12/13 Aug 2017 (The Watermelon Studio: book <a href="http://booking.thewatermelonstudio.co.uk/events">here</a>)</li>
+					</ul>
+				</div><!-- col-lg-6 -->
+
+			</div><!-- row -->
+		</div><!-- container -->
+
 		<!-- ==== ORGANISERS ==== -->
 
 	<div class="container" id="organisers" name="organisers">
@@ -262,12 +284,23 @@
 			<div class="row white centered">
 				<h1 class="centered">OUR SPONSORS</h1>
                 <hr><br/><br/>
-                <div class="col-sm-3 col-sm-offset-3 col-xs-6"><a href="https://www.winkdancewear.com"><img class="sponsor-img" src="{% static 'web/images/wink.png' %}"></a><br/>
-                    <a href="https://www.winkdancewear.com">www.winkdancewear.com</a>
-                </div>
-                <div class="col-sm-3 col-xs-6"><a href="http://radpolewear.com/"><img class="sponsor-img" src="{% static 'web/images/rad.jpg' %}"></a><br/>
-                    <a href="http://radpolewear.com">www.radpolewear.com</a>
-                </div>
+					<div class="col-lg-3 col-sm-6"><a href="https://www.winkdancewear.com"><img class="sponsor-img" src="{% static 'web/images/wink.png' %}"></a><br/>
+						<a class="sponsor-link" href="https://www.winkdancewear.com">winkdancewear.com</a>
+					</div>
+					<div class="col-lg-3 col-sm-6"><a href="https://radpolewear.com/"><img class="sponsor-img" src="{% static 'web/images/rad.jpg' %}"></a><br/>
+						<a class="sponsor-link"href="https://radpolewear.com">radpolewear.com</a>
+					</div>
+					<div class="col-lg-3 col-sm-6"><a href="https://www.polejunkie.co.uk"><img class="sponsor-img narrow" src="{% static 'web/images/polejunkie.png' %}"></a><br/>
+						<a class="sponsor-link" href="https://www.polejunkie.co.uk">polejunkie.co.uk</a>
+					</div>
+					<div class="col-lg-3 col-sm-6">
+						<a href="http://www.candyassclubwear.co.uk"><img class="sponsor-img" src="{% static 'web/images/candyass.png' %}"></a><br/>
+						<a class="sponsor-link" href="http://www.candyassclubwear.co.uk">candyassclubwear.co.uk</a>
+					</div>
+					<div class="col-lg-3 col-sm-6">
+						<a href="https://girliegrip.com"><img class="sponsor-img gg" src="{% static 'web/images/girliegrip.png' %}"></a><br/>
+						<a class="sponsor-link" href="https://girliegrip.com">girliegrip.com</a>
+					</div>
             </div>
         </div>
 		<!-- ==== GALLERY ==== -->

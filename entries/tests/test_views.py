@@ -1,3 +1,5 @@
+import os
+
 from mock import patch
 from model_mommy import mommy
 
@@ -6,11 +8,13 @@ from django.test import TestCase, override_settings
 from django.contrib.auth.models import User
 from django.core import mail
 from django.core.urlresolvers import reverse
+from django.http import Http404
 
 from accounts.models import OnlineDisclaimer
 
 from .helpers import format_content, TestSetupMixin, TestSetupLoginRequiredMixin
 from ..models import Entry, STATUS_CHOICES_DICT
+from ..views import pdf_view
 
 from payments.models import PaypalEntryTransaction
 
@@ -1056,3 +1060,25 @@ class WithdrawalPaymentViewTests(TestSetupLoginRequiredMixin, TestCase):
         pptrans1 = PaypalEntryTransaction.objects.first()
         self.assertEqual(pptrans.id, pptrans1.id)
         self.assertEqual(first_invoice_id, pptrans1.invoice_id)
+
+
+class PDFViewTests(TestSetupMixin, TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        super(PDFViewTests, cls).setUpTestData()
+        cls.url = reverse('entries:judging_criteria')
+
+    def test_judging_criteria_view(self):
+        resp = self.client.get(self.url)
+        self.assertEqual(resp.status_code, 200)
+
+    def test_file_not_found(self):
+        curr_dir = os.path.dirname(os.path.realpath(__file__))
+        file_path = os.path.join(curr_dir, '..', 'files/foo.pdf')
+        with self.assertRaises(Http404):
+            pdf_view(file_path)
+
+        file_path = os.path.join(curr_dir, '..', 'files/Judges2017.pdf')
+        resp = pdf_view(file_path)
+        self.assertEqual(resp.status_code, 200)
