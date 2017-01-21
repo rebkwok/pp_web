@@ -682,13 +682,29 @@ a > .noncoloured-link {
 }
 
 img.sponsor-img {
+    width: auto;
+    height: 55px;
+}
+
+img.sponsor-img.gg {
+    width: auto;
+    height: 85px;
+}
+
+@media (max-width: 767px) {
+    img.sponsor-img {
         width: auto;
-        height: 80px;
+        height: 60px;
     }
+
+}
 
 @media (max-width: 480px) {
     img.sponsor-img {
         width: auto;
         height: 60px;
+    }
+    a.sponsor-link {
+        font-size: medium;
     }
 }

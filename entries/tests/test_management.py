@@ -368,6 +368,19 @@ class ManagementCommandsTests(TestCase):
         self.assertEqual(
             mail.outbox[1].body, 'Submitted entry data attached. 2 entries.')
 
+        management.call_command('export_entries', 'DOU')
+        self.assertEqual(
+            Entry.objects.filter(
+                category='DOU', status='submitted', withdrawn=False,
+                video_entry_paid=True
+            ).count(),
+            1
+        )
+        self.assertEqual(len(mail.outbox), 3)
+        self.assertEqual(mail.outbox[2].to, [settings.SUPPORT_EMAIL])
+        self.assertEqual(
+            mail.outbox[2].body, 'Submitted entry data attached. 1 entry.')
+
         # save file
         filepath = os.path.join(os.getcwd(), 'test.csv')
         management.call_command(
@@ -382,5 +395,41 @@ class ManagementCommandsTests(TestCase):
         # cleanup
         os.unlink(filepath)
 
+    def test_reminders_for_incomplete_entries(self):
+        # with no entries
+        management.call_command('email_entry_info_reminder')
 
+        # 2 without song or bio
+        no_song_or_bio = mommy.make(
+            Entry, status='selected_confirmed', song="song", _quantity=2
+        )
+        # 2 with song but not bio
+        no_bio = mommy.make(
+            Entry, status='selected_confirmed', song="song", _quantity=2
+        )
+        # 2 with bio but not song
+        no_song = mommy.make(
+            Entry, status='selected_confirmed', biography="bio", _quantity=2
+        )
+        # no song/bio, not selected_confirmed or withdrawn
+        mommy.make(Entry, status='selected')
+        mommy.make(Entry, status='selected_confirmed', withdrawn=True)
+        mommy.make(Entry, status='submitted')
 
+        management.call_command('email_entry_info_reminder')
+
+        # emails to each of 6 applicable entries, plus support
+        self.assertEqual(len(mail.outbox), 7)
+
+        # check stdout for the 2 management calls
+        self.assertEqual(
+            self.output.getvalue(),
+            'No incomplete entries.\n'
+            'Reminder emails sent for incomplete selected-confirmed '
+            'entries: {}\n'.format(
+                ', '.join(
+                    [str(entry.id)
+                     for entry in no_song_or_bio + no_bio + no_song]
+                )
+            )
+        )
