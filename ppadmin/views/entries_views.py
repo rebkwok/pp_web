@@ -1,24 +1,27 @@
 import logging
+import xlwt
 
 from django.conf import settings
 
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.contrib import messages
 
 from django.core.urlresolvers import reverse
-from django.shortcuts import get_object_or_404, \
+from django.shortcuts import get_object_or_404, HttpResponse, \
     HttpResponseRedirect, render_to_response
 from django.template.response import TemplateResponse
-from django.views.generic import DetailView, ListView
+from django.views.generic import DetailView, FormView, ListView
 
 from braces.views import LoginRequiredMixin
 
-from ppadmin.forms import EntryFilterForm, EntrySelectionFilterForm
+from ppadmin.forms import EntryFilterForm, EntrySelectionFilterForm, \
+    ExportEntriesForm
 
 from ppadmin.views.helpers import staff_required, StaffUserMixin
 
 from activitylog.models import ActivityLog
-from entries.models import Entry, CATEGORY_CHOICES_DICT
+from entries.models import Entry, CATEGORY_CHOICES_DICT, STATUS_CHOICES_DICT
 from entries.email_helpers import send_pp_email
 
 
@@ -183,15 +186,18 @@ def toggle_selection(request, entry_id, decision=None):
 def notify_users(request, selection_type):
     if selection_type == "selected":
         unnotified_entries = Entry.objects.select_related('user').filter(
-            status='selected', withdrawn=False, notified=False
+            status='selected', withdrawn=False, notified=False,
+            entry_year=settings.CURRENT_ENTRY_YEAR
         ).order_by('category')
     elif selection_type == "rejected":
         unnotified_entries = Entry.objects.select_related('user').filter(
-            status='rejected', withdrawn=False, notified=False
+            status='rejected', withdrawn=False, notified=False,
+            entry_year=settings.CURRENT_ENTRY_YEAR
         ).order_by('category')
     else:
         unnotified_entries = Entry.objects.select_related('user').filter(
             status__in=['selected', 'rejected'], withdrawn=False,
+            entry_year=settings.CURRENT_ENTRY_YEAR,
             notified=False
         ).order_by('category')
 
@@ -282,8 +288,8 @@ def notified_selection_reset(request, entry_id, decision=None):
 
         ActivityLog.objects.create(
             log="Notified selected entry {entry_id} ({category}) - "
-                "user {username} reset by admin user {adminuser} and marked as "
-                "not notified (old notification date {date})".format(
+                "user {username} reset by admin user {adminuser} and marked "
+                "as not notified (old notification date {date})".format(
                     entry_id=entry_id,
                     category=CATEGORY_CHOICES_DICT[entry.category],
                     username=entry.user.username,
@@ -293,3 +299,143 @@ def notified_selection_reset(request, entry_id, decision=None):
         )
 
     return render_to_response(template, {'entry': entry})
+
+
+class ExportFormView(LoginRequiredMixin,  StaffUserMixin, FormView):
+
+    form_class = ExportEntriesForm
+    template_name = "ppadmin/export_entries.html"
+
+    def form_valid(self, form):
+        if 'export' in self.request.POST:
+            category = form.cleaned_data['category']
+            status = form.cleaned_data['status']
+            column_names = form.cleaned_data['include']
+            entries = Entry.objects.filter(
+                withdrawn=False, entry_year=settings.CURRENT_ENTRY_YEAR
+            ).order_by('category')
+
+            if category != 'all':
+                entries = entries.filter(category=category)
+            if status != 'all':
+                entries = entries.filter(status=status)
+            return export_data(category, entries, column_names)
+        else:
+            return TemplateResponse(
+                self.request,
+                self.template_name,
+                {'form': ExportEntriesForm(data=self.request.POST)}
+            )
+
+
+def get_columns_dict(entry=None, name=None, school=None):
+    return {
+        'name': (u"Name", 3000, name),
+        'stage_name': (
+            u"Stage Name", 3000, entry.stage_name if entry else None
+        ),
+        'pole_school': (u"Pole School", 4000, school),
+        'category': (
+            u"Category", 3000,
+            CATEGORY_CHOICES_DICT[entry.category] if entry else None
+        ),
+        'song': (u"Song", 4000, entry.song if entry else None),
+        'biography': (u"Biography", 6000, entry.biography if entry else None),
+        'video_url': (
+            u"Video Entry URL", 6000, entry.video_url if entry else None
+        ),
+        'status': (
+            u"Status", 4500,
+            STATUS_CHOICES_DICT[entry.status] if entry else None
+        ),
+        'video_entry_paid': (
+            u"Video Fee Paid", 2000,
+            'Yes' if entry and entry.video_entry_paid else 'No'
+        ),
+        'selected_entry_paid': (
+            u"Entry Fee Paid", 2000,
+            'Yes' if entry and entry.selected_entry_paid else 'No'
+        ),
+    }
+
+
+def export_data(category, entries, column_names):
+    filename = 'competitors_all.xls'
+    if category != 'all':
+        filename = 'competitors_{}.xls'.format(
+            CATEGORY_CHOICES_DICT[category].lower()
+        )
+
+    response = HttpResponse(content_type='application/ms-excel')
+    response['Content-Disposition'] = 'attachment; filename={}'.format(
+        filename
+    )
+    wb = xlwt.Workbook(encoding='utf-8')
+
+    columns_dict = get_columns_dict()
+    columns = [
+        (columns_dict[col_name][0], columns_dict[col_name][1])
+        for col_name in column_names
+    ]
+
+    if category == 'all':
+        worksheet_names = CATEGORY_CHOICES_DICT
+    else:
+        worksheet_names = {category: CATEGORY_CHOICES_DICT[category]}
+
+    for worksheet_category, worksheet_name in worksheet_names.items():
+        row_num = 0
+
+        if category == 'all':
+            cat_entries = entries.filter(category=worksheet_category)
+        else:
+            cat_entries = entries
+
+        if cat_entries:
+            ws = wb.add_sheet(worksheet_name)
+
+            font_style = xlwt.XFStyle()
+            font_style.alignment.wrap = 1
+            font_style.font.bold = True
+
+            for col_num in range(len(columns)):
+                ws.write(row_num, col_num, columns[col_num][0], font_style)
+                # set column width
+                ws.col(col_num).width = columns[col_num][1]
+
+            font_style = xlwt.XFStyle()
+            font_style.alignment.wrap = 1
+
+            for entry in cat_entries:
+                if entry.category == 'DOU':
+                    partner = User.objects.get(email=entry.partner_email)
+
+                school = None
+                name = None
+
+                if 'pole_school' in column_names:
+                    school = entry.user.profile.pole_school
+                    if entry.category == 'DOU':
+                        partner_school = partner.profile.pole_school
+                        school = '{} ({}) / {} ({} {})'.format(
+                            school, name, partner_school, partner.first_name,
+                            partner.last_name
+                        )
+
+                if 'name' in column_names:
+                    name = '{} {}'.format(
+                        entry.user.first_name, entry.user.last_name
+                    )
+                    if entry.category == 'DOU':
+                        name += ' & {}'.format(entry.partner_name)
+
+                row_num += 1
+
+                columns_dict = get_columns_dict(entry, name, school)
+                row = [columns_dict[col_name][2] for col_name in column_names]
+
+                for col_num in range(len(row)):
+                    ws.write(row_num, col_num, row[col_num], font_style)
+
+    wb.save(response)
+    return response

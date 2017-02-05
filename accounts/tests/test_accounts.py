@@ -82,6 +82,14 @@ class ProfileUpdateViewTests(TestSetupMixin, TestCase):
         self.assertEquals(updated_user.first_name, "Fred")
 
 
+class UserProfileTests(TestCase):
+
+    def test_userprofile_str(self):
+        management.call_command('setup_test_data')
+        user = User.objects.get(first_name='Sally')
+        self.assertEqual(str(user.profile), user.username)
+
+
 class ProfileTests(TestSetupMixin, TestCase):
 
     @classmethod

@@ -5,7 +5,7 @@ from ppadmin.views import user_disclaimer, DisclaimerUpdateView, \
     MailingListView, unsubscribe, UserListView, EntryListView, \
     EntryDetailView, EntryNotifiedListView, email_users_view, \
     EntrySelectionListView, toggle_selection, notified_selection_reset, \
-    notify_users
+    notify_users, export_data, ExportFormView
 
 
 urlpatterns = [
@@ -52,6 +52,12 @@ urlpatterns = [
     url(
         r'^entries/(?P<entry_id>\d+)/notified_selection_reset/$',
         notified_selection_reset, name='notified_selection_reset'
+    ),
+    url(
+        r'^entries/export/$', ExportFormView.as_view(), name="export_entries"
+    ),
+    url(
+        r'^entries/export/excel$', export_data, name="entries_xls"
     ),
     url(
         r'^entries/(?P<ref>[\w-]+)/$', EntryDetailView.as_view(), name="entry"

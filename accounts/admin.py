@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from accounts.models import OnlineDisclaimer
+from accounts.models import OnlineDisclaimer, UserProfile
 
 
 class OnlineDisclaimerAdmin(admin.ModelAdmin):
@@ -13,3 +13,4 @@ class OnlineDisclaimerAdmin(admin.ModelAdmin):
 
 
 admin.site.register(OnlineDisclaimer, OnlineDisclaimerAdmin)
+admin.site.register(UserProfile)
