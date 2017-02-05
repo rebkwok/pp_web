@@ -14,6 +14,9 @@
                 {{ filter_form }}
                 <input class="btn btn-purple table-btn" type="submit" name='reset' value="Reset" />
             </form>
+            <a class="btn btn-export-xls" href="{% url 'ppadmin:export_entries' %}">
+                Export to spreadsheet <span class="fa fa-file-excel-o"></span>
+            </a> <div class="vspace"></div>
         </div>
 
 

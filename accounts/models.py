@@ -126,3 +126,5 @@ class UserProfile(models.Model):
     postcode = models.CharField(max_length=10)
     phone = models.CharField(max_length=255)
 
+    def __str__(self):
+        return self.user.username

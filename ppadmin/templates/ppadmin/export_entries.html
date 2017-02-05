@@ -1,0 +1,29 @@
+{% extends "ppadmin/base.html" %}
+{% load static %}
+{% load accounttags %}
+
+{% block content %}
+
+<div class="container-fluid row">
+
+    <h2>Export Competitor Info to Spreadsheet</h2>
+
+    <div class=row>
+        <div class="col-sm-12">
+            <p>
+                Selecting "All categories" exports each category to a separate sheet.
+                If there are no entries for a category, no sheet will be generated for it.
+            </p>
+        </div>
+        <div class="col-sm-12">
+            <form action="" method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <input class="btn btn-export-xls" type="submit" name='export' value="Export XLS" />
+            </form>
+        </div>
+
+    </div>
+
+</div>
+{% endblock content %}

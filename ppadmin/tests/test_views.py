@@ -2,6 +2,7 @@ from datetime import datetime
 from model_mommy import mommy
 
 from django.contrib.auth.models import Group, User
+from django.core import management
 from django.core.cache import cache
 from django.core.urlresolvers import reverse
 from django.db.models import Q
@@ -135,7 +136,7 @@ class ActivityLogListViewTests(TestSetupStaffLoginRequiredMixin, TestCase):
         )
         self.assertEqual(len(resp.context_data['logs']), 10)
 
-from django.core.cache import cache
+
 class UserListViewTests(TestSetupStaffLoginRequiredMixin, TestCase):
 
     @classmethod
@@ -299,11 +300,18 @@ class UserListViewTests(TestSetupStaffLoginRequiredMixin, TestCase):
         subscribed = Group.objects.get(name='subscribed')
 
         self.assertIn(subscribed, user.groups.all())
+        self.assertTrue(
+            cache.get('user_{}_is_subscribed'.format(user.id))
+        )
+
         self.client.login(username=self.staff_user.username, password='test')
 
         # unsubscribe
         self.client.post(
             reverse('ppadmin:toggle_subscribed', args=[user.id])
+        )
+        self.assertFalse(
+            cache.get('user_{}_is_subscribed'.format(user.id))
         )
 
         user.refresh_from_db()
@@ -317,6 +325,9 @@ class UserListViewTests(TestSetupStaffLoginRequiredMixin, TestCase):
         )
         user.refresh_from_db()
         self.assertIn(subscribed, user.groups.all())
+        self.assertTrue(
+            cache.get('user_{}_is_subscribed'.format(user.id))
+        )
 
 
 class MailingListViewTests(TestSetupStaffLoginRequiredMixin, TestCase):
@@ -454,3 +465,78 @@ class DisclaimerDeleteViewTests(TestSetupStaffLoginRequiredMixin,
         self.client.login(username=self.staff_user.username, password='test')
         self.client.delete(self.url)
         self.assertEqual(OnlineDisclaimer.objects.count(), 0)
+
+
+class ExportEntriesView(TestSetupStaffLoginRequiredMixin, TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        super(ExportEntriesView, cls).setUpTestData()
+        cls.url = reverse('ppadmin:export_entries')
+
+    def test_no_entries(self):
+        self.client.login(username=self.staff_user.username, password='test')
+        form_data = {
+            'category': 'BEG', 'status': 'in_progress',
+            'include': ['name']
+        }
+        # submitting from dropdown change
+        resp = self.client.post(self.url, data=form_data)
+        form = resp.context_data['form']
+        self.assertFalse(form.is_valid())
+        self.assertEqual(
+            form.errors,
+            {'__all__': ['No entries match selected category/status.']}
+        )
+
+        # submitting from export button
+        form_data.update({'export': True})
+        resp = self.client.post(self.url, data=form_data)
+        form = resp.context_data['form']
+        self.assertFalse(form.is_valid())
+        self.assertEqual(
+            form.errors,
+            {'__all__': ['No entries match selected category/status.']}
+        )
+
+    def test_submit_all_categories(self):
+        self.client.login(username=self.staff_user.username, password='test')
+        management.call_command('setup_test_data')
+        form_data = {
+            'category': 'all', 'status': 'all',
+            'include': ['name']
+        }
+        # submitting from dropdown change
+        resp = self.client.post(self.url, data=form_data)
+        self.assertEqual(resp.status_code, 200)
+
+        # submitting from export button
+        form_data.update({'export': True})
+        resp = self.client.post(self.url, data=form_data)
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp['Content-Type'], 'application/ms-excel')
+        self.assertEqual(
+            resp['Content-Disposition'],
+            'attachment; filename=competitors_all.xls'
+        )
+
+    def test_submit_select_categories(self):
+        self.client.login(username=self.staff_user.username, password='test')
+        management.call_command('setup_test_data')
+        form_data = {
+            'category': 'DOU', 'status': 'submitted',
+            'include': ['name', 'stage_name', 'pole_school']
+        }
+        # submitting from dropdown change
+        resp = self.client.post(self.url, data=form_data)
+        self.assertEqual(resp.status_code, 200)
+
+        # submitting from export button
+        form_data.update({'export': True})
+        resp = self.client.post(self.url, data=form_data)
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp['Content-Type'], 'application/ms-excel')
+        self.assertEqual(
+            resp['Content-Disposition'],
+            'attachment; filename=competitors_doubles.xls'
+        )

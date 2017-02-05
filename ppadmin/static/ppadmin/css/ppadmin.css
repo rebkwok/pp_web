@@ -112,3 +112,20 @@ span.unnotified {
     color: red;
     font-weight: bold;
 }
+
+#id_include {
+    list-style: none;
+}
+
+.btn-export-xls {
+    background-color: darkgreen;
+    color: white;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    padding-left: 4px;
+    padding-right: 4px;
+}
+
+a.btn-export-xls > span {
+    color: white;
+}
