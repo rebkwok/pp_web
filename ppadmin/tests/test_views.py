@@ -1,3 +1,5 @@
+import os
+import xlrd
 from datetime import datetime
 from model_mommy import mommy
 
@@ -515,16 +517,73 @@ class ExportEntriesView(TestSetupStaffLoginRequiredMixin, TestCase):
         # submitting from dropdown change
         resp = self.client.post(self.url, data=form_data)
         self.assertEqual(resp.status_code, 200)
+        self.assertEqual( resp['Content-Type'], 'text/html; charset=utf-8')
 
         # submitting from export button
         form_data.update({'export': True})
         resp = self.client.post(self.url, data=form_data)
+
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp['Content-Type'], 'application/ms-excel')
         self.assertEqual(
             resp['Content-Disposition'],
             'attachment; filename=competitors_all.xls'
         )
+
+    def test_file_content(self):
+        self.client.login(username=self.staff_user.username, password='test')
+        management.call_command('setup_test_data')
+        form_data = {
+            'category': 'all', 'status': 'all',
+            'include': ['name', 'pole_school', 'category'],
+            'export': True
+        }
+        resp = self.client.post(self.url, data=form_data)
+
+        # test file content
+        # Test data:
+        #  - BEG: 1 in progress, 2 submitted
+        #  - INT: 1 in progress, 2 submitted
+        #  - ADV: 1 in progress
+        #  - DOU: 2 submitted
+        #  - MEN, PRO: none
+        curr_dir = os.path.dirname(os.path.realpath(__file__))
+        filename = os.path.join(curr_dir, "temp.xls")
+
+        with open(filename, "wb") as f:
+            f.write(resp.content)
+        book = xlrd.open_workbook(filename)
+
+        # 4 sheets, one per category
+        self.assertEqual(book.nsheets, 4)
+        self.assertCountEqual(
+            book.sheet_names(),
+            ['Advanced', 'Beginner', 'Doubles', 'Intermediate']
+        )
+        beg = book.sheet_by_name('Beginner')
+        int = book.sheet_by_name('Intermediate')
+        adv = book.sheet_by_name('Advanced')
+        dou = book.sheet_by_name('Doubles')
+        self.assertEqual(beg.nrows, 4)  # header row + 3 data rows
+        self.assertEqual(int.nrows, 4)
+        self.assertEqual(adv.nrows, 2)
+        self.assertEqual(dou.nrows, 3)
+
+        self.assertEqual(beg.ncols, 3)  # as specified in 'includes' field
+        # Name field is composed of first and last names
+        self.assertEqual(beg.cell_value(rowx=1, colx=0), 'Sally Test')
+
+        # For doubles, name field includes partner name
+        self.assertEqual(
+            dou.cell_value(rowx=1, colx=0), 'Sally Test & Bob Test'
+        )
+        # school for doubles shows both partners
+        self.assertEqual(
+            dou.cell_value(rowx=1, colx=1),
+            'School 0 (ST) / School 1 (BT)'
+        )
+
+        os.unlink(filename)
 
     def test_submit_select_categories(self):
         self.client.login(username=self.staff_user.username, password='test')

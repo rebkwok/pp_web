@@ -311,7 +311,7 @@ class ExportFormView(LoginRequiredMixin,  StaffUserMixin, FormView):
             category = form.cleaned_data['category']
             status = form.cleaned_data['status']
             column_names = form.cleaned_data['include']
-            entries = Entry.objects.filter(
+            entries = Entry.objects.select_related('user').filter(
                 withdrawn=False, entry_year=settings.CURRENT_ENTRY_YEAR
             ).order_by('category')
 
@@ -340,7 +340,7 @@ def get_columns_dict(entry=None, name=None, school=None):
             CATEGORY_CHOICES_DICT[entry.category] if entry else None
         ),
         'song': (u"Song", 4000, entry.song if entry else None),
-        'biography': (u"Biography", 6000, entry.biography if entry else None),
+        'biography': (u"Biography", 10000, entry.biography if entry else None),
         'video_url': (
             u"Video Entry URL", 6000, entry.video_url if entry else None
         ),
@@ -428,7 +428,9 @@ def export_data(category, entries, column_names):
                         entry.user.first_name, entry.user.last_name
                     )
                     if entry.category == 'DOU':
-                        name += ' & {}'.format(entry.partner_name)
+                        name += ' & {} {}'.format(
+                            partner.first_name, partner.last_name
+                        )
 
                 row_num += 1
 

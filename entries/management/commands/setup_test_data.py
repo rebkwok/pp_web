@@ -20,7 +20,8 @@ class Command(BaseCommand):
             )
             UserProfile.objects.get_or_create(
                 user=user, address='1 Test St', postcode='AB12 3CD',
-                phone='123456', dob=datetime(1990, 1, 1)
+                phone='123456', dob=datetime(1990, 1, 1),
+                pole_school='School {}'.format(i)
             )
             OnlineDisclaimer.objects.get_or_create(
                 user=user, emergency_contact_name='Test',
