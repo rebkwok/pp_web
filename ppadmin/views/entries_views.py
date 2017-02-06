@@ -412,14 +412,15 @@ def export_data(category, entries, column_names):
 
                 school = None
                 name = None
-
                 if 'pole_school' in column_names:
                     school = entry.user.profile.pole_school
                     if entry.category == 'DOU':
                         partner_school = partner.profile.pole_school
-                        school = '{} ({}) / {} ({} {})'.format(
-                            school, name, partner_school, partner.first_name,
-                            partner.last_name
+                        school = '{} ({}{}) / {} ({}{})'.format(
+                            school, entry.user.first_name[0],
+                            entry.user.last_name[0], partner_school,
+                            partner.first_name[0],
+                            partner.last_name[0]
                         )
 
                 if 'name' in column_names:
