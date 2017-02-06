@@ -8,7 +8,7 @@ def subscribed_cache_key(user):
 
 def subscribed(self):
     cache_key = subscribed_cache_key(self)
-    # get disclaimer from cache
+    # get subscribed from cache
     cached_subscribed = cache.get(cache_key)
     if cached_subscribed is not None:
         cached_subscribed = bool(cached_subscribed)

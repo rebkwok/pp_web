@@ -296,14 +296,20 @@ class UserListViewTests(TestSetupStaffLoginRequiredMixin, TestCase):
                 self.assertFalse(opt['available'])
 
     def test_change_mailing_list(self):
+        cache.clear()
         user = mommy.make(User)
-        subscribed = Group.objects.get(name='subscribed')
-
-        self.assertIn(subscribed, user.groups.all())
+        # cache populated on creating user
         self.assertTrue(
             cache.get('user_{}_is_subscribed'.format(user.id))
         )
 
+        subscribed = Group.objects.get(name='subscribed')
+        self.assertIn(subscribed, user.groups.all())
+
+        cache.clear()
+        self.assertIsNone(
+            cache.get('user_{}_is_subscribed'.format(user.id))
+        )
         self.client.login(username=self.staff_user.username, password='test')
 
         # unsubscribe
