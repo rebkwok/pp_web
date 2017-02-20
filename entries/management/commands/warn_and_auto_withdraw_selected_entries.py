@@ -21,6 +21,11 @@ class Command(BaseCommand):
            'and selected_confirmed 7 days after notification date'
 
     def handle(self, *args, **options):
+        # delete old nothing-to-do logs
+        ActivityLog.objects.filter(
+            log='CRON: Auto warn/withdraw selected unconfirmed/unpaid '
+                'run: no action required'
+        ).delete()
 
         selected_unpaid_entries = Entry.objects.select_related('user').filter(
             withdrawn=False,
