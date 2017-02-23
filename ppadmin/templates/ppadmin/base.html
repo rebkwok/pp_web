@@ -48,6 +48,8 @@
     </ul>
 {% endblock nav_content %}
 
+{% block extra_base_content %}{% endblock %}
+
 {% block extra_js %}
     {{ block.super }}
     <script type="text/javascript" src="{% static 'ppadmin/js/clock.js' %}"></script>
