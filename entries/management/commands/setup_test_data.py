@@ -59,15 +59,17 @@ class Command(BaseCommand):
             video_url='https://www.youtube.com/watch?v=0Bmhjf0rKe8'
         )
         Entry.objects.get_or_create(
-            category='DOU', user=users[0], status='submitted',
-            partner_name='{}'.format(users[1].first_name),
-            partner_email=users[1].email,
+            category='DOU',
+            user=User.objects.get(first_name='Sally'), status='submitted',
+            partner_name='Bob',
+            partner_email=User.objects.get(first_name='Bob').email,
             video_url='https://www.youtube.com/watch?v=Psv5dmrs3U0'
         )
         Entry.objects.get_or_create(
-            category='DOU', user=users[2], status='submitted',
-            partner_name='{}'.format(users[3].first_name),
-            partner_email=users[3].email,
+            category='DOU',
+            user=User.objects.get(first_name='Ann'), status='submitted',
+            partner_name='Anna',
+            partner_email=User.objects.get(first_name='Anna').email,
             video_entry_paid=True,
             video_url='https://www.youtube.com/watch?v=Psv5dmrs3U0'
         )
