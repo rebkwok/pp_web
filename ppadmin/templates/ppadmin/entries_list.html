@@ -56,7 +56,7 @@
                                 {% for entry in entries %}
                                 <tr {% if entry.withdrawn %}class='withdrawn'{% endif %}>
                                     <td class="table-center ppadmin-tbl"><a href="{% url 'ppadmin:entry' entry.entry_ref %}">{{ entry.user.first_name|abbr_name }} {{ entry.user.last_name|abbr_name }}</a></td>
-                                    <td class="table-center ppadmin-tbl"><a href="mailto:{{ user.email }}" target="_blank">{{ entry.user.email|abbr_email }}</a></td>
+                                    <td class="table-center ppadmin-tbl"><a href="mailto:{{ entry.user.email }}" target="_blank">{{ entry.user.email|abbr_email }}</a></td>
                                     <td class="table-center ppadmin-tbl">{{ entry.category | format_category }}</td>
                                     <td class="table-center ppadmin-tbl">{% if entry.category == 'DOU' %}{{ entry.partner_name }}{% else %}N/A{% endif %}</td>
                                     <td class="table-center ppadmin-tbl {{ entry|status_class }}">{{ entry | format_status_admin }}</td>
