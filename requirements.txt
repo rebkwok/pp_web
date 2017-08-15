@@ -4,7 +4,7 @@ dj-database-url==0.3.0
 django-allauth==0.27.0
 django-environ==0.3.0
 django-extensions==1.7.3
-git+git://github.com/spookylukey/django-paypal.git@67a02d7802313430f03a43f2594d0fdec0bde449
+django-paypal==0.3.6
 psycopg2==2.5.4
 model-mommy==1.2.6
 mock==1.0.1

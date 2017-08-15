@@ -8,7 +8,12 @@
 			<li> <a href="#judges" class="smoothScroll"> Judges</a></li>
 			<li> <a href="#workshops" class="smoothScroll"> Workshops</a></li>
 			<li> <a href="#organisers" class="smoothScroll"> Organisers</a></li>
-			  <li> <a href="#gallery" class="smoothScroll hidden-md hidden-sm"> 2016 Gallery</a></li>
+			<li class="dropdown hidden-md hidden-sm"><a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Gallery<span class="caret"></span></a>
+				<ul class="dropdown-menu" role="menu">
+					<li> <a href="#2017gallery" class="smoothScroll">2017</a></li>
+					<li> <a href="#2016gallery" class="smoothScroll">2016</a></li>
+				</ul>
+			</li>
             <li> <a href="#sponsors" class="smoothScroll hidden-sm"> Sponsors</a></li>
 			<li> <a href="#contact" class="smoothScroll hidden-sm"> Contact</a></li>
     </ul>
@@ -17,7 +22,7 @@
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">More<span class="caret"></span></a>
           <ul class="dropdown-menu" role="menu">
 			  <li> <a href="#about" class="smoothScroll"> About</a></li>
-            <li> <a href="#gallery" class="smoothScroll"> 2016 Gallery</a></li>
+			  <li> <a href="#2017gallery" class="smoothScroll"> Gallery</a></li>
               <li> <a href="#sponsors" class="smoothScroll"> Sponsors</a></li>
 			  <li> <a href="#contact" class="smoothScroll"> Contact</a></li>
           </ul>
@@ -43,10 +48,9 @@
 	    <div id="headerwrap" id="home" name="home">
 			<header class="clearfix">
 	  		 	<div><img class="img-responsive center-block" src="{% static 'web/images/header_text.png' %}" alt=""></div>
-				<br/><br/>
-				<p>Presented by</br>
+				<p style="margin-top: 150px;">Presented by</br>
 				The Watermelon Studio & Carousel Fitness</p>
-                <a class="btn btn-lg btn-purple" href="https://www.onfife.com/whats-on/detail/pole-performance-2017"><strong>TICKETS AVAILABLE NOW!<br/>CLICK HERE TO BUY</strong></a>
+                <!--<a class="btn btn-lg btn-purple" href="https://www.onfife.com/whats-on/detail/pole-performance-2017"><strong>TICKETS AVAILABLE NOW!<br/>CLICK HERE TO BUY</strong></a>-->
 	  		</header>	    
 	    </div><!-- /headerwrap -->
 
@@ -56,7 +60,7 @@
 				<div class="col-sm-4 callout">
 					<!--<span class="icon icon-eye"></span>-->
 					<h2>Date</h2>
-					<p>12 March 2017</br>(Final)</p>
+					<p>11 March 2018</br>(Final)</p>
 				</div><!-- col-lg-4 -->
 
 				<div class="col-sm-4 callout">
@@ -89,8 +93,8 @@
 				</div><!-- col-lg-6 -->
 				
 				<div class="col-lg-6">
-					<p>After last year's success, we are looking forward to
-                        another talent-filled event in 2017.
+					<p>After the success of the last two years, we are looking forward to
+                        another talent-filled event in 2018.
 					</p>
 				</div><!-- col-lg-6 -->
 			</div><!-- row -->
@@ -99,7 +103,7 @@
 		<!-- ==== SECTION DIVIDER1 -->
 		<section class="section-divider textdivider divider1">
 			<div class="container">
-				<h1>ENTRIES OPEN SEPTEMBER 2016</h1>
+				<h1>ENTRIES OPEN SEPTEMBER 2018</h1>
 				<hr>
 				<div class="centered"><a href="{% url 'entries:entries_home' %}" class="btn btn-large btn-purple">Further Information</a></div>
 			</div><!-- container -->
@@ -115,12 +119,13 @@
 				<hr>
 				<br>
 				<div class="col-lg-offset-2 col-lg-8">
-					<p>Initial application is by video entry. Entries close at midnight on {{ entries_close_date|date:"d M Y" }}
-						({{ early_categories }}) and {{ late_entries_close_date|date:"d M Y" }} ({{ late_categories }}).
+					<p>Initial application is by video entry. Entries close at midnight on {{ entries_close_date|date:"d M Y" }}.
+						<!--({{ early_categories }}).-->
+						<!--and {{ late_entries_close_date|date:"d M Y" }} ({{ late_categories }}).-->
 						Videos must not exceed 3 minutes and must not be edited. 6 people from
 						mens/professional/beginners and 8 from intermediate/advanced/doubles category
-						with the highest scores will perform live at the finals at Carnegie Hall, Dunfermline on 12th
-						March 2017. </p>
+						with the highest scores will perform live at the finals at Carnegie Hall, Dunfermline on 11th
+						March 2018. </p>
 					<p>More details can be found in the <a href="{% url 'entries:entries_home' %}">Competitors' section</a>. </p>
 					{% if entries_open %}<div class="centered"><a href="{% url 'entries:entries_home' %}" class="btn btn-large btn-purple">Enter</a></div>{% endif %}
 				</div><!-- col-lg -->
@@ -147,67 +152,67 @@
 				<hr>
 				<br>
 				<br>
-                <div class="col-sm-12">
-					<div class="col-sm-4 centered">
-                        <img class="img img-circle" src="{% static 'web/images/tiff.jpg' %}" height="150px" width="150px" alt="">
-                    </div>
-					<div class="col-sm-8">
-						<h4 class="centered"><b>Tiff Finney - Compère</b></h4>
-                        <p>Tiff has performed for thousand of people whether it be at
-                        Club Noir or on Britain's Got Talent. As well as her amazing performances,
-                        workshops, and being an ambassador for Bad Kitty, Tiff also owns
-                        her own gorgeous studio called Pole Physique. And of course she was
-                        United Pole Artists "Bringing Sexy Back" Poster Model 2016.
-                        We are very excited to have her join us again as our compère
-                        for Pole Performance 2017!</p>
-                    </div>
+                <div class="col-sm-12">To be confirmed
+					<!--<div class="col-sm-4 centered">-->
+                        <!--<img class="img img-circle" src="{% static 'web/images/tiff.jpg' %}" height="150px" width="150px" alt="">-->
+                    <!--</div>-->
+					<!--<div class="col-sm-8">-->
+						<!--<h4 class="centered"><b>Tiff Finney - Compère</b></h4>-->
+                        <!--<p>Tiff has performed for thousand of people whether it be at-->
+                        <!--Club Noir or on Britain's Got Talent. As well as her amazing performances,-->
+                        <!--workshops, and being an ambassador for Bad Kitty, Tiff also owns-->
+                        <!--her own gorgeous studio called Pole Physique. And of course she was-->
+                        <!--United Pole Artists "Bringing Sexy Back" Poster Model 2016.-->
+                        <!--We are very excited to have her join us again as our compère-->
+                        <!--for Pole Performance 2017!</p>-->
+                    <!--</div>-->
 				</div></br></br><!-- col-md-6 -->
 
-				<div class="col-lg-4 col-md-4 col-xs-12 centered">
-					<img class="img img-circle" src="{% static 'web/images/jess.png' %}" height="150px" width="150px" alt="">
-					<br>
-					<h4 class="centered"><b>Jess Leanne Norris</b></h4>
-					<p>Self taught Jess starting her incredible pole journey aged just 14 years old.
-                        Jess owns and runs her own dance and fitness studio JLN.<br/><br/>
-                    Miss Pole Dance UK winner 2011 and 2015 as well as award for best tricks.<br/><br/>
-                    We are super excited to have Jess and her expertise on our judging panel for Pole Performance 2017.</p>
-				</div><!-- col-lg-3 -->
-				
-				<div class="col-lg-4 col-md-4 col-xs-12 centered">
-					<img class="img img-circle" src="{% static 'web/images/charlotte.jpg' %}" height="150px" width="150px" alt="">
-					<br>
-					<h4 class="centered"><b>Charlotte Robertson</b></h4>
-					<p>Charlotte began pole around 4 years ago & fell in love with it! She started competing around 3 years ago
-                        & her titles include:</p>
-                        <ul>
-                            <li>Miss Pole Dance Doubles Champion 2013</li>
-                            <li>MPD Uk 2nd place</li>
-                            <li>UKPPC Professional Champion 2014</li>
-                            <li>World Championships finalist 2015</li>
-                            <li>UKPPC Elite Champion 2015</li>
-                            <li>PCS Asia 2016- 2nd place</li>
-                        </ul>
-                    <p>Charlotte is also the owner of Girls Love Fit Pole & Aerial Fitness & Xpole ambassador. She is also very
-                    lucky to have taught her workshops around the world & loves being able to share her passion for
-                    pole dancing with her students!
-                    </p>
-				</div><!-- col-lg-3 -->
-				
-				<div class="col-lg-4 col-md-4 col-xs-12 centered">
-					<img class="img img-circle" src="{% static 'web/images/michael.jpg' %}" height="150px" width="150px" alt="">
-					<br>
-					<h4><b>Michael Donohoe</b></h4>
-					<p>Co owner of Fierce fitness Ireland, Michael has 10 years' experience within the fitness industry.
-                        Michael recently competed at the World Pole and Fitness championship were he placed 4th, an amazing result.</p>
-                        <ul>
-                            <li>All Ireland pole dance champion 2013</li>
-                            <li>Irish Pole Fitness male champion 2013</li>
-                            <li>Pole Theatre Ireland professional winner 2014</li>
-                            <li>World Pole Dance Sport and Fitness finalist 2015</li>
-                            <li>Mr Pole Dance UK winner 2015</li>
-                        </ul>
-                    <p>With an abundance of experience, we are excited to have Michael on our judging panel!</p>
-				</div><!-- col-lg-3 -->
+				<!--<div class="col-lg-4 col-md-4 col-xs-12 centered">-->
+					<!--<img class="img img-circle" src="{% static 'web/images/jess.png' %}" height="150px" width="150px" alt="">-->
+					<!--<br>-->
+					<!--<h4 class="centered"><b>Jess Leanne Norris</b></h4>-->
+					<!--<p>Self taught Jess starting her incredible pole journey aged just 14 years old.-->
+                        <!--Jess owns and runs her own dance and fitness studio JLN.<br/><br/>-->
+                    <!--Miss Pole Dance UK winner 2011 and 2015 as well as award for best tricks.<br/><br/>-->
+                    <!--We are super excited to have Jess and her expertise on our judging panel for Pole Performance 2017.</p>-->
+				<!--</div>&lt;!&ndash; col-lg-3 &ndash;&gt;-->
+				<!-- -->
+				<!--<div class="col-lg-4 col-md-4 col-xs-12 centered">-->
+					<!--<img class="img img-circle" src="{% static 'web/images/charlotte.jpg' %}" height="150px" width="150px" alt="">-->
+					<!--<br>-->
+					<!--<h4 class="centered"><b>Charlotte Robertson</b></h4>-->
+					<!--<p>Charlotte began pole around 4 years ago & fell in love with it! She started competing around 3 years ago-->
+                        <!--& her titles include:</p>-->
+                        <!--<ul>-->
+                            <!--<li>Miss Pole Dance Doubles Champion 2013</li>-->
+                            <!--<li>MPD Uk 2nd place</li>-->
+                            <!--<li>UKPPC Professional Champion 2014</li>-->
+                            <!--<li>World Championships finalist 2015</li>-->
+                            <!--<li>UKPPC Elite Champion 2015</li>-->
+                            <!--<li>PCS Asia 2016- 2nd place</li>-->
+                        <!--</ul>-->
+                    <!--<p>Charlotte is also the owner of Girls Love Fit Pole & Aerial Fitness & Xpole ambassador. She is also very-->
+                    <!--lucky to have taught her workshops around the world & loves being able to share her passion for-->
+                    <!--pole dancing with her students!-->
+                    <!--</p>-->
+				<!--</div>&lt;!&ndash; col-lg-3 &ndash;&gt;-->
+				<!-- -->
+				<!--<div class="col-lg-4 col-md-4 col-xs-12 centered">-->
+					<!--<img class="img img-circle" src="{% static 'web/images/michael.jpg' %}" height="150px" width="150px" alt="">-->
+					<!--<br>-->
+					<!--<h4><b>Michael Donohoe</b></h4>-->
+					<!--<p>Co owner of Fierce fitness Ireland, Michael has 10 years' experience within the fitness industry.-->
+                        <!--Michael recently competed at the World Pole and Fitness championship were he placed 4th, an amazing result.</p>-->
+                        <!--<ul>-->
+                            <!--<li>All Ireland pole dance champion 2013</li>-->
+                            <!--<li>Irish Pole Fitness male champion 2013</li>-->
+                            <!--<li>Pole Theatre Ireland professional winner 2014</li>-->
+                            <!--<li>World Pole Dance Sport and Fitness finalist 2015</li>-->
+                            <!--<li>Mr Pole Dance UK winner 2015</li>-->
+                        <!--</ul>-->
+                    <!--<p>With an abundance of experience, we are excited to have Michael on our judging panel!</p>-->
+				<!--</div>&lt;!&ndash; col-lg-3 &ndash;&gt;-->
 
 				
 			</div><!-- row -->
@@ -220,15 +225,16 @@
 				<h1 class="centered">WORKSHOPS</h1>
 				<h3 class="centered">AT THE WATERMELON STUDIO AND CAROUSEL FITNESS</h3>
 				<hr>
-
-				<div class="col-lg-offset-3 col-lg-6">
-					<ul>
-						<li>Tiff Finney - 28 Jan 2017 (The Watermelon Studio: book <a href="http://booking.thewatermelonstudio.co.uk/events">here</a>)</li>
-						<li>Michael Donohoe - 11 Mar 2017 (Carousel Fitness: book <a href="http://www.carouselfitness.co.uk/booking/workshops">here</a>)</li>
-						<li>Jess Leanne Norris - 11 Mar 2017 (Carousel Fitness: book <a href="http://www.carouselfitness.co.uk/booking/workshops">here</a>)</li>
-						<li>Charlotte Robertson - 13 Mar 2017 (The Watermelon Studio: book <a href="http://booking.thewatermelonstudio.co.uk/events">here</a>)</li>
-					</ul>
-				</div><!-- col-lg-6 -->
+				<div class="centered"><p>To be confirmed</p>
+				<!--<div class="col-lg-offset-3 col-lg-6">-->
+					<!--<ul>-->
+						<!--<li>Tiff Finney - 28 Jan 2017 (The Watermelon Studio: book <a href="http://booking.thewatermelonstudio.co.uk/events">here</a>)</li>-->
+						<!--<li>Michael Donohoe - 11 Mar 2017 (Carousel Fitness: book <a href="http://www.carouselfitness.co.uk/booking/workshops">here</a>)</li>-->
+						<!--<li>Jess Leanne Norris - 11 Mar 2017 (Carousel Fitness: book <a href="http://www.carouselfitness.co.uk/booking/workshops">here</a>)</li>-->
+						<!--<li>Charlotte Robertson - 13 Mar 2017 (The Watermelon Studio: book <a href="http://booking.thewatermelonstudio.co.uk/events">here</a>)</li>-->
+					<!--</ul>-->
+				<!--</div>-->
+			<!-- col-lg-6 -->
 
 			</div><!-- row -->
 		</div><!-- container -->
@@ -285,38 +291,230 @@
 			<div class="row white centered">
 				<h1 class="centered">OUR SPONSORS</h1>
                 <hr><br/><br/>
-					<div class="col-lg-3 col-sm-6"><a href="https://www.winkdancewear.com"><img class="sponsor-img" src="{% static 'web/images/wink.png' %}"></a><br/>
-						<a class="sponsor-link" href="https://www.winkdancewear.com">winkdancewear.com</a>
-					</div>
-					<div class="col-lg-3 col-sm-6"><a href="https://radpolewear.com/"><img class="sponsor-img" src="{% static 'web/images/rad.jpg' %}"></a><br/>
-						<a class="sponsor-link"href="https://radpolewear.com">radpolewear.com</a>
-					</div>
-					<div class="col-lg-3 col-sm-6"><a href="https://www.polejunkie.co.uk"><img class="sponsor-img narrow" src="{% static 'web/images/polejunkie.png' %}"></a><br/>
+					<!--<div class="col-lg-3 col-sm-6"><a href="https://www.winkdancewear.com"><img class="sponsor-img" src="{% static 'web/images/wink.png' %}"></a><br/>-->
+						<!--<a class="sponsor-link" href="https://www.winkdancewear.com">winkdancewear.com</a>-->
+					<!--</div>-->
+					<!--<div class="col-lg-3 col-sm-6"><a href="https://radpolewear.com/"><img class="sponsor-img" src="{% static 'web/images/rad.jpg' %}"></a><br/>-->
+						<!--<a class="sponsor-link"href="https://radpolewear.com">radpolewear.com</a>-->
+					<!--</div>-->
+					<div class="col-lg-12 col-sm-12"><a href="https://www.polejunkie.co.uk"><img class="sponsor-img narrow" src="{% static 'web/images/polejunkie.png' %}"></a><br/>
 						<a class="sponsor-link" href="https://www.polejunkie.co.uk">polejunkie.co.uk</a>
 					</div>
-					<div class="col-lg-3 col-sm-6">
-						<a href="http://www.candyassclubwear.co.uk"><img class="sponsor-img" src="{% static 'web/images/candyass.png' %}"></a><br/>
-						<a class="sponsor-link" href="http://www.candyassclubwear.co.uk">candyassclubwear.co.uk</a>
-					</div>
-					<div class="col-lg-3 col-sm-6">
-						<a href="https://girliegrip.com"><img class="sponsor-img gg" src="{% static 'web/images/girliegrip.png' %}"></a><br/>
-						<a class="sponsor-link" href="https://girliegrip.com">girliegrip.com</a>
-					</div>
+					<!--<div class="col-lg-3 col-sm-6">-->
+						<!--<a href="http://www.candyassclubwear.co.uk"><img class="sponsor-img" src="{% static 'web/images/candyass.png' %}"></a><br/>-->
+						<!--<a class="sponsor-link" href="http://www.candyassclubwear.co.uk">candyassclubwear.co.uk</a>-->
+					<!--</div>-->
+					<!--<div class="col-lg-3 col-sm-6">-->
+						<!--<a href="https://girliegrip.com"><img class="sponsor-img gg" src="{% static 'web/images/girliegrip.png' %}"></a><br/>-->
+						<!--<a class="sponsor-link" href="https://girliegrip.com">girliegrip.com</a>-->
+					<!--</div>-->
             </div>
         </div>
 		<!-- ==== GALLERY ==== -->
-		<div class="container" id="gallery" name="gallery">
+
+<div class="container" id="2017gallery" name="2017gallery">
+		<br>
+			<div class="row">
+				<br>
+				<h1 class="centered">2017 GALLERY</h1>
+				<hr>
+				<div class="centered">
+					<p>Photography by Rebecca Hudson (<a href="https://www.facebook.com/AerialArtsPhotos/">Aerial Arts Photography</a>)</p>
+				</div>
+			</div><!-- /row -->
+			<div class="container">
+			<div class="row">
+
+				<!-- GALLERY IMAGE 1 -->
+				<div class="col-sm-4 col-xs-6">
+			    	<div class="grid mask">
+						<a data-toggle="modal" href="#2017modal1">
+							<div class="gallery-box">
+							<img class="img-responsive" src="{% static 'web/images/gallery/2017/preview/8Y7A4826.jpg' %}" alt="">
+							</div>
+						</a>
+			    	</div><!-- /grid-mask -->
+				</div><!-- /col -->
+
+
+						 <!-- MODAL SHOW THE GALLERY IMAGE. -->
+
+						  <div class="modal fade" id="2017modal1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+						    <div class="modal-dialog">
+						      <div class="modal-content">
+						        <div class="modal-header">
+						          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						          <h4 class="modal-title">Pole Performance 2017</h4>
+						        </div>
+						        <div class="modal-body">
+						          <p><img class="img-responsive" src="{% static 'web/images/gallery/2017/8Y7A4826.jpg' %}" alt=""></p>
+						        </div>
+						      </div><!-- /.modal-content -->
+						    </div><!-- /.modal-dialog -->
+						  </div><!-- /.modal -->
+
+
+				<!-- GALLERY IMAGE 2 -->
+				<div class="col-sm-4 col-xs-6">
+			    	<div class="grid mask">
+						<a data-toggle="modal" href="#2017modal2">
+							<div class="gallery-box">
+							<img class="img-responsive" src="{% static 'web/images/gallery/2017/preview/Pole_Performance2017_Georgia_Haroun_5.jpg' %}" alt="">
+							</div>
+						</a>
+			    	</div><!-- /grid-mask -->
+				</div><!-- /col -->
+
+				<!-- MODAL SHOW THE GALLERY IMAGE. -->
+
+						  <div class="modal fade" id="2017modal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+						    <div class="modal-dialog">
+						      <div class="modal-content">
+						        <div class="modal-header">
+						          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						          <h4 class="modal-title">Pole Performance 2017</h4>
+						        </div>
+						        <div class="modal-body">
+						          <p><img class="img-responsive" src="{% static 'web/images/gallery/2017/Pole_Performance2017_Georgia_Haroun_5.jpg' %}" alt=""></p>
+						        </div>
+						      </div><!-- /.modal-content -->
+						    </div><!-- /.modal-dialog -->
+						  </div><!-- /.modal -->
+
+
+				<!-- GALLERY IMAGE 3 -->
+				<div class="col-sm-4 col-xs-6">
+			    	<div class="grid mask">
+						<a data-toggle="modal" href="#2017modal3">
+							<div class="gallery-box">
+							<img class="img-responsive" src="{% static 'web/images/gallery/2017/preview/Pole_Performance2017_Grace_Ferguson_17.jpg' %}" alt="">
+							</div>
+						</a>
+			    	</div><!-- /grid-mask -->
+				</div><!-- /col -->
+
+				<!-- MODAL SHOW THE GALLERY IMAGE. -->
+
+						  <div class="modal fade" id="2017modal3" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+						    <div class="modal-dialog">
+						      <div class="modal-content">
+						        <div class="modal-header">
+						          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						          <h4 class="modal-title">Pole Performance 2017</h4>
+						        </div>
+						        <div class="modal-body">
+						          <p><img class="img-responsive" src="{% static 'web/images/gallery/2017/Pole_Performance2017_Grace_Ferguson.jpg' %}" alt=""></p>
+						        </div>
+						      </div><!-- /.modal-content -->
+						    </div><!-- /.modal-dialog -->
+						  </div><!-- /.modal -->
+
+
+				<!-- GALLERY IMAGE 4 -->
+				<div class="col-sm-4 col-xs-6">
+			    	<div class="grid mask">
+						<a data-toggle="modal" href="#2017modal4">
+							<div class="gallery-box">
+							<img class="img-responsive" src="{% static 'web/images/gallery/2017/preview/Pole_Performance2017_Heather_Carfray_7.jpg' %}" alt="">
+							</div>
+						</a>
+			    	</div><!-- /grid-mask -->
+				</div><!-- /col -->
+
+
+				<!-- MODAL SHOW THE GALLERY IMAGE. -->
+
+						  <div class="modal fade" id="2017modal4" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+						    <div class="modal-dialog">
+						      <div class="modal-content">
+						        <div class="modal-header">
+						          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						          <h4 class="modal-title">Pole Performance 2017</h4>
+						        </div>
+						        <div class="modal-body">
+						          <p><img class="img-responsive" src="{% static 'web/images/gallery/2017/Pole_Performance2017_Heather_Carfray_7.jpg' %}" alt=""></p>
+						        </div>
+						      </div><!-- /.modal-content -->
+						    </div><!-- /.modal-dialog -->
+						  </div><!-- /.modal -->
+
+
+				<!-- GALLERY IMAGE 5 -->
+				<div class="col-sm-4 col-xs-6">
+			    	<div class="grid mask">
+						<a data-toggle="modal" href="#2017modal5">
+							<div class="gallery-box">
+							<img class="img-responsive" src="{% static 'web/images/gallery/2017/preview/Pole_Performance2017_Marisa_Tatdoem_26.jpg' %}" alt="">
+							</div>
+						</a>
+			    	</div><!-- /grid-mask -->
+				</div><!-- /col -->
+
+				<!-- MODAL SHOW THE GALLERY IMAGE. -->
+
+						  <div class="modal fade" id="2017modal5" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+						    <div class="modal-dialog">
+						      <div class="modal-content">
+						        <div class="modal-header">
+						          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						          <h4 class="modal-title">Pole Performance 2017</h4>
+						        </div>
+						        <div class="modal-body">
+						          <p><img class="img-responsive" src="{% static 'web/images/gallery/2017/Pole_Performance2017_Marisa_Tatdoem_26.jpg' %}" alt=""></p>
+						        </div>
+						      </div><!-- /.modal-content -->
+						    </div><!-- /.modal-dialog -->
+						  </div><!-- /.modal -->
+
+
+				<!-- GALLERY IMAGE 6 -->
+				<div class="col-sm-4 col-xs-6">
+			    	<div class="grid mask">
+						<a data-toggle="modal" href="#2017modal6">
+							<div class="gallery-box">
+							<img class="img-responsive" src="{% static 'web/images/gallery/2017/preview/Pole_Performance2017_Sara&Terri_14.jpg' %}" alt="">
+							</div>
+						</a>
+			    	</div><!-- /grid-mask -->
+				</div><!-- /col -->
+
+				<!-- MODAL SHOW THE GALLERY IMAGE. -->
+
+						  <div class="modal fade" id="2017modal6" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+						    <div class="modal-dialog">
+						      <div class="modal-content">
+						        <div class="modal-header">
+						          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						          <h4 class="modal-title">Pole Performance 2017</h4>
+						        </div>
+						        <div class="modal-body">
+						          <p><img class="img-responsive" src="{% static 'web/images/gallery/2017/Pole_Performance2017_Sara&Terri_14.jpg' %}" alt=""></p>
+						        </div>
+						      </div><!-- /.modal-content -->
+						    </div><!-- /.modal-dialog -->
+						  </div><!-- /.modal -->
+
+
+			</div><!-- /row -->
+			</div>	<!-- /container -->
+			<br>
+			<br>
+		</div><!-- /row -->
+	</div><!-- /container 2017 Gallery-->
+
+		<div class="container" id="2016gallery" name="2016gallery">
 		<br>
 			<div class="row">
 				<br>
 				<h1 class="centered">2016 GALLERY</h1>
 				<hr>
-				<br>
-				<br>
+				<div class="centered">
+					<p>Photography by <a href="http://www.upyerpole.co.uk/pammie-cameron-photography.php">Pammie Cameron Photography</a></p>
+				</div>
 			</div><!-- /row -->
 			<div class="container">
-			<div class="row">	
-			
+			<div class="row">
+
 				<!-- GALLERY IMAGE 1 -->
 				<div class="col-sm-4 col-xs-6">
 			    	<div class="grid mask">
@@ -327,10 +525,10 @@
 						</a>
 			    	</div><!-- /grid-mask -->
 				</div><!-- /col -->
-				
-				
+
+
 						 <!-- MODAL SHOW THE GALLERY IMAGE. -->
-						      
+
 						  <div class="modal fade" id="modal1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 						    <div class="modal-dialog">
 						      <div class="modal-content">
@@ -344,8 +542,8 @@
 						      </div><!-- /.modal-content -->
 						    </div><!-- /.modal-dialog -->
 						  </div><!-- /.modal -->
-				
-				
+
+
 				<!-- GALLERY IMAGE 2 -->
 				<div class="col-sm-4 col-xs-6">
 			    	<div class="grid mask">
@@ -494,7 +692,6 @@
 		</div><!-- /row -->
 	</div><!-- /container -->
 
-		
 		<div class="container" id="contact" name="contact">
 			<div class="row">
 			<br>

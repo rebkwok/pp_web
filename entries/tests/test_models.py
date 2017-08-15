@@ -2,6 +2,7 @@ from datetime import datetime
 from mock import patch
 from model_mommy import mommy
 
+from django.conf import settings
 from django.test import TestCase
 from django.utils import timezone
 
@@ -16,7 +17,9 @@ class EntryModelTests(TestSetupMixin, TestCase):
         entry.entry_ref = 'ref'
         self.assertEqual(
             str(entry),
-            'Test User - ref - Intermediate - 2017 - In Progress'
+            'Test User - ref - Intermediate - {} - In Progress'.format(
+                settings.CURRENT_ENTRY_YEAR
+            )
         )
 
     def test_entry_ref_set_on_save(self):

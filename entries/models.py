@@ -32,12 +32,12 @@ LATE_ENTRY_CATEGORY_CHOICES = (
 )
 
 VIDEO_ENTRY_FEES = {
-    'BEG': 10,
-    'INT': 10,
-    'ADV': 10,
+    'BEG': 15,
+    'INT': 15,
+    'ADV': 15,
     'DOU': 15,
-    'PRO': 10,
-    'MEN': 10,
+    'PRO': 15,
+    'MEN': 15,
 }
 
 SELECTED_ENTRY_FEES = {

@@ -63,7 +63,7 @@ def has_readonly_fields(original_class):
 WAIVER_TERMS = """
 I hereby declare that I have read and understood all the rules of the Pole Performance categories and agree to represent the competition in a professional manner during and prior to the event.
 
-I agree that I am available all day on March 12th 2017.
+I agree that I am available all day on March 11th 2018.
 
 I understand that my entry will not be accepted until I have paid the appropriate entry fee and that all judges’ decisions are final.
 
