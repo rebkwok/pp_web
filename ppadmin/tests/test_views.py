@@ -568,20 +568,32 @@ class ExportEntriesView(TestSetupStaffLoginRequiredMixin, TestCase):
         self.assertEqual(int.nrows, 4)
         self.assertEqual(adv.nrows, 2)
         self.assertEqual(dou.nrows, 3)
-
         self.assertEqual(beg.ncols, 3)  # as specified in 'includes' field
         # Name field is composed of first and last names
-        self.assertEqual(beg.cell_value(rowx=1, colx=0), 'Sally Test')
+        for i in range(0, beg.nrows):
+            if i == 0:  # header row
+                self.assertEqual(dou.cell_value(rowx=i, colx=0), 'Name')
+            else:
+                beg_names = ['Sally Test', 'Anna Test', 'Emma Test']
+                self.assertIn(beg.cell_value(rowx=i, colx=0), beg_names)
 
         # For doubles, name field includes partner name
-        self.assertEqual(
-            dou.cell_value(rowx=1, colx=0), 'Sally Test & Bob Test'
-        )
-        # school for doubles shows both partners
-        self.assertEqual(
-            dou.cell_value(rowx=1, colx=1),
-            'School 0 (ST) / School 1 (BT)'
-        )
+        for i in range(0, dou.nrows):
+            if i == 0:  # header row
+                self.assertEqual(dou.cell_value(rowx=i, colx=0), 'Name')
+            else:
+                dou_names = ['Sally Test & Bob Test', 'Ann Test & Anna Test']
+                self.assertIn(
+                    dou.cell_value(rowx=i, colx=0), dou_names
+                )
+                # school for doubles shows both partners
+                sch_names = [
+                    'School 0 (ST) / School 1 (BT)',
+                    'School 2 (AT) / School 3 (AT)'
+                ]
+                self.assertIn(
+                    dou.cell_value(rowx=i, colx=1), sch_names
+                )
 
         os.unlink(filename)
 
