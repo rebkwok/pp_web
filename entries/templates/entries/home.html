@@ -5,32 +5,37 @@
     {% block content %}
 
     <div class="extra-top-margin row">
+        {% if not user.is_authenticated and entries_open %}
         <div class="col-xs-12">
             <div class="pull-right">
-            {% if not user.is_authenticated and entries_open %}
                 To enter or view your previous entries,
-                    please <a href="{% url 'login' %}?next=/entries/">log in</a> or <a href="{% url 'account_signup' %}?next=/entries/">sign up</a> for a new account.<br/>
-            {% endif %}
-            {% if entries_open %}
-                <span class="pull-right col-xs-12" {% if not user.is_authenticated %} data-toggle="tooltip" data-placement="left" title="Log in to enter"{% endif %}>
-                <a {% if not user.is_authenticated %}class="btn btn-purple disabled"
-                   {% else %}class="btn btn-purple"{% endif %} href="{% url 'entries:user_entries' %}">ENTER NOW</a></span>
+                    please <a href="{% url 'login' %}?next=/entries/">log in</a> or <a href="{% url 'account_signup' %}?next=/entries/">sign up</a> for a new account.
+            </div>
+        </div>
+        {% endif %}
 
+            {% if entries_open %}
+            <div class="col-xs-12">
+                <div class="pull-right" {% if not user.is_authenticated %} data-toggle="tooltip" data-placement="left" title="Log in to enter"{% endif %}>
+                <a {% if not user.is_authenticated %}class="btn btn-purple disabled"
+                   {% else %}class="btn btn-purple"{% endif %} href="{% url 'entries:user_entries' %}">ENTER NOW</a></div>
+            </div>
             {% else %}
-                <span class="pull-right">
+                <div class="col-xs-12">
+                    <div class="pull-right">
                     ENTRIES ARE NOT CURRENTLY OPEN<br>
                     Entries open: {{ entries_open_date|date:"d M Y" }}<br>
                     Entries close: {{ late_entries_close_date|date:"d M Y" }}
-                </span>
+                    </div>
+                </div>
             {% endif %}
-            </div>
-        </div>
 
         <div class="col-xs-12">
             <div class="pull-right">
                 {% if entries_open %}
-                        Entries close: {{ entries_close_date|date:"d M Y" }} ({{ early_categories }})<br/>
-                        Entries close: {{ late_entries_close_date|date:"d M Y" }} ({{ late_categories }})
+                        Entries close: {{ entries_close_date|date:"d M Y" }}
+                        <!--Entries close: {{ entries_close_date|date:"d M Y" }} ({{ early_categories }})<br/>-->
+                        <!--Entries close: {{ late_entries_close_date|date:"d M Y" }} ({{ late_categories }})-->
                 {% endif %}
             </div>
         </div>
@@ -42,20 +47,19 @@
         <a id="toggler" href="#" data-toggle="collapse" class="active" data-target="#semifinals">
             <span class="fa fa-plus-square"></span>
         </a><span class="semi-finals-title">Semi Finals - Video Entry</span>
-        <span id="semifinals" class="collapse">
+        <span id="semifinals" class="collapse in">
 
 
         <p>Please upload your video to YouTube or similar and submit a link to your video with your entry.
-            Entries close at midnight on {{ entries_close_date|date:"d M Y" }} ({{ early_categories }}) and
-            {{ late_entries_close_date|date:"d M Y" }} ({{ late_categories }}).</p>
+            Entries close at midnight on {{ entries_close_date|date:"d M Y" }}.</p>
 
         <p>Videos must show a routine to a song, must not exceed 3 minutes and must not be
             edited. A video of a previous performance can be used as entry.
             The routine will only be marked up to 3 minutes. If the video
             exceeds that, anything after 3 minutes will not be marked.</p>
 
-        <p>6 people from mens/professional/beginners and 8 from
-            intermediate/advanced/doubles category with the highest scores will perform live at the finals.
+        <p>6 people from beginners, mens and doubles and 8 from intermediate, advanced and professional
+            categories with the highest scores will perform live at the finals.
             </p>
 
         <p>Your video will be marked by an impartial judge who will mark you on the following:</p>
@@ -71,9 +75,10 @@
             <li>Overall performance</li>
         </ul>
 
-        <p>£10 (£15 for doubles) video entry fee must be made via PayPal before entry will be accepted. If your
+        <p>£15 video entry fee must be made via PayPal before entry will be accepted. If your
             application is successful and you make it through to the final, a further fee of £15 per
-            solo and £20 per double will be required.</p>
+            solo and £20 per double will be required.  Unsuccessful applicants will receive a free spectator ticket to the
+            competition finals on 11th March.</p>
 
         <p>Doubles partners must both register and complete waivers.  One member of the doubles should submit
             an entry form specifying their partner's name and email.  The partner's email address will be used
@@ -83,7 +88,7 @@
 
         <h2>Finals</h2>
 
-        <p>12 March 2017</br>12pm - 8pm</p>
+        <p>11 March 2018</br>12pm - 8pm</p>
         <p>Carnegie Hall</br>
         Dunfermline</br>
         KY12 7JA</p>
@@ -136,7 +141,6 @@
             <ul>
                 <li>Must not have previously won a pole competition in an advanced category within the past three years</li>
                 <li>Must not be a paid performer</li>
-                <li>No handspring deadlifts or aerial handsprings</li>
                 <li>Must use both static and spinny</li>
                 <li>Instructors allowed (if you have previously entered fewer than 5 competitions)</li>
                 <li>Only one flip permitted</li>
@@ -175,7 +179,7 @@
          <p>Entry fees are NON REFUNDABLE. If you withdraw your entry at any point after
              selection and accepting your place, you will be charged a £25
              cancellation fee; if this is not paid you will not be able to enter Pole
-             Performance in the future. You must be available all day on 12 March 2017. Failure to follow
+             Performance in the future. You must be available all day on 11 March 2018. Failure to follow
              category rules will result in you being disqualified. Your video will not be judged if you do not
              pay your entry fee before the closing date. All competitors MUST be over the age of 18. The
              contestants with the highest scores will go through to the final and will be announced firstly on

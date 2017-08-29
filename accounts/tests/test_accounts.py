@@ -301,8 +301,7 @@ class CustomSignUpViewTests(TestSetupMixin, TestCase):
 
 
 class DisclaimerModelTests(TestCase):
-
-    def test_online_disclaimer_str(self,):
+    def test_online_disclaimer_str(self):
         user = mommy.make(User, username='testuser')
         field = OnlineDisclaimer._meta.get_field('date')
         mock_now = lambda: datetime(2015, 2, 10, 19, 0, tzinfo=timezone.utc)
