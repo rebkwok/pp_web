@@ -243,21 +243,46 @@ LOGGING = {
             'level': 'DEBUG',
             'class': 'logging.StreamHandler',
             'formatter': 'verbose'
-        }
+        },
+        'mail_admins': {
+            'level': 'ERROR',
+            'class': 'django.utils.log.AdminEmailHandler',
+            'include_html': True,
+        },
     },
     'loggers': {
         '': {
-            'handlers': ['console', 'file_app'],
+            'handlers': ['console', 'file_app', 'mail_admins'],
             'level': 'WARNING',
             'propagate': True,
         },
         'accounts': {
-            'handlers': ['console', 'file_app'],
+            'handlers': ['console', 'file_app', 'mail_admins'],
             'level': 'INFO',
             'propagate': False,
         },
         'web': {
-            'handlers': ['console', 'file_app'],
+            'handlers': ['console', 'file_app', 'mail_admins'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'entries': {
+            'handlers': ['console', 'file_app', 'mail_admins'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'payments': {
+            'handlers': ['console', 'file_app', 'mail_admins'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'activitylog': {
+            'handlers': ['console', 'file_app', 'mail_admins'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'ppadmin': {
+            'handlers': ['console', 'file_app', 'mail_admins'],
             'level': 'INFO',
             'propagate': False,
         },
@@ -265,6 +290,17 @@ LOGGING = {
     },
 }
 
+ADMINS = [SUPPORT_EMAIL]
+
+import sys
+if DEBUG or 'test' in sys.argv:   # pragma: no cover
+    LOGGING['loggers'] = {
+        '': {
+            'handlers': ['console', 'file_app'],
+            'level': 'WARNING',
+            'propagate': True,
+        }
+    }
 # ####HEROKU#######
 
 HEROKU = env('HEROKU')
