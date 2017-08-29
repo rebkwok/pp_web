@@ -12,9 +12,13 @@
         <div class="panel-body">
             {% if paypalform %}
                 <p>To complete your entry and confirm your place, please click below to be transferred to paypal
-                    to pay the entry fee.</p>
+                    to pay the entry fee.
+                </p>
                 <p>Entry Fee: £ {{ fee }}</p>
                 {% include 'payments/payment.html' %}
+            <strong>PLEASE CHECK YOUR PAYMENT METHOD AND ENSURE YOU HAVE
+                        <span class="warning">NOT</span> SELECTED "PAY AFTER DELIVERY" AS THIS MAY
+                        NOT REGISTER PAYMENT FOR YOUR ENTRY IN TIME.</strong>
             {% elif already_paid %}
                 <p>The fee for this entry has already been paid.</p>
             {% elif not_selected_confirmed %}

@@ -273,3 +273,7 @@ th {
 span.semi-finals-title {
     font-size: x-large;
 }
+
+.warning {
+  color: red;
+}
