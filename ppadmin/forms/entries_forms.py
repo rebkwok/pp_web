@@ -1,3 +1,4 @@
+from django.conf import settings
 from django import forms
 
 from entries.models import CATEGORY_CHOICES, Entry, STATUS_CHOICES
@@ -93,7 +94,9 @@ class ExportEntriesForm(forms.Form):
     )
 
     def clean(self):
-        entries = Entry.objects.filter(withdrawn=False).order_by('category')
+        entries = Entry.objects.filter(
+            withdrawn=False, entry_year=settings.CURRENT_ENTRY_YEAR
+        ).order_by('category')
         category = self.cleaned_data['category']
         status = self.cleaned_data['status']
 

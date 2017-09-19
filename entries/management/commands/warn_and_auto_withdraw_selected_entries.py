@@ -30,7 +30,8 @@ class Command(BaseCommand):
         selected_unpaid_entries = Entry.objects.select_related('user').filter(
             withdrawn=False,
             status__in=['selected', 'selected_confirmed'],
-            selected_entry_paid=False
+            selected_entry_paid=False,
+            entry_year=settings.CURRENT_ENTRY_YEAR,
         ).order_by('category')
 
         to_warn = []

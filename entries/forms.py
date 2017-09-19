@@ -73,8 +73,9 @@ class EntryCreateUpdateForm(EntryFormMixin, forms.ModelForm):
 
         # only list the current category (for editing saved entries) and
         # categories not yet entered
-        user_cats = Entry.objects.filter(user=self.user)\
-            .values_list('category', flat=True)
+        user_cats = Entry.objects.filter(
+            user=self.user, entry_year=settings.CURRENT_ENTRY_YEAR
+        ).values_list('category', flat=True)
         cat_choices = [
             choice for choice in CATEGORY_CHOICES if choice[0] not in
             user_cats or
