@@ -121,7 +121,7 @@ class Command(BaseCommand):
                 'No unconfirmed/unpaid selected entries to withdraw'
             )
 
-        if not (to_withdraw or to_warn):
+        if not (to_withdraw and to_warn):
             ActivityLog.objects.create(
                 log='CRON: Auto warn/withdraw selected unconfirmed/unpaid '
                     'run: no action required'

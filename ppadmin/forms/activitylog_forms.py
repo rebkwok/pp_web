@@ -23,3 +23,11 @@ class ActivityLogSearchForm(forms.Form):
         ),
         required=False
     )
+    hide_empty_cronjobs = forms.BooleanField(
+        widget=forms.CheckboxInput(attrs={
+            'class': "regular-checkbox",
+            'id': 'hide_empty_cronjobs_id'
+        }),
+        initial='on',
+        required=False
+    )

@@ -138,6 +138,34 @@ class ActivityLogListViewTests(TestSetupStaffLoginRequiredMixin, TestCase):
         )
         self.assertEqual(len(resp.context_data['logs']), 10)
 
+    def test_empty_cron_job_logs_filtered_by_default(self):
+        # Make an empty job log
+        mommy.make(
+            ActivityLog,
+            timestamp=datetime(2015, 1, 1, 4, 0, tzinfo=timezone.utc),
+            log='CRON: Auto warn/withdraw selected unconfirmed/unpaid run: '
+                'no action required',
+
+        )
+        self.client.login(username=self.staff_user.username, password='test')
+        resp = self.client.get(self.url)
+        self.assertEqual(ActivityLog.objects.count(), 11)
+        self.assertEqual(len(resp.context_data['logs']), 10)
+
+    def test_show_empty_cron_job_logs(self):
+        # Make an empty job log
+        mommy.make(
+            ActivityLog,
+            timestamp=datetime(2015, 1, 1, 4, 0, tzinfo=timezone.utc),
+            log='CRON: Auto warn/withdraw selected unconfirmed/unpaid run: '
+                'no action required',
+
+        )
+        self.client.login(username=self.staff_user.username, password='test')
+        resp = self.client.get(self.url, {'search_submitted': 'Search'})
+        self.assertEqual(ActivityLog.objects.count(), 11)
+        self.assertEqual(len(resp.context_data['logs']), 11)
+
 
 class UserListViewTests(TestSetupStaffLoginRequiredMixin, TestCase):
 
