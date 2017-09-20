@@ -10,5 +10,6 @@ class UserListSearchForm(forms.Form):
                 'placeholder': 'Search first, last and username',
                 'style': 'width: 250px;'
             }
-        )
+        ),
+        required=False
     )
