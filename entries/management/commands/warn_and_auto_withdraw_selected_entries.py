@@ -54,7 +54,9 @@ class Command(BaseCommand):
             ctx = {
                 'entry': entry,
                 'category': CATEGORY_CHOICES_DICT[entry.category],
-                'withdrawal_datetime': withdrawal_datetime.strftime('%d %b %Y')
+                'withdrawal_datetime': (
+                    entry.notified_date + timedelta(days=7)
+                ).strftime('%d %b %Y')
             }
 
             send_pp_email(
