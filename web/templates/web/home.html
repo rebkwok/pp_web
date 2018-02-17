@@ -3,15 +3,15 @@
 
 {% block nav_content %}
     <ul class="nav navbar-nav">
-			<li> <a href="#about" class="smoothScroll hidden-sm"> About</a></li>
-			<li> <a href="#entry-info" class="smoothScroll"> Entry Info</a></li>
-			<li> <a href="#judges" class="smoothScroll"> Judges</a></li>
-			<li> <a href="#workshops" class="smoothScroll"> Workshops</a></li>
-			<li> <a href="#organisers" class="smoothScroll"> Organisers</a></li>
+			<li> <a href="#about" class="hidden-sm"> About</a></li>
+			<li> <a href="#entry-info"> Entry Info</a></li>
+			<li> <a href="#judges" > Judges</a></li>
+			<li> <a href="#workshops" > Workshops</a></li>
+			<li> <a href="#organisers" > Organisers</a></li>
 			<li class="dropdown hidden-md hidden-sm"><a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Gallery<span class="caret"></span></a>
 				<ul class="dropdown-menu" role="menu">
-					<li> <a href="#2017gallery" class="smoothScroll">2017</a></li>
-					<li> <a href="#2016gallery" class="smoothScroll">2016</a></li>
+					<li> <a href="#2017gallery" >2017</a></li>
+					<li> <a href="#2016gallery" >2016</a></li>
 				</ul>
 			</li>
             <li> <a href="#sponsors" class="smoothScroll hidden-sm"> Sponsors</a></li>
@@ -21,20 +21,20 @@
 		<li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">More<span class="caret"></span></a>
           <ul class="dropdown-menu" role="menu">
-			  <li> <a href="#about" class="smoothScroll"> About</a></li>
-			  <li> <a href="#2017Gllery" class="smoothScroll"> Gallery</a></li>
-              <li> <a href="#sponsors" class="smoothScroll"> Sponsors</a></li>
-			  <li> <a href="#contact" class="smoothScroll"> Contact</a></li>
+			  <li> <a href="#about" > About</a></li>
+			  <li> <a href="#2017Gallery" > Gallery</a></li>
+              <li> <a href="#sponsors" > Sponsors</a></li>
+			  <li> <a href="#contact" > Contact</a></li>
           </ul>
         </li>
 	</ul>
 
 	<ul class="nav navbar-nav hidden-xs pull-right">
-		<li> <a href="{% url 'entries:entries_home' %}" class="smoothScroll"> Competitors' Section</a></li>
+		<li> <a href="{% url 'entries:entries_home' %}" > Competitors' Section</a></li>
         {% if request.user.is_staff %}<li class="active-nav"><a href="{% url 'ppadmin:entries' %}">Admin</a></li>{% endif %}
 	</ul>
 	<ul class="nav navbar-nav hidden-sm hidden-md hidden-lg">
-		<li> <a href="{% url 'entries:entries_home' %}" class="smoothScroll"> Competitors' Section</a></li>
+		<li> <a href="{% url 'entries:entries_home' %}" > Competitors' Section</a></li>
         {% if request.user.is_staff %}<li class="active-nav"><a href="{% url 'ppadmin:entries' %}">Admin</a></li>{% endif %}
 	</ul>
 
@@ -153,7 +153,7 @@
 				<br>
 				<br>
 					<div class="col-sm-4 centered">
-                        <img class="img img-circle" src="{% static 'web/images/tiff.jpg' %}" height="150px" width="150px" alt="">
+                        <img class="img img-circle" src="{% static 'web/images/judges/	tiff.jpg' %}" height="150px" width="150px" alt="">
                     </div>
 					<div class="col-sm-8">
 						<h4 class="centered"><b>Tiff Finney - Compère</b></h4>
@@ -705,3 +705,8 @@
 		</div><!-- container -->
 
 {% endblock content %}
+
+
+{% block extra_js %}
+<script src="{% static 'web/js/zenscroll-min.js' %}"></script>
+{% endblock %}
