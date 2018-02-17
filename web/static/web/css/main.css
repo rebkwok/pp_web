@@ -681,30 +681,26 @@ a > .noncoloured-link {
     }
 }
 
-img.sponsor-img {
-    width: auto;
-    height: 55px;
-}
-
-img.sponsor-img.gg {
-    width: auto;
-    height: 85px;
-}
-
-@media (max-width: 767px) {
-    img.sponsor-img {
-        width: auto;
-        height: 60px;
+a.sponsor-lnk {
+        font-size: smaller;
     }
 
+img.sponsor-img {
+    width: 200px;
+    height: auto;
 }
+
+/*@media (max-width: 767px) {*/
+    /*img.sponsor-img {*/
+        /*width: 100px;*/
+        /*height: auto;*/
+    /*}*/
+
+/*}*/
 
 @media (max-width: 480px) {
     img.sponsor-img {
-        width: auto;
-        height: 60px;
-    }
-    a.sponsor-link {
-        font-size: medium;
+        width: 100px;
+        height: auto;
     }
 }
