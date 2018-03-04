@@ -1,10 +1,15 @@
 ---
-- name: Make virtual env
-  shell: virtualenv -p python3.4 venv
-  args:
-    chdir: "{{ project_root_path }}"
+- name: Setup Virtualenv and upgrade setuptools and pip
+  pip:
+    name: "{{ item }}"
+    state: latest
+    virtualenv: "{{ virtualenv_path }}"
+    virtualenv_python: "{{ python3_path }}"
+  with_items:
+    - setuptools
+    - pip
 
-- name: Setup Virtualenv
+- name: Install requirements
   pip:
     virtualenv: "{{ virtualenv_path }}"
     requirements: "{{ project_root_path }}/requirements.txt"
@@ -16,10 +21,10 @@
     - ipython
     - django-extensions
 
+- name: Install .env file
+  template: src=env.j2 dest="{{ project_root_path }}/poleperformance/.env" force=no
+
 - name: Django db
   django_manage: command={{ item }} app_path={{ project_root_path }} virtualenv={{ virtualenv_path }}
   with_items:
     - migrate
-
-
-

@@ -3,5 +3,6 @@
 *.pyc
 venv
 ansible/vagrant.retry
+ansible/.vaultpass
 .env
 *.DS_Store
