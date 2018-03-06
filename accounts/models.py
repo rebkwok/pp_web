@@ -85,7 +85,9 @@ I agree to the above T & C’s and release of liability. I have fully read and u
 class OnlineDisclaimer(models.Model):
     read_only_fields = ('waiver_terms', )
 
-    user = models.OneToOneField(User, related_name='online_disclaimer')
+    user = models.OneToOneField(
+        User, related_name='online_disclaimer', on_delete=models.CASCADE
+    )
     date = models.DateTimeField(default=timezone.now)
     date_updated = models.DateTimeField(null=True, blank=True)
     emergency_contact_name = models.CharField(max_length=255, verbose_name='name')

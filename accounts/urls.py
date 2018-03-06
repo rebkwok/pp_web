@@ -1,24 +1,28 @@
-from django.conf.urls import url
-from accounts.views import ProfileUpdateView, profile, CustomLoginView, \
+from django.urls import path
+from accounts.views import ProfileUpdateView, profile, \
     DisclaimerCreateView, data_protection, subscribe_view
 
+
+app_name = 'accounts'
+
+
 urlpatterns = [
-    url(r'^profile/$', profile, name='profile'),
-    url(
-        r'^profile/update/$', ProfileUpdateView.as_view(),
+    path('profile/', profile, name='profile'),
+    path(
+        'profile/update/', ProfileUpdateView.as_view(),
         name='update_profile'
     ),
-    url(
-        r'^waiver/$', DisclaimerCreateView.as_view(),
+    path(
+        'waiver/', DisclaimerCreateView.as_view(),
         name='disclaimer_form'
     ),
-    url(
-        r'^data-protection-statement/$', data_protection,
+    path(
+        'data-protection-statement/', data_protection,
         name='data_protection'
     ),
-    url(r'^mailing-list/$', subscribe_view, name='subscribe'),
+    path('mailing-list/', subscribe_view, name='subscribe'),
 
-    url(r'^$', profile)
+    path('', profile)
 ]
 
 

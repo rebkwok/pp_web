@@ -56,7 +56,7 @@ class PaypalEntryTransaction(models.Model):
     invoice_id = models.CharField(
         max_length=255, null=True, blank=True, unique=True
     )
-    entry = models.ForeignKey(Entry, null=True)
+    entry = models.ForeignKey(Entry, null=True, on_delete=models.SET_NULL)
     payment_type = models.CharField(
         choices=(
             ('video', 'video'),

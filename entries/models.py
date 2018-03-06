@@ -65,7 +65,7 @@ class Entry(models.Model):
     entry_year = models.CharField(
         choices=YEAR_CHOICES, default=settings.CURRENT_ENTRY_YEAR, max_length=4
     )  # so we can use this system for future comp entries too
-    user = models.ForeignKey(User, related_name="entries")
+    user = models.ForeignKey(User, related_name="entries", on_delete=models.CASCADE)
     stage_name = models.CharField(max_length=255, blank=True, null=True)
     category = models.CharField(
         choices=CATEGORY_CHOICES, default='BEG', max_length=3

@@ -3,7 +3,7 @@ import os
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.http import FileResponse, Http404
 from django.shortcuts import get_object_or_404, HttpResponse, \
     HttpResponseRedirect, render, render_to_response
@@ -265,7 +265,7 @@ class SelectedEntryUpdateView(LoginRequiredMixin, generic.UpdateView):
 
     def dispatch(self, request, *args, **kwargs):
         # redirect if not status "selected" or "selected_confirmed"
-        if not request.user.is_anonymous():
+        if not request.user.is_anonymous:
             entry = self.get_object()
             if entry.status not in ["selected", "selected_confirmed"] or \
                     entry.withdrawn:
@@ -302,7 +302,7 @@ class EntryDeleteView(LoginRequiredMixin, generic.DeleteView):
 
     def dispatch(self, request, *args, **kwargs):
         # redirect if not status "in_progress"
-        if not request.user.is_anonymous():
+        if not request.user.is_anonymous:
             entry = self.get_object()
             if entry.status != "in_progress":
                 return HttpResponseRedirect(reverse('permission_denied'))
@@ -345,7 +345,7 @@ class EntryWithdrawView(LoginRequiredMixin, generic.UpdateView):
 
     def dispatch(self, request, *args, **kwargs):
         # redirect if already withdrawn
-        if not request.user.is_anonymous():
+        if not request.user.is_anonymous:
             entry = self.get_object()
             if entry.withdrawn :
                 return HttpResponseRedirect(reverse('permission_denied'))
@@ -472,7 +472,7 @@ class EntryConfirmView(LoginRequiredMixin, generic.UpdateView):
     fields = ('id',)
 
     def dispatch(self, request, *args, **kwargs):
-        if not request.user.is_anonymous():
+        if not request.user.is_anonymous:
             # redirect if not status "selected"
             entry = self.get_object()
             if entry.status != "selected" or entry.withdrawn :

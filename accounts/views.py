@@ -5,7 +5,7 @@ from django.core.cache import cache
 from django.shortcuts import render, HttpResponseRedirect, get_object_or_404
 from django.views.generic import UpdateView, CreateView
 from django.contrib.auth.models import User
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.template.response import TemplateResponse
 from django.utils.safestring import mark_safe
 

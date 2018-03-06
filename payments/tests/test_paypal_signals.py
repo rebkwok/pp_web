@@ -5,7 +5,7 @@ from unittest.mock import Mock, patch
 
 from django.conf import settings
 from django.core import mail
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.test import TestCase, Client, override_settings
 from django.utils import timezone
 
