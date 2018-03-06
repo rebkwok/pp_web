@@ -3,7 +3,7 @@ import os
 
 from datetime import datetime, timedelta
 from io import StringIO
-from mock import patch
+from unittest.mock import patch
 from model_mommy import mommy
 
 from django.test import TestCase, override_settings
@@ -32,8 +32,11 @@ class ManagementCommandsTests(TestCase):
 
     def test_email_warnings(self):
         mommy.make(Entry, _quantity=5)
-        management.call_command('email_warnings')
+        for i, entry in enumerate(Entry.objects.all()):
+            entry.user.email = 'testuser{}@test.com'.format(i)
+            entry.user.save()
 
+        management.call_command('email_warnings')
         # All emails in progress; one email sent per entry and one support
         self.assertEqual(len(mail.outbox), 6)
 
@@ -415,6 +418,11 @@ class ManagementCommandsTests(TestCase):
         mommy.make(Entry, status='selected')
         mommy.make(Entry, status='selected_confirmed', withdrawn=True)
         mommy.make(Entry, status='submitted')
+
+        # make sure users have valid emails
+        for i, entry in enumerate(Entry.objects.all()):
+            entry.user.email = 'testuser{}@test.com'.format(i)
+            entry.user.save()
 
         management.call_command('email_entry_info_reminder')
 

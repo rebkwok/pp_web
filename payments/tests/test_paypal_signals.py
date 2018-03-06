@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from model_mommy import mommy
-from mock import Mock, patch
+from unittest.mock import Mock, patch
 
 from django.conf import settings
 from django.core import mail
@@ -164,7 +164,7 @@ class PaypalSignalsTests(TestCase):
     @patch('paypal.standard.ipn.models.PayPalIPN._postback')
     def test_paypal_notify_url_with_complete_status(self, mock_postback):
         mock_postback.return_value = b"VERIFIED"
-        entry = mommy.make(Entry)
+        entry = mommy.make(Entry, user__email='test@test.com')
         pptrans = create_entry_paypal_transaction(entry.user, entry, 'video')
 
         self.assertFalse(PayPalIPN.objects.exists())
@@ -231,7 +231,7 @@ class PaypalSignalsTests(TestCase):
     @patch('paypal.standard.ipn.models.PayPalIPN._postback')
     def test_successful_paypal_payment_sends_emails(self, mock_postback):
         mock_postback.return_value = b"VERIFIED"
-        entry = mommy.make(Entry)
+        entry = mommy.make(Entry, user__email='testuser@test.com')
         invoice_id = create_entry_paypal_transaction(
             entry.user, entry, 'video'
         ).invoice_id
@@ -298,7 +298,7 @@ class PaypalSignalsTests(TestCase):
     @patch('paypal.standard.ipn.models.PayPalIPN._postback')
     def test_paypal_notify_only_updates_relevant_entry(self, mock_postback):
         mock_postback.return_value = b"VERIFIED"
-        entry = mommy.make(Entry)
+        entry = mommy.make(Entry, user__email='test@test.com')
         invoice_id = create_entry_paypal_transaction(
             entry.user, entry, 'video'
         ).invoice_id
@@ -332,7 +332,7 @@ class PaypalSignalsTests(TestCase):
             self, mock_postback
     ):
         mock_postback.return_value = b"VERIFIED"
-        entry = mommy.make(Entry)
+        entry = mommy.make(Entry, user__email='test@test.com')
 
         self.assertFalse(PayPalIPN.objects.exists())
         params = dict(IPN_POST_PARAMS)
@@ -365,7 +365,7 @@ class PaypalSignalsTests(TestCase):
         we create one when processing the payment
         """
         mock_postback.return_value = b"VERIFIED"
-        entry = mommy.make(Entry)
+        entry = mommy.make(Entry, user__email='test@test.com')
 
         self.assertFalse(PayPalIPN.objects.exists())
         self.assertFalse(PaypalEntryTransaction.objects.exists())
@@ -393,8 +393,8 @@ class PaypalSignalsTests(TestCase):
     @patch('paypal.standard.ipn.models.PayPalIPN._postback')
     def test_paypal_notify_url_with_duplicate_trans_object(self, mock_postback):
         mock_postback.return_value = b"VERIFIED"
-        entry = mommy.make(Entry, category='BEG')
-        entry1 = mommy.make(Entry, category='INT')
+        entry = mommy.make(Entry, category='BEG', user__email='test@test.com')
+        entry1 = mommy.make(Entry, category='INT', user__email='test1@test.com')
         # create 2 paypal trans objects and make they for the same object
         pptrans = create_entry_paypal_transaction(entry.user, entry, 'video')
         pptrans1 = create_entry_paypal_transaction(entry.user, entry1, 'video')
@@ -427,8 +427,8 @@ class PaypalSignalsTests(TestCase):
     @patch('paypal.standard.ipn.models.PayPalIPN._postback')
     def test_paypal_notify_url_duplicate_trans_not_invoice(self, mock_postback):
         mock_postback.return_value = b"VERIFIED"
-        entry = mommy.make(Entry, category='BEG')
-        entry1 = mommy.make(Entry, category='INT')
+        entry = mommy.make(Entry, category='BEG', user__email='test@test.com')
+        entry1 = mommy.make(Entry, category='INT', user__email='test@test.com')
         # create 2 paypal trans objects and make they for the same object
         pptrans = create_entry_paypal_transaction(entry.user, entry, 'video')
         pptrans1 = create_entry_paypal_transaction(entry.user, entry1, 'video')
@@ -595,7 +595,7 @@ class PaypalSignalsTests(TestCase):
         self.assertEqual(
             ppipn.flag_info,
             'Invalid form. (payment_date: Invalid date format '
-            '2015-10-25 01:21:32: need more than 2 values to unpack)'
+            '2015-10-25 01:21:32: not enough values to unpack (expected 5, got 2))'
         )
 
         self.assertEqual(mail.outbox[0].to, [settings.SUPPORT_EMAIL])
@@ -608,7 +608,7 @@ class PaypalSignalsTests(TestCase):
             'PayPal sent an invalid transaction notification while attempting '
             'to process payment;.\n\nThe flag info was "Invalid form. '
             '(payment_date: Invalid date format '
-            '2015-10-25 01:21:32: need more than 2 values to unpack)"'
+            '2015-10-25 01:21:32: not enough values to unpack (expected 5, got 2))"'
             '\n\nAn additional error was raised: Unknown object for '
             'payment'
         )
@@ -698,7 +698,7 @@ class PaypalSignalsTests(TestCase):
         self.assertEqual(
             ppipn.flag_info,
             "Invalid form. (payment_date: Invalid date format "
-            "01:28 Jan 25 2015 PDT: need more than 2 values to unpack)"
+            "01:28 Jan 25 2015 PDT: not enough values to unpack (expected 3, got 2))"
         )
 
         # Can be split and day/month/year parts converted but invalid date so
