@@ -81,7 +81,7 @@
     <div id="footer">
 		<div id="footerwrap">
 			<div class="container">
-				<h6>Site developed by Becky Smith</h6>
+				<h6>Site developed by Becky Smith <a class="pull-right footerlink" href="{% url 'data_privacy_policy' %}">Data Privacy Policy</a></h6>
 			</div>
 		</div>
 
@@ -90,7 +90,8 @@
 
 
 {% block extra_js %}
-<script src="http://momentjs.com/downloads/moment.min.js"></script>
+<!--<script src="http://momentjs.com/downloads/moment.min.js"></script>-->
+<script type="text/javascript" src="{% static 'entries/js/moment.min.js' %}"></script>
 <script type="text/javascript" src="{% static 'entries/js/jquery.datetimepicker.js' %}"></script>
 <script type="text/javascript" src="{% static 'entries/js/jquery.tablesorter.min.js' %}"></script>
 <script type="text/javascript" src="{% static 'entries/js/jquery.are-you-sure.js' %}"></script>

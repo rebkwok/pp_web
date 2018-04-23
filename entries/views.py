@@ -22,6 +22,7 @@ from .email_helpers import send_pp_email
 from .models import CATEGORY_CHOICES_DICT, Entry, VIDEO_ENTRY_FEES, \
     SELECTED_ENTRY_FEES, WITHDRAWAL_FEE
 from .utils import check_partner_email, entries_open
+from .views_utils import DataPolicyAgreementRequiredMixin
 
 """
 Enter Now link --> Entry form page
@@ -231,7 +232,10 @@ class EntryMixin(object):
         return reverse('entries:user_entries')
 
 
-class EntryCreateView(EntryMixin, LoginRequiredMixin, generic.CreateView):
+class EntryCreateView(
+    EntryMixin, DataPolicyAgreementRequiredMixin, LoginRequiredMixin,
+    generic.CreateView
+):
     model = Entry
     template_name = 'entries/entry_create_update.html'
     form_class = EntryCreateUpdateForm
@@ -244,7 +248,10 @@ class EntryCreateView(EntryMixin, LoginRequiredMixin, generic.CreateView):
         return super(EntryMixin, self).dispatch(request, *args, **kwargs)
 
 
-class EntryUpdateView(EntryMixin, LoginRequiredMixin, generic.UpdateView):
+class EntryUpdateView(
+    EntryMixin, DataPolicyAgreementRequiredMixin, LoginRequiredMixin,
+    generic.UpdateView
+):
 
     model = Entry
     template_name = 'entries/entry_create_update.html'
@@ -256,7 +263,9 @@ class EntryUpdateView(EntryMixin, LoginRequiredMixin, generic.UpdateView):
         return get_object_or_404(Entry, entry_ref=ref, user=self.request.user)
 
 
-class SelectedEntryUpdateView(LoginRequiredMixin, generic.UpdateView):
+class SelectedEntryUpdateView(
+    DataPolicyAgreementRequiredMixin, LoginRequiredMixin, generic.UpdateView
+):
 
     model = Entry
     template_name = 'entries/selected_entry_update.html'
@@ -463,7 +472,9 @@ def check_partner(request):
     )
 
 
-class EntryConfirmView(LoginRequiredMixin, generic.UpdateView):
+class EntryConfirmView(
+    LoginRequiredMixin, DataPolicyAgreementRequiredMixin, generic.UpdateView
+):
     """
     An update view for confirming entry selection
     """

@@ -9,7 +9,7 @@ from model_mommy import mommy
 from django.conf import settings
 from django.core import management, mail
 from django.core.cache import cache
-from django.test import TestCase, override_settings
+from django.test import RequestFactory, TestCase, override_settings
 from django.contrib.auth.models import User, Group
 from django.contrib.messages.storage.fallback import FallbackStorage
 from django.urls import reverse
@@ -17,12 +17,12 @@ from django.utils import timezone
 
 from allauth.account.models import EmailAddress
 
-from accounts.forms import SignupForm, DisclaimerForm
+from accounts.forms import DisclaimerForm
 from accounts.management.commands.import_disclaimer_data import logger as \
     import_disclaimer_data_logger
 from accounts.management.commands.export_encrypted_disclaimers import EmailMessage
 from accounts.models import OnlineDisclaimer, \
-    WAIVER_TERMS
+    WAIVER_TERMS, DataPrivacyPolicy, SignedDataPrivacy
 from accounts.views import ProfileUpdateView, profile, DisclaimerCreateView
 
 from .helpers import _create_session, TestSetupMixin
@@ -219,11 +219,10 @@ class CustomSignUpViewTests(TestSetupMixin, TestCase):
         cls.form_data = {
             'first_name': 'Test',
              'last_name': 'User',
-             'email': 'test_user@test.com',
              'dob': '01 Jan 1990', 'address': '1 test st',
              'postcode': 'TEST1', 'phone': '123445',
              'username': 'testuser', 'email': 'testuser@test.com',
-             'password1': 'dj34nmadkl24', 'password2': 'dj34nmadkl24'
+             'password1': 'dj34nmadkl24', 'password2': 'dj34nmadkl24',
          }
 
     def test_get_signup_view(self):
@@ -299,6 +298,36 @@ class CustomSignUpViewTests(TestSetupMixin, TestCase):
                 ]
             }
         )
+
+    def test_signup_dataprotection_confirmation_required(self):
+        mommy.make(DataPrivacyPolicy)
+        form_data = self.form_data.copy()
+        form_data.update({'data_privacy_confirmation': False})
+
+        resp = self.client.post(self.url, form_data)
+        form = resp.context_data['form']
+        self.assertFalse(form.is_valid())
+        self.assertEqual(
+            form.errors,
+            {
+                'data_privacy_confirmation': [
+                    'You must check this box to continue'
+                ]
+            }
+        )
+
+    def test_sign_up_with_data_protection(self):
+        dp = mommy.make(DataPrivacyPolicy)
+        self.assertFalse(SignedDataPrivacy.objects.exists())
+        form_data = self.form_data.copy()
+        form_data.update({'data_privacy_confirmation': True})
+        url = reverse('account_signup')
+        self.client.post(url, form_data)
+        user = User.objects.latest('id')
+        self.assertEquals('Test', user.first_name)
+        self.assertEquals('User', user.last_name)
+        self.assertTrue(SignedDataPrivacy.objects.exists())
+        self.assertEqual(user.data_privacy_agreement.first().version, dp.version)
 
 
 class DisclaimerModelTests(TestCase):
@@ -469,7 +498,7 @@ class DataProtectionViewTests(TestSetupMixin, TestCase):
 
     def test_get_data_protection_view(self):
         # no need to be a logged in user to access
-        resp = self.client.get(reverse('accounts:data_protection'))
+        resp = self.client.get(reverse('data_privacy_policy'))
         self.assertEqual(resp.status_code, 200)
 
 
@@ -728,6 +757,3 @@ class MailingListSubscribeViewTests(TestSetupMixin, TestCase):
 
         self.client.post(self.url, {'subscribe': 'Subscribe'})
         self.assertIn(self.subscribed, self.user.groups.all())
-
-
-
