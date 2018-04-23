@@ -1,4 +1,5 @@
 {% load static %}
+{% load cookielaw_tags %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -69,6 +70,7 @@
     </div>
     </div>
 
+{% cookielaw_banner %}
 {% block messages %}{% endblock messages %}
 {% block extra_base_content %}{% endblock %}
  {% block content %}{% endblock %}
@@ -78,8 +80,9 @@
   {% block footer_content %}
 		<div id="footerwrap">
 			<div class="container">
-				<h6>Site developed by Becky Smith; design based on http://blacktie.co/shield/</h6>
-			</div>
+				<h6>Site developed by Becky Smith; design based on http://blacktie.co/shield/
+                    <a class="pull-right footerlink" href="{% url 'data_privacy_policy' %}">Data Privacy Policy</a></h6>
+            </div>
 		</div>
   {% endblock %}
 
@@ -99,6 +102,7 @@
 	<script type="text/javascript" src="{% static 'web/js/bootstrap.min.js' %}"></script>
 	<script type="text/javascript" src="{% static 'web/js/jquery.easing.1.3.js' %}"></script>
 	<script type="text/javascript" src="{% static 'web/js/jquery-func.js' %}"></script>
+  <script src="{% static 'cookielaw/js/cookielaw.js' %}"></script>
     {% block extra_js %}{% endblock %}
 
   </body>

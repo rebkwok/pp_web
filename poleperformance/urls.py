@@ -18,7 +18,8 @@ from django.urls import include, path
 from django.conf.urls.static import static
 from django.contrib import admin
 
-from accounts.views import CustomLoginView, CustomSignUpView
+from accounts.views import CustomLoginView, CustomSignUpView, \
+    data_privacy_policy, cookie_policy
 from entries.views import permission_denied
 
 
@@ -30,9 +31,16 @@ urlpatterns = [
     path('accounts/signup/', CustomSignUpView.as_view(), name='account_signup'),
     path('accounts/', include('accounts.urls')),
     path('accounts/', include('allauth.urls')),
+    path(
+        'data-privacy-policy/', data_privacy_policy, name='data_privacy_policy'
+    ),
+    path(
+        'cookie-policy/', cookie_policy, name='cookie_policy'
+    ),
     path('payments/ipn-paypal-notify/', include('paypal.standard.ipn.urls')),
     path('payments/', include('payments.urls')),
     path('not-available/', permission_denied, name='permission_denied'),
+
     path('ppadmin/', include('ppadmin.urls')),
 ]
 

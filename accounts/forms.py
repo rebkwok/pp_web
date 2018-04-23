@@ -4,9 +4,12 @@ from dateutil.relativedelta import relativedelta
 
 from django import forms
 from django.contrib.auth.models import User
+from django.utils import timezone
+
 
 from accounts import validators as account_validators
-from accounts.models import OnlineDisclaimer, WAIVER_TERMS, UserProfile
+from .models import DataPrivacyPolicy, SignedDataPrivacy, \
+    OnlineDisclaimer, WAIVER_TERMS, UserProfile
 
 
 class AccountFormMixin(object):
@@ -74,6 +77,35 @@ class SignupForm(AccountFormMixin, forms.Form):
 
     def __init__(self, *args, **kwargs):
         super(SignupForm, self).__init__(*args, **kwargs)
+        # get the current version here to make sure we always display and save
+        # with the same version, even if it changed while the form was being
+        # completed
+        self.fields['email'].widget.attrs.update({'autofocus': 'autofocus'})
+        if DataPrivacyPolicy.current():
+            self.data_privacy_policy = DataPrivacyPolicy.current()
+            self.fields['data_privacy_content'] = forms.CharField(
+                initial=self.data_privacy_policy.data_privacy_content,
+                required=False
+            )
+            self.fields['cookie_content'] = forms.CharField(
+                initial=self.data_privacy_policy.cookie_content,
+                required=False
+            )
+            self.fields['data_privacy_confirmation'] = forms.BooleanField(
+                widget=forms.CheckboxInput(attrs={'class': "regular-checkbox"}),
+                required=False,
+                label='I confirm I have read and agree to the terms of the data ' \
+                      'privacy policy'
+            )
+
+    def clean_data_privacy_confirmation(self):
+       dp = self.cleaned_data.get('data_privacy_confirmation')
+       if not dp:
+           self.add_error(
+               'data_privacy_confirmation',
+               'You must check this box to continue'
+           )
+       return
 
     def signup(self, request, user):
         user.first_name = self.cleaned_data['first_name']
@@ -83,12 +115,20 @@ class SignupForm(AccountFormMixin, forms.Form):
         profile_data = self.cleaned_data.copy()
         non_profile_fields = [
             'first_name', 'last_name', 'password1', 'password2', 'username',
-            'email'
+            'email', 'data_privacy_content', 'cookie_content',
+            'data_privacy_confirmation'
         ]
         for field in non_profile_fields:
-            del profile_data[field]
+            if field in profile_data:
+                del profile_data[field]
 
         UserProfile.objects.create(user=user, **profile_data)
+
+        if hasattr(self, 'data_privacy_policy'):
+           SignedDataPrivacy.objects.create(
+               user=user, version=self.data_privacy_policy.version,
+               date_signed=timezone.now()
+           )
 
 
 class ProfileForm(AccountFormMixin, forms.ModelForm):
@@ -192,3 +232,24 @@ class DisclaimerForm(forms.ModelForm):
                 attrs={'class': 'form-control'},
             ),
         }
+
+
+class DataPrivacyAgreementForm(forms.Form):
+
+    confirm = forms.BooleanField(
+        widget=forms.CheckboxInput(attrs={'class': "regular-checkbox"}),
+        required=False,
+        label='I confirm I have read and agree to the terms of the data ' \
+              'privacy and cookie policy'
+    )
+
+    def __init__(self, *args, **kwargs):
+        self.next_url = kwargs.pop('next_url')
+        super(DataPrivacyAgreementForm, self).__init__(*args, **kwargs)
+        self.data_privacy_policy = DataPrivacyPolicy.current()
+
+    def clean_confirm(self):
+        confirm = self.cleaned_data.get('confirm')
+        if not confirm:
+            self.add_error('confirm', 'You must check this box to continue')
+        return

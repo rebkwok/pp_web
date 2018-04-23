@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
+    'cookielaw',
     'allauth',
     'allauth.account',
     'debug_toolbar',
