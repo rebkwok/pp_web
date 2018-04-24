@@ -1,3 +1,0 @@
-<button class="btn table-btn subscribe-btn {% if user.subscribed %}subscribed{% else %}btn-default{% endif %}">
-    {% if user.subscribed %}Yes{% else %}No{% endif %}
-</button>

@@ -26,7 +26,7 @@ logger = logging.getLogger(__name__)
 @login_required
 @staff_required
 def email_users_view(
-        request, mailing_list=False,
+        request,
         template_name='ppadmin/email_users_form.html'
 ):
     if 'users_to_email' in request.POST:  # posting a test email; already in
@@ -34,9 +34,6 @@ def email_users_view(
         users_to_email = ast.literal_eval(request.POST.get('users_to_email'))
     else:
         users = []
-        if mailing_list:
-            subscribed, _ = Group.objects.get_or_create(name='subscribed')
-            users = subscribed.user_set.all()
         if 'email_selected' in request.POST:
             users = User.objects.filter(id__in=request.POST.getlist('emailusers'))
         users_to_email = [
@@ -90,7 +87,6 @@ def email_users_view(
                               'number_of_emails': number_of_emails,
                               'email_count': email_count,
                               'is_test': test_email,
-                              'mailing_list': mailing_list,
                           }
 
                     sent = send_pp_email(
@@ -110,9 +106,8 @@ def email_users_view(
 
                     if not test_email and sent_ok:
                         ActivityLog.objects.create(
-                            log='{} email with subject "{}" sent to users '
+                            log='Bulk email with subject "{}" sent to users '
                                 '{} by admin user {}'.format(
-                                'Mailing list' if mailing_list else 'Bulk',
                                 subject, ', '.join(email_list),
                                 request.user.username
                                 )
@@ -120,27 +115,19 @@ def email_users_view(
                     if not sent_ok:
                         ActivityLog.objects.create(
                             log='There was a problem with at least one '
-                                'email in the {} email with '
+                                'email in the bulk email with '
                                 'subject "{}"'.format(
-                                'Mailing list' if mailing_list else
-                                'Bulk', subject, ', '.join(email_list),
-                                request.user.username
-                            )
+                                    subject, ', '.join(email_list),
+                                    request.user.username
+                                )
                         )
 
                 if not test_email and sent_ok:
                     messages.success(
                         request,
-                        '{} email with subject "{}" has been sent to '
-                        'users'.format(
-                            'Mailing list' if mailing_list else 'Bulk',
-                            subject
-                        )
+                        'Bulk email with subject "{}" has been sent to '
+                        'users'.format(subject)
                     )
-                    if mailing_list:
-                        return HttpResponseRedirect(
-                            reverse('ppadmin:mailing_list')
-                            )
                     return HttpResponseRedirect(reverse('ppadmin:entries'))
                 else:
                     messages.success(
@@ -166,6 +153,5 @@ def email_users_view(
         request, template_name, {
             'form': form,
             'users_to_email': users_to_email,
-            'mailing_list': mailing_list
         }
     )

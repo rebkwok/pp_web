@@ -12,7 +12,6 @@ from django.views.generic import ListView
 from braces.views import LoginRequiredMixin
 
 from ppadmin.forms import UserListSearchForm
-from ppadmin.models import subscribed_cache_key
 from ppadmin.views.helpers import staff_required, StaffUserMixin
 from activitylog.models import ActivityLog
 
@@ -93,77 +92,3 @@ class UserListView(LoginRequiredMixin,  StaffUserMixin,  ListView):
         context['num_results'] = num_results
         context['total_users'] = total_users
         return context
-
-
-@login_required
-@staff_required
-def toggle_subscribed(request,  user_id):
-    user_to_change = User.objects.get(id=user_id)
-
-    if request.method == 'POST':
-        group, _ = Group.objects.get_or_create(name='subscribed')
-        # subscribed = group in user_to_change.groups.all()
-        if user_to_change.subscribed():
-            group.user_set.remove(user_to_change)
-            cache.set(subscribed_cache_key(user_to_change), False, None)
-            ActivityLog.objects.create(
-                log="User {} {} ({}) unsubscribed from mailing list by "
-                    "admin user {}".format(
-                    user_to_change.first_name,
-                    user_to_change.last_name,
-                    user_to_change.username,
-                    request.user.username
-                )
-            )
-        else:
-            group.user_set.add(user_to_change)
-            cache.set(subscribed_cache_key(user_to_change), True, None)
-            ActivityLog.objects.create(
-                log="User {} {} ({}) subscribed to mailing list by "
-                    "admin user {}".format(
-                    user_to_change.first_name,
-                    user_to_change.last_name,
-                    user_to_change.username,
-                    request.user.username
-                )
-            )
-    return render_to_response(
-        "ppadmin/includes/subscribed_button.txt",
-        {"user": user_to_change}
-    )
-
-
-class MailingListView(LoginRequiredMixin, StaffUserMixin, ListView):
-    model = User
-    template_name = 'ppadmin/mailing_list.html'
-    context_object_name = 'users'
-
-    def get_queryset(self, **kwargs):
-        group, _ = Group.objects.get_or_create(name='subscribed')
-        return group.user_set.all().order_by('first_name', 'last_name')
-
-
-def unsubscribe(request, user_id):
-    user_to_change = User.objects.get(id=user_id)
-    group = Group.objects.get(name='subscribed')
-    group.user_set.remove(user_to_change)
-    cache.set(subscribed_cache_key(user_to_change), False, None)
-    messages.success(
-        request,
-        "User {} {} ({}) unsubscribed from mailing list.".format(
-            user_to_change.first_name,
-            user_to_change.last_name,
-            user_to_change.username
-        )
-    )
-    ActivityLog.objects.create(
-        log="User {} {} ({}) unsubscribed from mailing list by "
-            "admin user {}".format(
-            user_to_change.first_name,
-            user_to_change.last_name,
-            user_to_change.username,
-            request.user.username
-            )
-    )
-    user_to_change.save()
-    return HttpResponseRedirect(reverse('ppadmin:mailing_list'))

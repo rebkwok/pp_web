@@ -1,7 +1,6 @@
 from django.urls import path
 from accounts.views import ProfileUpdateView, profile, \
-    DisclaimerCreateView, subscribe_view, \
-    SignedDataPrivacyCreateView
+    DisclaimerCreateView, SignedDataPrivacyCreateView
 
 
 app_name = 'accounts'
@@ -21,7 +20,5 @@ urlpatterns = [
         'data-privacy-review/', SignedDataPrivacyCreateView.as_view(),
          name='data_privacy_review'
     ),
-    path('mailing-list/', subscribe_view, name='subscribe'),
-
     path('', profile)
 ]

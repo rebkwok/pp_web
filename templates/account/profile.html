@@ -54,26 +54,6 @@
 
                <div class="panel panel-default">
                    <div class="panel-heading">
-                        <h1 class="panel-title">Mailing List</h1>
-                    </div>
-                   <div class="panel-body">
-                       <div class="row">
-                           <div class="col-xs-12">
-                               {% if request.user|subscribed %}
-                                    Subscribed
-                               {% else %}
-                                    Not subscribed
-                               {% endif %}
-                           </div>
-                       </div>
-                        <div class="row">
-                            <div class="col-xs-12"><a href="{% url 'accounts:subscribe' %}">Change</a></div>
-                        </div>
-                    </div>
-               </div>
-
-               <div class="panel panel-default">
-                   <div class="panel-heading">
                         <h1 class="panel-title">Waiver</h1>
                     </div>
                    <div class="panel-body">

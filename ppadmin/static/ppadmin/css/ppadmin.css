@@ -44,26 +44,6 @@
 	color: #fff;
     }
 
-.subscribe-btn {
-    width: 5em;
-    background-color: grey;
-    border: 1px solid grey;
-}
-
-.subscribe-btn:hover, .subscribe-btn.subscribed:hover {
-    background-color: whitesmoke;
-    color: grey;
-}
-
-.subscribe-btn.subscribed {
-    background-color: green;
-    border: 1px solid green;
-}
-
-.subscribe-btn.subscribed:hover {
-    color: green;
-}
-
 .filter-btn {
     width: 11.2em;
 }
