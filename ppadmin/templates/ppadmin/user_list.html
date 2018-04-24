@@ -44,7 +44,6 @@
                                 <th class="table-center">Last Name <span class="fa fa-sort"></span></th>
                                 <th class="table-center">Waiver</br><span class="ppadmin-help">Click to view/print</span></th>
                                 <th class="table-center">Email</th>
-                                <th class="table-center">Subscribed</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -60,9 +59,6 @@
                                         <a href="{% url 'ppadmin:user_disclaimer' user.id|encode %}" target="_blank"><span class="has-disclaimer-pill">Yes</span></a>
                                     {% else %}No{% endif %}
                                 <td class="table-center ppadmin-tbl"><a href="mailto:{{ user.email }}" target="_blank">{{ user.email|abbr_email }}</a></td>
-                                <td id="toggle_subscribed_{{ user.id }}" data-user_id="{{ user.id }}" class="table-center ppadmin-tbl td_subscribed_button">
-                                    {% include "ppadmin/includes/subscribed_button.txt" %}
-                                </td>
                             </tr>
                             {% endfor %}
 

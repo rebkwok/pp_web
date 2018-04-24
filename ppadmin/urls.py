@@ -1,8 +1,8 @@
 from django.urls import path
 from django.views.generic import RedirectView
 from ppadmin.views import user_disclaimer, DisclaimerUpdateView, \
-    DisclaimerDeleteView, ActivityLogListView, toggle_subscribed, \
-    MailingListView, unsubscribe, UserListView, EntryListView, \
+    DisclaimerDeleteView, ActivityLogListView, \
+    UserListView, EntryListView, \
     EntryDetailView, EntryNotifiedListView, email_users_view, \
     EntrySelectionListView, toggle_selection, notified_selection_reset, \
     notify_users, export_data, ExportFormView
@@ -69,20 +69,7 @@ urlpatterns = [
         'activitylog/', ActivityLogListView.as_view(), name='activitylog'
     ),
     path(
-        'users/(<int:user_id>/toggle_subscribed/',
-        toggle_subscribed, name='toggle_subscribed'
-    ),
-    path('users/mailing-list/', MailingListView.as_view(), name='mailing_list'),
-    path(
-        'users/mailing-list/send/', email_users_view, {'mailing_list': True},
-        name='send_mailing_list'
-    ),
-    path(
         'users/email-users/', email_users_view, name='email_users'
-    ),
-    path(
-        'users/<int:user_id>/mailing-list/unsubscribe/',
-        unsubscribe, name='unsubscribe'
     ),
     path('',
         RedirectView.as_view(url='/ppadmin/entries/', permanent=True)),

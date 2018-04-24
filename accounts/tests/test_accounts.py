@@ -23,7 +23,7 @@ from accounts.management.commands.import_disclaimer_data import logger as \
 from accounts.management.commands.export_encrypted_disclaimers import EmailMessage
 from accounts.models import OnlineDisclaimer, \
     WAIVER_TERMS, DataPrivacyPolicy, SignedDataPrivacy
-from accounts.views import ProfileUpdateView, profile, DisclaimerCreateView
+from accounts.views import ProfileUpdateView, DisclaimerCreateView
 
 from .helpers import _create_session, TestSetupMixin
 
@@ -708,52 +708,3 @@ class ImportDisclaimersTests(TestCase):
         )
         self.assertIsNotNone(test_1_disclaimer.waiver_terms)
         self.assertTrue(test_1_disclaimer.terms_accepted)
-
-
-class MailingListSubscribeViewTests(TestSetupMixin, TestCase):
-
-    @classmethod
-    def setUpTestData(cls):
-        super(MailingListSubscribeViewTests, cls).setUpTestData()
-        cls.url = reverse('accounts:subscribe')
-        # group is created when user is saved and user is added to group
-        cls.group = Group.objects.get(name='subscribed')
-
-    def test_login_required(self):
-        resp = self.client.get(self.url)
-        self.assertEqual(resp.status_code, 302)
-        self.assertIn(
-            resp.url, reverse('login') + '?next=/accounts/mailing-list/'
-        )
-
-        self.client.login(username=self.user.username, password='test')
-        resp = self.client.get(self.url)
-        self.assertEqual(resp.status_code, 200)
-
-    def test_get_shows_correct_subscription_status(self):
-        self.client.login(username=self.user.username, password='test')
-
-        resp = self.client.get(self.url)
-        self.assertIn(
-            "You are currently subscribed to the mailing list.  "
-            "Please click below if you would like to unsubscribe.",
-            resp.rendered_content
-        )
-        # remove user from group
-        self.group.user_set.remove(self.user)
-        resp = self.client.get(self.url)
-        self.assertIn(
-            "You are not currently subscribed to the mailing list.",
-            resp.rendered_content
-        )
-
-    def test_can_change_subscription(self):
-        self.subscribed = Group.objects.get(name='subscribed')
-        self.client.login(username=self.user.username, password='test')
-        self.assertIn(self.subscribed, self.user.groups.all())
-
-        self.client.post(self.url, {'unsubscribe': 'Unsubscribe'})
-        self.assertNotIn(self.subscribed, self.user.groups.all())
-
-        self.client.post(self.url, {'subscribe': 'Subscribe'})
-        self.assertIn(self.subscribed, self.user.groups.all())

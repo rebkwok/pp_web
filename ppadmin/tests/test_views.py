@@ -27,9 +27,8 @@ class ActivityLogListViewTests(TestSetupStaffLoginRequiredMixin, TestCase):
 
     def setUp(self):
         super(ActivityLogListViewTests, self).setUp()
-        # 10 logs
-        # 4 logs when self.user, self.staff_user are created in setUp
-        # and added to mailing list
+        # 8 logs
+        # 2 logs when self.user, self.staff_user are created in setUp
         # 1 log when user's disclaimer created
         # 3 with log messages to test search text
         # 2 with fixed dates to test search date
@@ -85,7 +84,7 @@ class ActivityLogListViewTests(TestSetupStaffLoginRequiredMixin, TestCase):
             'search_submitted': 'Search',
             'search_date': '01-34-2015'}
         )
-        self.assertEqual(len(resp.context_data['logs']), 10)
+        self.assertEqual(len(resp.context_data['logs']), 8)
 
     def test_search_date_and_text(self):
         self.client.login(username=self.staff_user.username, password='test')
@@ -136,7 +135,7 @@ class ActivityLogListViewTests(TestSetupStaffLoginRequiredMixin, TestCase):
             'reset': 'Reset'
             }
         )
-        self.assertEqual(len(resp.context_data['logs']), 10)
+        self.assertEqual(len(resp.context_data['logs']), 8)
 
     def test_empty_cron_job_logs_filtered_by_default(self):
         # Make an empty job log
@@ -149,8 +148,8 @@ class ActivityLogListViewTests(TestSetupStaffLoginRequiredMixin, TestCase):
         )
         self.client.login(username=self.staff_user.username, password='test')
         resp = self.client.get(self.url)
-        self.assertEqual(ActivityLog.objects.count(), 11)
-        self.assertEqual(len(resp.context_data['logs']), 10)
+        self.assertEqual(ActivityLog.objects.count(), 9)
+        self.assertEqual(len(resp.context_data['logs']), 8)
 
     def test_show_empty_cron_job_logs(self):
         # Make an empty job log
@@ -163,8 +162,8 @@ class ActivityLogListViewTests(TestSetupStaffLoginRequiredMixin, TestCase):
         )
         self.client.login(username=self.staff_user.username, password='test')
         resp = self.client.get(self.url, {'search_submitted': 'Search'})
-        self.assertEqual(ActivityLog.objects.count(), 11)
-        self.assertEqual(len(resp.context_data['logs']), 11)
+        self.assertEqual(ActivityLog.objects.count(), 9)
+        self.assertEqual(len(resp.context_data['logs']), 9)
 
 
 class UserListViewTests(TestSetupStaffLoginRequiredMixin, TestCase):
@@ -324,69 +323,6 @@ class UserListViewTests(TestSetupStaffLoginRequiredMixin, TestCase):
                 self.assertTrue(opt['available'])
             else:
                 self.assertFalse(opt['available'])
-
-    def test_change_mailing_list(self):
-        cache.clear()
-        user = mommy.make(User)
-        # cache populated on creating user
-        self.assertTrue(
-            cache.get('user_{}_is_subscribed'.format(user.id))
-        )
-
-        subscribed = Group.objects.get(name='subscribed')
-        self.assertIn(subscribed, user.groups.all())
-
-        cache.clear()
-        self.assertIsNone(
-            cache.get('user_{}_is_subscribed'.format(user.id))
-        )
-        self.client.login(username=self.staff_user.username, password='test')
-
-        # unsubscribe
-        self.client.post(
-            reverse('ppadmin:toggle_subscribed', args=[user.id])
-        )
-        self.assertFalse(
-            cache.get('user_{}_is_subscribed'.format(user.id))
-        )
-
-        user.refresh_from_db()
-        self.assertNotIn(subscribed, user.groups.all())
-
-        # subscribe again
-        self.client.post(
-            reverse(
-                'ppadmin:toggle_subscribed', args=[user.id]
-            )
-        )
-        user.refresh_from_db()
-        self.assertIn(subscribed, user.groups.all())
-        self.assertTrue(
-            cache.get('user_{}_is_subscribed'.format(user.id))
-        )
-
-
-class MailingListViewTests(TestSetupStaffLoginRequiredMixin, TestCase):
-
-    @classmethod
-    def setUpTestData(cls):
-        super(MailingListViewTests, cls).setUpTestData()
-        cls.url = reverse('ppadmin:mailing_list')
-
-    def test_unsubscribe(self):
-        subscribed = Group.objects.get(name='subscribed')
-
-        self.assertIn(subscribed, self.user.groups.all())
-        self.client.login(username=self.staff_user.username, password='test')
-        resp = self.client.post(
-            reverse('ppadmin:unsubscribe', args=[self.user.id])
-        )
-
-        # redirects back to mailing list
-        self.assertEqual(resp.status_code, 302)
-        self.assertEqual(resp.url, self.url)
-        self.user.refresh_from_db()
-        self.assertNotIn(subscribed, self.user.groups.all())
 
 
 class UserDisclaimerViewTests(TestSetupStaffLoginRequiredMixin, TestCase):

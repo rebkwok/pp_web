@@ -1,12 +1,8 @@
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import Group
 from django.contrib import messages
-from django.core.cache import cache
 from django.shortcuts import render, HttpResponseRedirect, get_object_or_404
 from django.views.generic import UpdateView, CreateView, FormView
 from django.contrib.auth.models import User
 from django.urls import reverse
-from django.template.response import TemplateResponse
 from django.utils.safestring import mark_safe
 
 from braces.views import LoginRequiredMixin
@@ -17,9 +13,7 @@ from .forms import DataPrivacyAgreementForm, DisclaimerForm, ProfileForm
 from .models import DataPrivacyPolicy, has_disclaimer, SignedDataPrivacy, \
     UserProfile
 from .utils import has_active_data_privacy_agreement
-from activitylog.models import ActivityLog
 
-from ppadmin.models import subscribed_cache_key
 
 
 def profile(request):
@@ -134,42 +128,6 @@ class DisclaimerCreateView(LoginRequiredMixin, CreateView):
 
     def get_success_url(self):
         return reverse('accounts:profile')
-
-
-@login_required
-def subscribe_view(request):
-
-    if request.method == 'POST':
-        group = Group.objects.get(name='subscribed')
-        if 'subscribe' in request.POST:
-            cache.set(subscribed_cache_key(request.user), True, None)
-            group.user_set.add(request.user)
-            messages.success(
-                request, 'You have been subscribed to the mailing list'
-            )
-            ActivityLog.objects.create(
-                log='User {} {} ({}) has subscribed to the mailing '
-                    'list'.format(
-                        request.user.first_name, request.user.last_name,
-                        request.user.username
-                    )
-            )
-        elif 'unsubscribe' in request.POST:
-            cache.set(subscribed_cache_key(request.user), False, None)
-            group.user_set.remove(request.user)
-            messages.success(
-                request, 'You have been unsubscribed from the mailing list'
-            )
-            ActivityLog.objects.create(
-                log='User {} {} ({}) has unsubscribed from the mailing '
-                    'list'.format(
-                        request.user.first_name, request.user.last_name,
-                        request.user.username
-                    )
-            )
-    return TemplateResponse(
-        request, 'account/mailing_list_subscribe.html'
-    )
 
 
 class SignedDataPrivacyCreateView(LoginRequiredMixin, FormView):
