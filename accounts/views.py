@@ -10,8 +10,8 @@ from braces.views import LoginRequiredMixin
 from allauth.account.views import LoginView, SignupView
 
 from .forms import DataPrivacyAgreementForm, DisclaimerForm, ProfileForm
-from .models import DataPrivacyPolicy, has_disclaimer, SignedDataPrivacy, \
-    UserProfile
+from .models import CookiePolicy, DataPrivacyPolicy, has_disclaimer, \
+    SignedDataPrivacy, UserProfile
 from .utils import has_active_data_privacy_agreement
 
 
@@ -137,7 +137,7 @@ class SignedDataPrivacyCreateView(LoginRequiredMixin, FormView):
     def dispatch(self, *args, **kwargs):
         if has_active_data_privacy_agreement(self.request.user):
             return HttpResponseRedirect(
-                self.request.GET.get('next', reverse('booking:events'))
+                self.request.GET.get('next', reverse('entries:entries_home'))
             )
         return super().dispatch(*args, **kwargs)
 
@@ -176,12 +176,13 @@ class SignedDataPrivacyCreateView(LoginRequiredMixin, FormView):
 def data_privacy_policy(request):
     return render(
         request, 'account/data_privacy_policy.html',
-        {'data_privacy_policy': DataPrivacyPolicy.current()}
+        {'data_privacy_policy': DataPrivacyPolicy.current(),
+         'cookie_policy': CookiePolicy.current()}
     )
 
 
 def cookie_policy(request):
     return render(
         request, 'account/cookie_policy.html',
-        {'data_privacy_policy': DataPrivacyPolicy.current()}
+        {'cookie_policy': CookiePolicy.current()}
     )

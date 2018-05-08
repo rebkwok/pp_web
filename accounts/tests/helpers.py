@@ -6,7 +6,20 @@ from django.conf import settings
 from django.test import RequestFactory
 from django.utils.html import strip_tags
 
-from accounts.models import OnlineDisclaimer
+from accounts.models import DataPrivacyPolicy, OnlineDisclaimer, SignedDataPrivacy
+from accounts.utils import has_active_data_privacy_agreement
+
+
+def make_data_privacy_agreement(user):
+    if not has_active_data_privacy_agreement(user):
+        if DataPrivacyPolicy.current_version() == 0:
+            mommy.make(
+                DataPrivacyPolicy, content='Foo', version=1
+            )
+        mommy.make(
+            SignedDataPrivacy, user=user,
+            version=DataPrivacyPolicy.current_version()
+        )
 
 
 def _create_session():
@@ -38,6 +51,7 @@ class TestSetupMixin(object):
             username='test', email='test@test.com', password='test'
         )
         mommy.make(OnlineDisclaimer, user=cls.user)
+        make_data_privacy_agreement(cls.user)
 
 
 def format_content(content):
