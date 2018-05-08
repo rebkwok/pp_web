@@ -25,7 +25,8 @@ from accounts.models import OnlineDisclaimer, \
     WAIVER_TERMS, DataPrivacyPolicy, SignedDataPrivacy
 from accounts.views import ProfileUpdateView, DisclaimerCreateView
 
-from .helpers import _create_session, TestSetupMixin
+from .helpers import _create_session, has_active_data_privacy_agreement, \
+    TestSetupMixin, make_data_privacy_agreement
 
 
 class DisclaimerFormTests(TestSetupMixin, TestCase):
@@ -100,10 +101,12 @@ class ProfileTests(TestSetupMixin, TestCase):
         cls.user_with_online_disclaimer = User.objects.create_user(
             username='test_disc', password='test'
         )
+        make_data_privacy_agreement(cls.user_with_online_disclaimer)
         mommy.make(OnlineDisclaimer, user=cls.user_with_online_disclaimer)
         cls.user_no_disclaimer = User.objects.create_user(
             username='test_no_disc', password='test'
         )
+        make_data_privacy_agreement(cls.user_no_disclaimer)
         cls.url = reverse('accounts:profile')
 
     def setUp(self):
@@ -223,6 +226,7 @@ class CustomSignUpViewTests(TestSetupMixin, TestCase):
              'postcode': 'TEST1', 'phone': '123445',
              'username': 'testuser', 'email': 'testuser@test.com',
              'password1': 'dj34nmadkl24', 'password2': 'dj34nmadkl24',
+            'data_privacy_confirmation': True
          }
 
     def test_get_signup_view(self):
@@ -318,7 +322,7 @@ class CustomSignUpViewTests(TestSetupMixin, TestCase):
 
     def test_sign_up_with_data_protection(self):
         dp = mommy.make(DataPrivacyPolicy)
-        self.assertFalse(SignedDataPrivacy.objects.exists())
+        SignedDataPrivacy.objects.all().delete()
         form_data = self.form_data.copy()
         form_data.update({'data_privacy_confirmation': True})
         url = reverse('account_signup')
@@ -708,3 +712,46 @@ class ImportDisclaimersTests(TestCase):
         )
         self.assertIsNotNone(test_1_disclaimer.waiver_terms)
         self.assertTrue(test_1_disclaimer.terms_accepted)
+
+
+class DataPrivacyViewTests(TestCase):
+
+    def test_get_data_privacy_view(self):
+        # no need to be a logged in user to access
+        resp = self.client.get(reverse('data_privacy_policy'))
+        self.assertEqual(resp.status_code, 200)
+
+
+class CookiePolicyViewTests(TestCase):
+
+    def test_get_cookie_view(self):
+        # no need to be a logged in user to access
+        resp = self.client.get(reverse('cookie_policy'))
+        self.assertEqual(resp.status_code, 200)
+
+
+class SignedDataPrivacyCreateViewTests(TestSetupMixin, TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        cls.url = reverse('accounts:data_privacy_review')
+        cls.data_privacy_policy = mommy.make(DataPrivacyPolicy, version=None)
+
+    def setUp(self):
+        super(SignedDataPrivacyCreateViewTests, self).setUp()
+        self.client.login(username=self.user.username, password='test')
+
+    def test_user_already_has_active_signed_agreement(self):
+        # dp agreement is created in setup
+        self.assertTrue(has_active_data_privacy_agreement(self.user))
+        resp = self.client.get(self.url)
+        self.assertEqual(resp.status_code, 302)
+        self.assertEqual(resp.url, reverse('entries:entries_home'))
+
+        # make new policy
+        cache.clear()
+        mommy.make(DataPrivacyPolicy, version=None)
+        self.assertFalse(has_active_data_privacy_agreement(self.user))
+        resp = self.client.get(self.url)
+        self.assertEqual(resp.status_code, 200)

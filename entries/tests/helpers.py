@@ -6,6 +6,7 @@ from django.test import RequestFactory
 from django.utils.html import strip_tags
 
 from accounts.models import OnlineDisclaimer
+from accounts.tests.helpers import make_data_privacy_agreement
 
 
 class TestSetupMixin(object):
@@ -18,11 +19,13 @@ class TestSetupMixin(object):
             username='test', email='test@test.com', password='test'
         )
         mommy.make(OnlineDisclaimer, user=cls.user)
+        make_data_privacy_agreement(cls.user)
 
         cls.user_no_disclaimer = User.objects.create_user(
             username='test_no_disc', email='test_no_disc@test.com',
             password='test'
         )
+        make_data_privacy_agreement(cls.user_no_disclaimer)
         cls.url = None  # test class needs to define this
 
 

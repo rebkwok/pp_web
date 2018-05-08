@@ -83,12 +83,8 @@ class SignupForm(AccountFormMixin, forms.Form):
         self.fields['email'].widget.attrs.update({'autofocus': 'autofocus'})
         if DataPrivacyPolicy.current():
             self.data_privacy_policy = DataPrivacyPolicy.current()
-            self.fields['data_privacy_content'] = forms.CharField(
-                initial=self.data_privacy_policy.data_privacy_content,
-                required=False
-            )
-            self.fields['cookie_content'] = forms.CharField(
-                initial=self.data_privacy_policy.cookie_content,
+            self.fields['content'] = forms.CharField(
+                initial=self.data_privacy_policy.content,
                 required=False
             )
             self.fields['data_privacy_confirmation'] = forms.BooleanField(
@@ -115,7 +111,7 @@ class SignupForm(AccountFormMixin, forms.Form):
         profile_data = self.cleaned_data.copy()
         non_profile_fields = [
             'first_name', 'last_name', 'password1', 'password2', 'username',
-            'email', 'data_privacy_content', 'cookie_content',
+            'email', 'content',
             'data_privacy_confirmation'
         ]
         for field in non_profile_fields:
@@ -240,7 +236,7 @@ class DataPrivacyAgreementForm(forms.Form):
         widget=forms.CheckboxInput(attrs={'class': "regular-checkbox"}),
         required=False,
         label='I confirm I have read and agree to the terms of the data ' \
-              'privacy and cookie policy'
+              'privacy policy'
     )
 
     def __init__(self, *args, **kwargs):
