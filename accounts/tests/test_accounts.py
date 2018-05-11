@@ -17,7 +17,7 @@ from django.utils import timezone
 
 from allauth.account.models import EmailAddress
 
-from accounts.forms import DisclaimerForm
+from accounts.forms import DataPrivacyAgreementForm, DisclaimerForm
 from accounts.management.commands.import_disclaimer_data import logger as \
     import_disclaimer_data_logger
 from accounts.management.commands.export_encrypted_disclaimers import EmailMessage
@@ -755,3 +755,27 @@ class SignedDataPrivacyCreateViewTests(TestSetupMixin, TestCase):
         self.assertFalse(has_active_data_privacy_agreement(self.user))
         resp = self.client.get(self.url)
         self.assertEqual(resp.status_code, 200)
+
+    def test_create_new_agreement(self):
+        # make new policy
+        cache.clear()
+        mommy.make(DataPrivacyPolicy, version=None)
+        self.assertFalse(has_active_data_privacy_agreement(self.user))
+
+        self.client.post(self.url, data={'confirm': True})
+        self.assertTrue(has_active_data_privacy_agreement(self.user))
+
+
+class DataPrivacyAgreementFormTests(TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = mommy.make(User)
+        mommy.make(DataPrivacyPolicy)
+
+    def test_confirm_required(self):
+        form = DataPrivacyAgreementForm(next_url='/')
+        self.assertFalse(form.is_valid())
+
+        form = DataPrivacyAgreementForm(next_url='/', data={'confirm': True})
+        self.assertTrue(form.is_valid())
