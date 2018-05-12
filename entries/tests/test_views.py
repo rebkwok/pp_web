@@ -1,16 +1,17 @@
 import os
 
-from unittest.mock import patch
 from model_mommy import mommy
 
 from django.conf import settings
 from django.test import TestCase, override_settings
 from django.contrib.auth.models import User
 from django.core import mail
+from django.core.cache import cache
 from django.urls import reverse
 from django.http import Http404
 
 from accounts.models import OnlineDisclaimer
+from accounts.utils import has_active_data_privacy_agreement
 
 from .helpers import format_content, TestSetupMixin, TestSetupLoginRequiredMixin
 from ..models import Entry, STATUS_CHOICES_DICT
@@ -221,6 +222,16 @@ class EntryCreateViewTests(TestSetupLoginRequiredMixin, TestCase):
             resp = self.client.get(self.url)
             self.assertEqual(resp.status_code, 302)
             self.assertIn(reverse('permission_denied'), resp.url)
+
+    def test_cant_access_without_signed_data_privacy(self):
+        user = User.objects.create_user(
+            username='test1', email='test1@test.com', password='test'
+        )
+        self.assertFalse(has_active_data_privacy_agreement(user))
+        self.client.login(username=user.username, password='test')
+        resp = self.client.get(self.url)
+        self.assertEqual(resp.status_code, 302)
+        self.assertIn(reverse('accounts:data_privacy_review'), resp.url)
 
     def test_create_entry_and_save(self):
         self.assertFalse(Entry.objects.exists())

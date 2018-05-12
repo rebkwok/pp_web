@@ -3,12 +3,14 @@ import os
 import pytz
 
 from datetime import date, datetime, timedelta
+from decimal import Decimal
 from unittest.mock import Mock, patch
 from model_mommy import mommy
 
 from django.conf import settings
 from django.core import management, mail
 from django.core.cache import cache
+from django.core.exceptions import ValidationError
 from django.test import RequestFactory, TestCase, override_settings
 from django.contrib.auth.models import User, Group
 from django.contrib.messages.storage.fallback import FallbackStorage
@@ -24,6 +26,7 @@ from accounts.management.commands.import_disclaimer_data import logger as \
 from accounts.management.commands.export_encrypted_disclaimers import EmailMessage
 from accounts.models import CookiePolicy, OnlineDisclaimer, \
     WAIVER_TERMS, DataPrivacyPolicy, SignedDataPrivacy
+from ..utils import active_data_privacy_cache_key
 from accounts.views import ProfileUpdateView, DisclaimerCreateView
 
 from .helpers import _create_session, has_active_data_privacy_agreement, \
@@ -166,6 +169,18 @@ class ProfileTests(TestSetupMixin, TestCase):
         resp = self.client.get(self.url)
         self.assertIn("Not completed", str(resp.content))
         self.assertIn("/accounts/waiver", str(resp.content))
+
+    def test_profile_requires_signed_data_privacy(self):
+        self.client.login(username=self.user, password='test')
+        cache.clear()
+        mommy.make(DataPrivacyPolicy)
+        resp = self.client.get(self.url)
+
+        # request = self.factory.get(self.url)
+        # request.user = self.user
+        # resp = profile(request)
+        self.assertEqual(resp.status_code, 302)
+        self.assertIn(reverse('accounts:data_privacy_review'), resp.url)
 
 
 class CustomLoginViewTests(TestSetupMixin, TestCase):
@@ -715,6 +730,92 @@ class ImportDisclaimersTests(TestCase):
         self.assertTrue(test_1_disclaimer.terms_accepted)
 
 
+class DataPrivacyPolicyModelTests(TestCase):
+
+    def test_no_policy_version(self):
+        self.assertEqual(DataPrivacyPolicy.current_version(), 0)
+
+    def test_policy_versioning(self):
+        self.assertEqual(DataPrivacyPolicy.current_version(), 0)
+
+        DataPrivacyPolicy.objects.create(content='Foo')
+        self.assertEqual(DataPrivacyPolicy.current_version(), Decimal('1.0'))
+
+        DataPrivacyPolicy.objects.create(content='Foo1')
+        self.assertEqual(DataPrivacyPolicy.current_version(), Decimal('2.0'))
+
+        DataPrivacyPolicy.objects.create(content='Foo2', version=Decimal('2.6'))
+        self.assertEqual(DataPrivacyPolicy.current_version(), Decimal('2.6'))
+
+        DataPrivacyPolicy.objects.create(content='Foo3')
+        self.assertEqual(DataPrivacyPolicy.current_version(), Decimal('3.0'))
+
+    def test_cannot_make_new_version_with_same_content(self):
+        DataPrivacyPolicy.objects.create(content='Foo')
+        self.assertEqual(DataPrivacyPolicy.current_version(), Decimal('1.0'))
+        with self.assertRaises(ValidationError):
+            DataPrivacyPolicy.objects.create(content='Foo')
+
+    def test_policy_str(self):
+        dp = DataPrivacyPolicy.objects.create(content='Foo')
+        self.assertEqual(
+            str(dp), 'Data Privacy Policy - Version {}'.format(dp.version)
+        )
+
+
+class CookiePolicyModelTests(TestCase):
+
+    def test_policy_versioning(self):
+        CookiePolicy.objects.create(content='Foo')
+        self.assertEqual(CookiePolicy.current().version, Decimal('1.0'))
+
+        CookiePolicy.objects.create(content='Foo1')
+        self.assertEqual(CookiePolicy.current().version, Decimal('2.0'))
+
+        CookiePolicy.objects.create(content='Foo2', version=Decimal('2.6'))
+        self.assertEqual(CookiePolicy.current().version, Decimal('2.6'))
+
+        CookiePolicy.objects.create(content='Foo3')
+        self.assertEqual(CookiePolicy.current().version, Decimal('3.0'))
+
+    def test_cannot_make_new_version_with_same_content(self):
+        CookiePolicy.objects.create(content='Foo')
+        self.assertEqual(CookiePolicy.current().version, Decimal('1.0'))
+        with self.assertRaises(ValidationError):
+            CookiePolicy.objects.create(content='Foo')
+
+    def test_policy_str(self):
+        dp = CookiePolicy.objects.create(content='Foo')
+        self.assertEqual(
+            str(dp), 'Cookie Policy - Version {}'.format(dp.version)
+        )
+
+
+class SignedDataPrivacyModelTests(TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        DataPrivacyPolicy.objects.create(content='Foo')
+
+    def setUp(self):
+        self.user = mommy.make(User)
+
+    def test_cached_on_save(self):
+        make_data_privacy_agreement(self.user)
+        self.assertTrue(cache.get(active_data_privacy_cache_key(self.user)))
+
+        cache.clear()
+        DataPrivacyPolicy.objects.create(content='New Foo')
+        self.assertFalse(has_active_data_privacy_agreement(self.user))
+
+    def test_delete(self):
+        make_data_privacy_agreement(self.user)
+        self.assertTrue(cache.get(active_data_privacy_cache_key(self.user)))
+
+        SignedDataPrivacy.objects.get(user=self.user).delete()
+        self.assertIsNone(cache.get(active_data_privacy_cache_key(self.user)))
+
+
 class DataPrivacyViewTests(TestCase):
 
     def test_get_data_privacy_view(self):
@@ -775,9 +876,11 @@ class DataPrivacyAgreementFormTests(TestCase):
         mommy.make(DataPrivacyPolicy)
 
     def test_confirm_required(self):
-        form = DataPrivacyAgreementForm(next_url='/')
+        form = DataPrivacyAgreementForm(next_url='/', data={})
         self.assertFalse(form.is_valid())
-
+        self.assertEqual(
+            form.errors, {'confirm': ['You must check this box to continue']}
+        )
         form = DataPrivacyAgreementForm(next_url='/', data={'confirm': True})
         self.assertTrue(form.is_valid())
 
