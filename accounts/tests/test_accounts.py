@@ -172,7 +172,6 @@ class ProfileTests(TestSetupMixin, TestCase):
 
     def test_profile_requires_signed_data_privacy(self):
         self.client.login(username=self.user, password='test')
-        cache.clear()
         mommy.make(DataPrivacyPolicy)
         resp = self.client.get(self.url)
 
@@ -804,7 +803,6 @@ class SignedDataPrivacyModelTests(TestCase):
         make_data_privacy_agreement(self.user)
         self.assertTrue(cache.get(active_data_privacy_cache_key(self.user)))
 
-        cache.clear()
         DataPrivacyPolicy.objects.create(content='New Foo')
         self.assertFalse(has_active_data_privacy_agreement(self.user))
 
@@ -838,7 +836,6 @@ class SignedDataPrivacyCreateViewTests(TestSetupMixin, TestCase):
     def setUpTestData(cls):
         super().setUpTestData()
         cls.url = reverse('accounts:data_privacy_review')
-        cls.data_privacy_policy = mommy.make(DataPrivacyPolicy, version=None)
 
     def setUp(self):
         super(SignedDataPrivacyCreateViewTests, self).setUp()
@@ -852,16 +849,14 @@ class SignedDataPrivacyCreateViewTests(TestSetupMixin, TestCase):
         self.assertEqual(resp.url, reverse('entries:entries_home'))
 
         # make new policy
-        cache.clear()
-        mommy.make(DataPrivacyPolicy, version=None)
+        mommy.make(DataPrivacyPolicy)
         self.assertFalse(has_active_data_privacy_agreement(self.user))
         resp = self.client.get(self.url)
         self.assertEqual(resp.status_code, 200)
 
     def test_create_new_agreement(self):
         # make new policy
-        cache.clear()
-        mommy.make(DataPrivacyPolicy, version=None)
+        mommy.make(DataPrivacyPolicy)
         self.assertFalse(has_active_data_privacy_agreement(self.user))
 
         self.client.post(self.url, data={'confirm': True})
