@@ -76,16 +76,13 @@
 {% endblock messages %}
 
 
-
   {% block footer_content %}
-    <div id="footer">
 		<div id="footerwrap">
 			<div class="container">
-				<h6>Site developed by Becky Smith <a class="pull-right footerlink" href="{% url 'data_privacy_policy' %}">Data Privacy Policy</a></h6>
-			</div>
+				<h6>Site developed by Becky Smith; design based on http://blacktie.co/shield/
+                    <a class="pull-right footerlink" href="{% url 'data_privacy_policy' %}">Data Privacy Policy</a></h6>
+            </div>
 		</div>
-
-    </div>
   {% endblock %}
 
 
@@ -95,5 +92,5 @@
 <script type="text/javascript" src="{% static 'entries/js/jquery.datetimepicker.js' %}"></script>
 <script type="text/javascript" src="{% static 'entries/js/jquery.tablesorter.min.js' %}"></script>
 <script type="text/javascript" src="{% static 'entries/js/jquery.are-you-sure.js' %}"></script>
-<script type="text/javascript" src="{% static 'entries/js/custom.js' %}"></script>
+<script type="text/javascript" src="{% static 'entries/js/custom-v1.js' %}"></script>
 {% endblock %}
