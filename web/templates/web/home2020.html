@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block nav_content %}
+    <!--<ul class="nav navbar-nav">-->
+			<!--<li> <a href="#about" class="hidden-sm"> About</a></li>-->
+			<!--<li> <a href="#entry-info"> Entry Info</a></li>-->
+			<!--<li> <a href="#judges" > Judges</a></li>-->
+			<!--<li> <a href="#workshops" > Workshops</a></li>-->
+			<!--<li> <a href="#organisers" > Organisers</a></li>-->
+			<!--<li class="dropdown hidden-md hidden-sm"><a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Gallery<span class="caret"></span></a>-->
+				<!--<ul class="dropdown-menu" role="menu">-->
+					<!--<li> <a href="#2017gallery" >2017</a></li>-->
+					<!--<li> <a href="#2016gallery" >2016</a></li>-->
+				<!--</ul>-->
+			<!--</li>-->
+            <!--<li> <a href="#sponsors" class="smoothScroll hidden-sm"> Sponsors</a></li>-->
+			<!--<li> <a href="#contact" class="smoothScroll hidden-sm"> Contact</a></li>-->
+    <!--</ul>-->
+	<!--<ul class="nav navbar-nav hidden-xs hidden-lg">-->
+		<!--<li class="dropdown">-->
+          <!--<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">More<span class="caret"></span></a>-->
+          <!--<ul class="dropdown-menu" role="menu">-->
+			  <!--<li> <a href="#about" > About</a></li>-->
+			  <!--<li> <a href="#2017Gallery" > Gallery</a></li>-->
+              <!--<li> <a href="#sponsors" > Sponsors</a></li>-->
+			  <!--<li> <a href="#contact" > Contact</a></li>-->
+          <!--</ul>-->
+        <!--</li>-->
+	<!--</ul>-->
+
+	<!--<ul class="nav navbar-nav hidden-xs pull-right">-->
+		<!--<li> <a href="{% url 'entries:entries_home' %}" > Competitors' Section</a></li>-->
+        <!--{% if request.user.is_staff %}<li class="active-nav"><a href="{% url 'ppadmin:entries' %}">Admin</a></li>{% endif %}-->
+	<!--</ul>-->
+	<!--<ul class="nav navbar-nav hidden-sm hidden-md hidden-lg">-->
+		<!--<li> <a href="{% url 'entries:entries_home' %}" > Competitors' Section</a></li>-->
+        <!--{% if request.user.is_staff %}<li class="active-nav"><a href="{% url 'ppadmin:entries' %}">Admin</a></li>{% endif %}-->
+	<!--</ul>-->
+
+{% endblock %}
+
+
+{% block content %}
+  
+  
+		<!-- ==== HEADERWRAP ==== -->
+	    <div id="headerwrap" id="home" name="home">
+			<header class="clearfix">
+	  		 	<div><img class="img-responsive center-block" src="{% static 'web/images/header_text2020.png' %}" alt=""></div>
+				<p style="margin-top: 100px; font-size: 40pt;">Coming Soon</p>
+				<p style="margin-top: 100px;">Presented by Carousel Fitness</p>
+                <!--<a class="btn btn-lg btn-purple" href="https://www.onfife.com/whats-on/detail/pole-performance-2017"><strong>TICKETS AVAILABLE NOW!<br/>CLICK HERE TO BUY</strong></a>-->
+	  		</header>	    
+	    </div><!-- /headerwrap -->
+
+		<!-- ==== GREYWRAP ==== -->
+		<!--<div id="greywrap">-->
+			<!--<div class="row">-->
+				<!--<div class="col-sm-4 callout">-->
+					<!--&lt;!&ndash;<span class="icon icon-eye"></span>&ndash;&gt;-->
+					<!--<h2>Date</h2>-->
+					<!--<p>11 March 2018</br>(Final)</p>-->
+				<!--</div>&lt;!&ndash; col-lg-4 &ndash;&gt;-->
+
+				<!--<div class="col-sm-4 callout">-->
+					<!--&lt;!&ndash;<span class="icon icon-stack"></span>&ndash;&gt;-->
+					<!--<h2>Categories</h2>-->
+					<!--<p>Beginner - Intermediate - Advanced - Mens - Professional - Doubles</p>-->
+				<!--</div>&lt;!&ndash; col-lg-4 &ndash;&gt;-->
+
+				<!--<div class="col-sm-4 callout">-->
+					<!--&lt;!&ndash;<span class="icon icon-heart"></span>&ndash;&gt;-->
+					<!--<h2>Venue</h2>-->
+					<!--<p>Carnegie Hall</br>Dunfermline</p>-->
+				<!--</div>&lt;!&ndash; col-lg-4 &ndash;&gt;	-->
+			<!--</div>&lt;!&ndash; row &ndash;&gt;-->
+		<!--</div>&lt;!&ndash; greywrap &ndash;&gt;-->
+		
+
+
+		<div class="container" id="contact" name="contact">
+			<div class="row">
+			<br>
+				<h1 class="centered">CONTACT US</h1>
+				<hr>
+				<br>
+				<div class="col-lg-4 col-lg-offset-4">
+					<p><span class="icon icon-envelop"></span> <a href="mailto:{{ pp_email }}">{{ pp_email }}</a> <br/>
+						<span class="icon icon-facebook"></span> <a href="https://www.facebook.com/Pole-Performance-Competition-111934239163033/"> Pole Peformance Competition</a> <br/>
+						<span class="icon icon-globe"></span> <a href="https://carouselfitness.co.uk/"> Carousel Fitness</a> <br/>
+					</p>
+				</div><!-- col -->
+
+
+			</div><!-- row -->
+		
+		</div><!-- container -->
+
+{% endblock content %}
+
+
+{% block extra_js %}
+<script src="{% static 'web/js/zenscroll-min.js' %}"></script>
+{% endblock %}
