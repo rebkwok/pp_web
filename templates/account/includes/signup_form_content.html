@@ -4,7 +4,7 @@
             <div class="dp-box pre-scrollable"><h2>Data Privacy & Cookie Policy</h2>
             <h5>Version: {{ form.data_privacy_policy.version }}.  Issue date: {{ form.data_privacy_policy.issue_date | date:'d M Y' }}.</h5>
                 <h3>Data Privacy</h3>
-                {{ form.data_privacy_policy.content | safe | linebreaks }}
+                {{ form.data_privacy_policy.content|safe|linebreaks }}
 
             </div>
         {% elif field.name  == 'data_privacy_confirmation' %}

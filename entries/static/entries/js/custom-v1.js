@@ -48,4 +48,12 @@ jQuery(document).ready(function () {
         }
     });
 
+    jQuery('#semifinals').on('hidden.bs.collapse', function() {
+        jQuery("#toggle-icon").addClass('fa-plus-square').removeClass('fa-minus-square');
+      });
+
+    jQuery('#semifinals').on('shown.bs.collapse', function() {
+        jQuery("#toggle-icon").addClass('fa-minus-square').removeClass('fa-plus-square');
+      });
+
 });

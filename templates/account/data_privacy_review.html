@@ -2,9 +2,7 @@
 {% load static %}
 
 {% block content %}
-
-<div class="container row">
-
+    <div class="row container">
     <h1>Data Privacy Policy</h1>
 
         <p>Please review our {% if update_needed %}updated {% endif %}data privacy policy before proceeding.</p>
@@ -15,7 +13,7 @@
             <div class="dp-box">
         <h4>Version: {{ form.data_privacy_policy.version }}.  Issue date: {{ form.data_privacy_policy.issue_date | date:'d M Y' }}.</h4>
             <p>
-                {{ form.data_privacy_policy.content | linebreaks | safe }}
+                {{ form.data_privacy_policy.content|linebreaks|safe }}
             </p>
 
             </div>
@@ -27,10 +25,8 @@
                </div>
                <div class="studioadmin-help col-xs-10 col-xs-offset-2">{{ form.confirm.help_text }}</div>
            </div>
-
             <input type="hidden" name="next_url" value={{ form.next_url }}/>
             <input class="btn btn-success topspace" type="submit" value="Submit" />
         </form>
-</div>
-
+    </div>
 {% endblock content %}
