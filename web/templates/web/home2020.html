@@ -2,41 +2,42 @@
 {% load static %}
 
 {% block nav_content %}
-    <!--<ul class="nav navbar-nav">-->
-			<!--<li> <a href="#about" class="hidden-sm"> About</a></li>-->
-			<!--<li> <a href="#entry-info"> Entry Info</a></li>-->
-			<!--<li> <a href="#judges" > Judges</a></li>-->
-			<!--<li> <a href="#workshops" > Workshops</a></li>-->
-			<!--<li> <a href="#organisers" > Organisers</a></li>-->
-			<!--<li class="dropdown hidden-md hidden-sm"><a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Gallery<span class="caret"></span></a>-->
-				<!--<ul class="dropdown-menu" role="menu">-->
-					<!--<li> <a href="#2017gallery" >2017</a></li>-->
-					<!--<li> <a href="#2016gallery" >2016</a></li>-->
-				<!--</ul>-->
-			<!--</li>-->
-            <!--<li> <a href="#sponsors" class="smoothScroll hidden-sm"> Sponsors</a></li>-->
-			<!--<li> <a href="#contact" class="smoothScroll hidden-sm"> Contact</a></li>-->
-    <!--</ul>-->
-	<!--<ul class="nav navbar-nav hidden-xs hidden-lg">-->
-		<!--<li class="dropdown">-->
-          <!--<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">More<span class="caret"></span></a>-->
-          <!--<ul class="dropdown-menu" role="menu">-->
-			  <!--<li> <a href="#about" > About</a></li>-->
-			  <!--<li> <a href="#2017Gallery" > Gallery</a></li>-->
-              <!--<li> <a href="#sponsors" > Sponsors</a></li>-->
-			  <!--<li> <a href="#contact" > Contact</a></li>-->
-          <!--</ul>-->
-        <!--</li>-->
-	<!--</ul>-->
+    <ul class="nav navbar-nav">
+			<li> <a href="#about" class="hidden-sm"> About</a></li>
+			<li> <a href="#entry-info"> Entry Info</a></li>
+			<li> <a href="#judges" > Judges</a></li>
+			<li> <a href="#workshops" > Workshops</a></li>
+			<li> <a href="#organisers" > Organisers</a></li>
+			<li class="dropdown hidden-md hidden-sm"><a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Gallery<span class="caret"></span></a>
+				<ul class="dropdown-menu" role="menu">
+					<li> <a href="#2018gallery" >2018</a></li>
+					<li> <a href="#2017gallery" >2017</a></li>
+					<li> <a href="#2016gallery" >2016</a></li>
+				</ul>
+			</li>
+            <li> <a href="#sponsors" class="smoothScroll hidden-sm"> Sponsors</a></li>
+			<li> <a href="#contact" class="smoothScroll hidden-sm"> Contact</a></li>
+    </ul>
+	<ul class="nav navbar-nav hidden-xs hidden-lg">
+		<li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">More<span class="caret"></span></a>
+          <ul class="dropdown-menu" role="menu">
+			  <li> <a href="#about" > About</a></li>
+			  <li> <a href="#2018gallery" > Gallery</a></li>
+              <li> <a href="#sponsors" > Sponsors</a></li>
+			  <li> <a href="#contact" > Contact</a></li>
+          </ul>
+        </li>
+	</ul>
 
-	<!--<ul class="nav navbar-nav hidden-xs pull-right">-->
-		<!--<li> <a href="{% url 'entries:entries_home' %}" > Competitors' Section</a></li>-->
-        <!--{% if request.user.is_staff %}<li class="active-nav"><a href="{% url 'ppadmin:entries' %}">Admin</a></li>{% endif %}-->
-	<!--</ul>-->
-	<!--<ul class="nav navbar-nav hidden-sm hidden-md hidden-lg">-->
-		<!--<li> <a href="{% url 'entries:entries_home' %}" > Competitors' Section</a></li>-->
-        <!--{% if request.user.is_staff %}<li class="active-nav"><a href="{% url 'ppadmin:entries' %}">Admin</a></li>{% endif %}-->
-	<!--</ul>-->
+	<ul class="nav navbar-nav hidden-xs pull-right">
+		<li> <a href="{% url 'entries:entries_home' %}" > Competitors' Section</a></li>
+        {% if request.user.is_staff %}<li class="active-nav"><a href="{% url 'ppadmin:entries' %}">Admin</a></li>{% endif %}
+	</ul>
+	<ul class="nav navbar-nav hidden-sm hidden-md hidden-lg">
+		<li> <a href="{% url 'entries:entries_home' %}" > Competitors' Section</a></li>
+        {% if request.user.is_staff %}<li class="active-nav"><a href="{% url 'ppadmin:entries' %}">Admin</a></li>{% endif %}
+	</ul>
 
 {% endblock %}
 
@@ -48,35 +49,252 @@
 	    <div id="headerwrap" id="home" name="home">
 			<header class="clearfix">
 	  		 	<div><img class="img-responsive center-block" src="{% static 'web/images/header_text2020.png' %}" alt=""></div>
-				<p style="margin-top: 100px; font-size: 40pt;">Coming Soon</p>
 				<p style="margin-top: 100px;">Presented by Carousel Fitness</p>
                 <!--<a class="btn btn-lg btn-purple" href="https://www.onfife.com/whats-on/detail/pole-performance-2017"><strong>TICKETS AVAILABLE NOW!<br/>CLICK HERE TO BUY</strong></a>-->
 	  		</header>	    
 	    </div><!-- /headerwrap -->
 
 		<!-- ==== GREYWRAP ==== -->
-		<!--<div id="greywrap">-->
-			<!--<div class="row">-->
-				<!--<div class="col-sm-4 callout">-->
-					<!--&lt;!&ndash;<span class="icon icon-eye"></span>&ndash;&gt;-->
-					<!--<h2>Date</h2>-->
-					<!--<p>11 March 2018</br>(Final)</p>-->
-				<!--</div>&lt;!&ndash; col-lg-4 &ndash;&gt;-->
+		<div id="greywrap">
+			<div class="row">
+				<div class="col-sm-4 callout">
+					<!--<span class="icon icon-eye"></span>-->
+					<h2>Date</h2>
+					<p>To be confirmed</p>
+				</div><!-- col-lg-4 -->
 
-				<!--<div class="col-sm-4 callout">-->
-					<!--&lt;!&ndash;<span class="icon icon-stack"></span>&ndash;&gt;-->
-					<!--<h2>Categories</h2>-->
-					<!--<p>Beginner - Intermediate - Advanced - Mens - Professional - Doubles</p>-->
-				<!--</div>&lt;!&ndash; col-lg-4 &ndash;&gt;-->
+				<div class="col-sm-4 callout">
+					<!--<span class="icon icon-stack"></span>-->
+					<h2>Categories</h2>
+					<br>Beginner - Intermediate - Advanced - Professional - Doubles</p>
+				</div><!-- col-lg-4 -->
 
-				<!--<div class="col-sm-4 callout">-->
-					<!--&lt;!&ndash;<span class="icon icon-heart"></span>&ndash;&gt;-->
-					<!--<h2>Venue</h2>-->
-					<!--<p>Carnegie Hall</br>Dunfermline</p>-->
-				<!--</div>&lt;!&ndash; col-lg-4 &ndash;&gt;	-->
-			<!--</div>&lt;!&ndash; row &ndash;&gt;-->
-		<!--</div>&lt;!&ndash; greywrap &ndash;&gt;-->
+				<div class="col-sm-4 callout">
+					<!--<span class="icon icon-heart"></span>-->
+					<h2>Venue</h2>
+					<p>Carnegie Hall</br>Dunfermline</p>
+				</div><!-- col-lg-4 -->	
+			</div><!-- row -->
+		</div><!-- greywrap -->
 		
+		<!-- ==== ABOUT ==== -->
+		<div class="container" id="about" name="about">
+			<div class="row white">
+			<br>
+				<h1 class="centered">ABOUT POLE PERFORMANCE</h1>
+				<hr>
+				
+				<div class="col-lg-6">
+					<p>Pole Performance is a pole dance competition based in
+                        Scotland. Carousel Fitness want to give pole dancers of all levels a chance to
+                        displsay a routine with flair and passion.
+					</p>
+				</div><!-- col-lg-6 -->
+				
+				<div class="col-lg-6">
+					<p>After the success of 2016-2018, we are looking forward to
+                        another talent-filled event in 2020.
+					</p>
+				</div><!-- col-lg-6 -->
+			</div><!-- row -->
+		</div><!-- container -->
+		
+		<!-- ==== SECTION DIVIDER1 -->
+		<section class="section-divider textdivider divider1">
+			<div class="container">
+				<h1>ENTRIES OPENING SOON</h1>
+				<hr>
+				<div class="centered"><a href="{% url 'entries:entries_home' %}" class="btn btn-large btn-purple">Further Information</a></div>
+			</div><!-- container -->
+		</section><!-- section -->
+		
+		
+		<!-- ==== ENTRIES ==== -->
+		<div class="container" id="entry-info" name="entry-info">
+			<br>
+			<br>
+			<div class="row">
+				<h2 class="centered">ENTRY INFORMATION</h2>
+				<hr>
+				<br>
+				<div class="col-lg-offset-2 col-lg-8">
+					<p>Initial application is by video entry. Entries close at midnight on {{ entries_close_date|date:"d M Y" }}.
+						<!--({{ early_categories }}).-->
+						<!--and {{ late_entries_close_date|date:"d M Y" }} ({{ late_categories }}).-->
+						Videos must not exceed 3 minutes and must not be edited. 6 applicants from
+						beginners/mens/doubles and 8 from intermediate/advanced/professional categories
+						with the highest scores will perform live at the finals at Carnegie Hall, Dunfermline on 11th
+						March 2018.  Unsuccessful applicants will receive a free spectator ticket to the competition finals</p>
+					<p>More details can be found in the <a href="{% url 'entries:entries_home' %}">Competitors' section</a>. </p>
+					{% if entries_open %}<div class="centered"><a href="{% url 'entries:entries_home' %}" class="btn btn-large btn-purple">Enter</a></div>{% endif %}
+				</div><!-- col-lg -->
+			</div><!-- row -->
+
+		</div><!-- container -->
+  		
+
+		<!-- ==== SECTION DIVIDER2 -->
+		<section class="section-divider textdivider divider2">
+			<div class="container">
+				<h1></h1>
+				<!--<hr>-->
+				<br><br>
+				<p></p>
+			</div><!-- container -->
+		</section><!-- section -->
+
+		<!-- ==== JUDGES ==== -->
+		<div class="container" id="judges" name="judges">
+		<br>
+			<div class="row white centered">
+				<h1 class="centered">JUDGES & COMPÈRE</h1>
+				To be confirmed
+				<!--<hr>-->
+				<!--<br>-->
+				<!--<br>-->
+					<!--<div class="col-sm-4 centered">-->
+                        <!--<img class="img img-circle" src="{% static 'web/images/judges/tiff.jpg' %}" height="150px" width="150px" alt="">-->
+                    <!--</div>-->
+					<!--<div class="col-sm-8">-->
+						<!--<h4 class="centered"><b>Tiff Finney - Compère</b></h4>-->
+                        <!--<p>Tiff has performed for thousand of people whether it be at-->
+                        <!--Club Noir or on Britain's Got Talent. As well as her amazing performances,-->
+                        <!--workshops, and being an ambassador for Bad Kitty, Tiff also owns-->
+                        <!--her own gorgeous studio called Pole Physique. And of course she was-->
+                        <!--United Pole Artists "Bringing Sexy Back" Poster Model 2016.-->
+                        <!--We are very excited to have for the third time at our competition!</p>-->
+                    <!--</div>-->
+
+				<!--<div class="col-lg-6 col-md-6 col-xs-12 centered">-->
+					<!--<img class="img img-circle" src="{% static 'web/images/judges/sarahscott.jpg' %}" height="150px" width="150px" alt="">-->
+					<!--<br>-->
+					<!--<h4 class="centered"><b>Sarah Scott - Finals Judge</b></h4>-->
+					<!--<p>-->
+						<!--Sarah began pole around 8 years ago. She has a passion for impriving students-->
+						<!--traning techniques and bringing powerhouse moves t o the masses! She is constantly-->
+						<!--striving to improve her knowledge of the industry and human body to bring the best-->
+						<!--to her workshops. She runs a private gym in Taunton, Somerset where she runs-->
+						<!--training packages.</p>-->
+					<!--<p>-->
+						<!--The Watermelon Studio and Carousel Fitness will be hosting Sarah for workshops on 10th March.-->
+					<!--</p>-->
+				<!--</div>&lt;!&ndash; col-lg-4 &ndash;&gt;-->
+
+				<!--<div class="col-lg-6 col-md-6 col-xs-12 centered">-->
+					<!--<img class="img img-circle" src="{% static 'web/images/judges/terri&michael.jpg' %}" height="150px" width="150px" alt="">-->
+					<!--<br>-->
+					<!--<h4 class="centered"><b>Terri Fierce & Michael Donahoe - Finals Judges</b></h4>-->
+					<!--<p>-->
+						<!--Terri is 3 x World Doubles Champion and multiple Irish Solo Champion. Michael is-->
+						<!--multiple Irish Solo Champion, Pole Theatre Ireland Professional & Overall Champion-->
+						<!--and MPDUK Champion. Together they run Fierce Fitness Dance Studio in Ireland and-->
+						<!--between them have 16 years of experience teaching Pole.</p>-->
+					<!--<p>-->
+						<!--Carousel Fitness and The Watermelon Studio will be hosting them for workshops on the 10th and 12th March!-->
+					<!--</p>-->
+				</div><!-- col-lg-4 -->
+
+
+				
+			</div><!-- row -->
+		</div><!-- container -->
+
+	<!-- ==== WORKSHOPS ==== -->
+		<div class="container" id="workshops" name="workshops">
+			<div class="row white">
+			<br>
+				<h1 class="centered">WORKSHOPS</h1>
+				<h3 class="centered">AT CAROUSEL FITNESS</h3>
+				<hr>
+				<div class="col-lg-offset-3 col-lg-6">To be confirmed
+					<!--<ul>-->
+						<!--<li>Sarah Scott - 10 Mar 2018 (Carousel Fitnes)</li>-->
+						<!--<li>Sarah Scott - 10 Mar 2018 (The Watermelon Studio: book <a href="https://booking.thewatermelonstudio.co.uk/events">here</a>)</li>-->
+						<!--<li>Michael & Terri - 10 Mar 2018 (Carousel Fitness)</li>-->
+						<!--<li>Michael & Terri - 12 Mar 2018 (The Watermelon Studio: book <a href="https://booking.thewatermelonstudio.co.uk/events">here</a>)</li>-->
+					<!--</ul>-->
+				</div>
+
+			</div><!-- row -->
+		</div><!-- container -->
+
+		<!-- ==== ORGANISERS ==== -->
+
+	<div class="container" id="organisers" name="organisers">
+			<div class="row white">
+			<br>
+				<h1 class="centered">ORGANISERS</h1>
+				<hr>
+
+				<div class="col-sm-12">
+					<div class="col-sm-12 centered">
+						<p><a href="https://carouselfitness.co.uk"><img class="img" src="{% static 'web/images/carousel_logo.jpg' %}" width="100px" height="auto"></a></p>
+						<a href="https://carouselfitness.co.uk"><span class="noncoloured-link icon icon-globe"></span></a>&nbsp;
+						<a href="https://www.facebook.com/carouselfitness"><span class="noncoloured-link icon icon-facebook"></span></a>&nbsp;
+						<a href="https://www.instagram.com/carouselfitness"><span class="noncoloured-link icon icon-instagram"></span></a>
+					</div>
+					<div class="col-sm-12">
+						<h2 class="centered">Carousel Fitness</h2>
+						<p>Carousel Fitness is a studio based in Inverkeithing that runs a variety of alternative fitness classes. From Pole to HIIT, Burlesque to Stretch and Flex, our aim as a school is to increase fitness, boost confidence and teach new skills in a fun and fresh way.</p>
+					</div>
+				</div><!-- col-md-6 -->
+			</div><!-- row -->
+		</div><!-- container -->
+
+
+		<!-- ==== SECTION DIVIDER3 -->
+		<section class="section-divider textdivider divider3">
+			<div class="container">
+				<h1>SPONSORSHIP OPTIONS AVAILABLE</h1>
+				<hr>
+				<p><strong><a href="mailto:{{ pp_email }}">Contact us</a> for details</strong></p>
+			</div><!-- container -->
+		</section><!-- section -->
+
+    <div class="container" id="sponsors" name="sponsors">
+		<br>
+			<div class="row white centered">
+				<h1 class="centered">OUR SPONSORS</h1>
+				To be confirmed
+                <!--<hr><br/><br/>-->
+					<!--<div class="col-lg-3 col-md-4 col-xs-6">-->
+						<!--<a href="https://www.polejunkie.co.uk"><img class="sponsor-img" src="{% static 'web/images/sponsors/polejunkie.png' %}"></a><br/>-->
+					<!--</div>-->
+					<!--<div class="col-lg-3 col-md-4 col-xs-6">-->
+						<!--<a href="https://girliegrip.com"><img class="sponsor-img" src="{% static 'web/images/sponsors/girliegrip.jpg' %}"></a><br/>-->
+					<!--</div>-->
+				    <!--<div class="col-lg-3 col-md-4 col-xs-6">-->
+						<!--<a href="http://www.charlottepolefit.co.uk/merchandise"><img class="sponsor-img" src="{% static 'web/images/sponsors/charlotterobertson.jpg' %}"></a><br/>-->
+					<!--</div>-->
+				    <!--<div class="col-lg-3 col-md-4 col-xs-6">-->
+						<!--<a href="http://www.dragonflybrand.com"><img class="sponsor-img" src="{% static 'web/images/sponsors/dragonfly.jpg' %}"></a><br/>-->
+					<!--</div>-->
+				<!--<div class="col-lg-3 col-md-4 col-xs-6">-->
+						<!--<a href="http://creaturesofxix.co"><img class="sponsor-img" src="{% static 'web/images/sponsors/xix.jpg' %}"></a><br/>-->
+					<!--</div>-->
+
+				<!--<div class="col-lg-3 col-md-4 col-xs-6">-->
+						<!--<a href="http://www.facebook.com/polecatapparel"><img class="sponsor-img" src="{% static 'web/images/sponsors/polecat.jpg' %}"></a><br/>-->
+					<!--</div>-->
+				<!--<div class="col-lg-3 col-md-4 col-xs-6">-->
+						<!--<a href="http://www.lunapolewear.com"><img class="sponsor-img" src="{% static 'web/images/sponsors/luna.jpg' %}"></a><br/>-->
+					<!--</div>-->
+				<!--<div class="col-lg-3 col-md-4 col-xs-6">-->
+						<!--<a href="http://rarrdesigns.com.au"><img class="sponsor-img" src="{% static 'web/images/sponsors/rarr.jpg' %}"></a><br/>-->
+					<!--</div>-->
+				<!--<div class="col-lg-3 col-md-4 col-xs-6">-->
+							<!--<a href="http://www.hoodlumfang.com"><img class="sponsor-img" src="{% static 'web/images/sponsors/hoodlumfang.jpg' %}"></a><br/>-->
+						<!--</div>-->
+
+
+
+            </div>
+        </div>
+		<!-- ==== GALLERY ==== -->
+
+	<div class="container" id="2018gallery" name="2018gallery">{% include "web/gallery2018.html" %}</div>
+	<div class="container" id="2017gallery" name="2017gallery">{% include "web/gallery2017.html" %}</div>
+	<div class="container" id="2016gallery" name="2016gallery">{% include "web/gallery2016.html" %}</div>
 
 
 		<div class="container" id="contact" name="contact">
