@@ -56,8 +56,7 @@
                 The routine will only be marked up to 3 minutes. If the video
                 exceeds that, anything after 3 minutes will not be marked.</p>
 
-            <p>6 people from beginners, mens and doubles and 8 from intermediate, advanced and professional
-                categories with the highest scores will perform live at the finals.
+            <p>6 applicants from each category with the highest scores will go through to the grand final.
                 </p>
 
             <p>Your video will be marked by an impartial judge who will mark you on the following:</p>
@@ -71,6 +70,7 @@
                 <li>Costume/Makeup</li>
                 <li>Transitions on and off the pole</li>
                 <li>Overall performance</li>
+                <li>Bonus 5 points: wow factor and extra flair</li>
             </ul>
 
             <p>£15 video entry fee must be made via PayPal before entry will be accepted. If your
@@ -86,7 +86,7 @@
 
             <h2>Finals</h2>
 
-            <p>11 March 2018</br>12pm - 8pm</p>
+            <p>{{ final_date|date:"d M Y" }} {{ final_times}}</p>
             <p>Carnegie Hall</br>
             Dunfermline</br>
             KY12 7JA</p>
@@ -99,13 +99,12 @@
                 <li>Facing the audience, the pole on your left will be spinning and the pole on your right will be static.</li>
                 <li>Judges: check the <a href="{% url 'web:home' %}#judges">judges</a> section on our main page. You won’t be disappointed!</li>
                 <li>Detailed judging criteria available <a href="{% url 'entries:judging_criteria' %}" target="_blank">here</a> (opens in new window)</li>
-                <li>Pole performance, Carnegie hall staff and anyone helping out on the day are not liable for
+                <li>Pole Performance, Carnegie hall staff and anyone helping out on the day are not liable for
                 any injuries sustained from taking part in the competition</li>
                 <li>You may bring a chaperone, but they do require a normal ticket</li>
                 <li>If you withdraw at ANY point after accepting a place in the finals,
                 you will be required to pay a £25 cancellation fee</li>
                 <li>Songs must be sent in advance by email in mp3 format</li>
-                <li>Clean edits of songs (radio version)</li>
                 <li>Costume: no nudity, no nipple tassels, no thongs</li>
             </ul>
 
@@ -114,61 +113,60 @@
             <h2>Beginner</h2>
             <ul>
                 <li>Less than 18 months' pole experience</li>
-                <li>Must not have previously won a pole competition in a beginners category</li>
+                <li>Must not have previously won a pole competition in a Beginner category</li>
                 <li>Inverts from floor only</li>
                 <li>Maximum of 3 moves up the pole during the same combination (e.g. scissor seat, wrist
                 seat, drama queen)</li>
                 <li>Must always have three points of contact when in a up-the-pole move</li>
                 <li>No drops</li>
-                <li>Song length: 3:00 - 3:30 minutes</li>
+                <li>Song length: maximum 3:30 minutes</li>
             </ul>
 
             <h2>Intermediate</h2>
                 <ul>
-                    <li>Must not have previously won a pole competition in an intermediate category within the past three years</li>
+                    <li>Must not have previously won a pole competition in an Intermediate category within the past three years</li>
                     <li>Only basic inverts (air invert allowed)</li>
                     <li>No handsprings/ayeshas</li>
-                    <li>Must use both static and spinny</li>
+                    <li>Must use both static and spinning</li>
                     <li>No instructors</li>
                     <li>Must not be a paid performer</li>
                     <li>No flips</li>
-                    <li>Song length: 3:00 - 3:30 minutes</li>
+                    <li>Song length: maximum 3:30 minutes</li>
                 </ul>
 
             <h2>Advanced</h2>
                 <ul>
-                    <li>Must not have previously won a pole competition in an advanced category within the past three years</li>
+                    <li>Must not have previously won a pole competition in an Advanced category within the past three years</li>
                     <li>Must not be a paid performer</li>
-                    <li>Must use both static and spinny</li>
-                    <li>Instructors allowed (if you have previously entered fewer than 5 competitions)</li>
+                    <li>Must use both static and spinning</li>
+                    <li>Instructors who teach up to intermediate level allowed (must have competed in a maximum of 2 competitions previously)</li>
                     <li>Only one flip permitted</li>
-                    <li>Song length: 3:30 - 4:00 minutes</li>
+                    <li>Song length: maximum 3:30 minutes</li>
                 </ul>
             <h2>Doubles</h2>
                 <ul>
-                    <li>No restrictions</li>
-                    <li>Must use both static and spinny</li>
+                    <li>No move restrictions</li>
+                    <li>Must use both static and spinning</li>
                     <li>Same or mixed gender</li>
-                    <li>Song length: 4:00 - 4:30 minutes</li>
+                    <li>Song length: maximum 4 minutes</li>
                 </ul>
 
-            <h2>Mens</h2>
+            <h2>Semi-Pro</h2>
                 <ul>
-                    <li>Must not be a paid performer
-                    <li>Must not have previously won a competition in the mens category (if so, enter professional!)</li>
-                    <li>Only one flip permitted</li>
-                    <li>Only one handspring deadlift permitted</li>
-                    <li>Must use both static and spinny</li>
-                    <li>Song length: 3:30 - 4:00 minutes</li>
+                    <li>No move restrictions</li>
+                    <li>Must use both static and spinning</li>
+                    <li>Must not have previously competed at Professional level</li>
+                    <li>Previous Advanced level winners allowed</li>
+                    <li>Instructors and paid performers allowed</li>
+                    <li>Song length: maximum 4 minute</li>
                 </ul>
 
             <h2>Professional</h2>
                 <ul>
                     <li>No move restrictions</li>
-                    <li>Must use both static and spinny</li>
-                    <li>Instructors allowed</li>
-                    <li>Female and male competitors welcome</li>
-                    <li>Song length: 4:00 - 4:30 minutes</li>
+                    <li>Must use both static and spinning</li>
+                    <li>Instructors and paid performers allowed</li>
+                    <li>Song length: maximum 4 minute</li>
                 </ul>
 
             <h1 id="tc">Terms and Conditions</h1>
@@ -176,7 +174,7 @@
              <p>Entry fees are NON REFUNDABLE. If you withdraw your entry at any point after
                  selection and accepting your place, you will be charged a £25
                  cancellation fee; if this is not paid you will not be able to enter Pole
-                 Performance in the future. You must be available all day on 11 March 2018. Failure to follow
+                 Performance in the future. You must be available all day on {{ final_date }}. Failure to follow
                  category rules will result in you being disqualified. Your video will not be judged if you do not
                  pay your entry fee before the closing date. All competitors MUST be over the age of 18. The
                  contestants with the highest scores will go through to the final and will be announced firstly on

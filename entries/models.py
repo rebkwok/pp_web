@@ -20,6 +20,7 @@ CATEGORY_CHOICES = (
     ('BEG', 'Beginner'),
     ('INT', 'Intermediate'),
     ('ADV', 'Advanced'),
+    ('SMP', 'Semi-Pro'),
     ('PRO', 'Professional'),
     ('MEN', 'Mens'),
     ('DOU', 'Doubles'),
@@ -27,15 +28,18 @@ CATEGORY_CHOICES = (
 CATEGORY_CHOICES_DICT = dict(CATEGORY_CHOICES)
 
 LATE_ENTRY_CATEGORY_CHOICES = (
-    ('MEN', 'Mens'),
     ('DOU', 'Doubles'),
 )
+
+# This is so we can keep/view old entries for old categories, but choose not to display invalid ones on a new entry form
+INVALID_CATEGORIES = ['MEN']
 
 VIDEO_ENTRY_FEES = {
     'BEG': 15,
     'INT': 15,
     'ADV': 15,
     'DOU': 15,
+    'SMP': 15,
     'PRO': 15,
     'MEN': 15,
 }
@@ -45,6 +49,7 @@ SELECTED_ENTRY_FEES = {
     'INT': 15,
     'ADV': 15,
     'DOU': 20,
+    'SMP': 15,
     'PRO': 15,
     'MEN': 15,
 }
@@ -57,6 +62,15 @@ YEAR_CHOICES = (
     ('2019', '2019'),
     ('2020', '2020'),
     ('2021', '2021'),
+    ('2022', '2022'),
+    ('2023', '2023'),
+    ('2024', '2024'),
+    ('2025', '2025'),
+    ('2026', '2026'),
+    ('2027', '2027'),
+    ('2028', '2028'),
+    ('2029', '2029'),
+    ('2030', '2030'),
 )
 
 

@@ -59,7 +59,11 @@ def permission_denied(request):
 
 
 def entries_home(request):
-    return render(request, 'entries/home.html')
+    context = {
+        "final_date": settings.FINAL_DATE,
+        "final_times": settings.FINAL_TIMES,
+    }
+    return render(request, 'entries/home.html', context)
 
 
 def judging_criteria(request):

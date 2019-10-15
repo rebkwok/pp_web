@@ -25,6 +25,8 @@ def entries(request):
         'entries_close_date': close_date,
         'late_entries_close_date': late_close_date,
         'early_categories': early_categories,
-        'late_categories': late_categories
+        'late_categories': late_categories,
+        'final_date': settings.FINAL_DATE,
+        'final_times': settings.FINAL_TIMES
     }
 
