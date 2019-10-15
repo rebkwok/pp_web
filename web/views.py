@@ -1,7 +1,7 @@
 from django.shortcuts import render
 
 
-def home(request):
+def placeholder(request):
     return render(request, 'web/home2020_placeholder.html')
 
 

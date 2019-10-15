@@ -346,6 +346,8 @@ LATE_CATEGORIES_ENTRIES_CLOSE_DATE = env('LATE_CATEGORIES_ENTRIES_CLOSE_DATE')
 
 CURRENT_ENTRY_YEAR = env('CURRENT_ENTRY_YEAR')
 
+FINAL_DATE = env('FINAL_DATE')
+FINAL_TIMES = env('FINAL_TIMES')
 
 if env('SHOW_DEBUG_TOOLBAR') and 'test' not in sys.argv:  # pragma: no cover
     def show_toolbar(request):

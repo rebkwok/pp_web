@@ -47,6 +47,12 @@ def all_entries_open():
     return is_open(settings.ENTRIES_OPEN_DATE, settings.ENTRIES_CLOSE_DATE)
 
 
+def final_datetime():
+    final_date = datetime.strptime(settings.FINAL_DATE, "%d/%m/%Y").date
+    final_times = settings.FINAL_TIMES
+    return final_date, final_times
+
+
 def late_categories_entries_open():
     return is_open(
         settings.ENTRIES_OPEN_DATE, settings.LATE_CATEGORIES_ENTRIES_CLOSE_DATE

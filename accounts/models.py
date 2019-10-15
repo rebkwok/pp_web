@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
-
+from datetime import datetime
 import logging
 import pytz
 
 from math import floor
 
+from django.conf import settings
 from django.core.cache import cache
 from django.db import models
 from django.contrib.auth.models import User
@@ -12,7 +13,6 @@ from django.core.exceptions import ValidationError
 from django.utils import timezone
 
 from activitylog.models import ActivityLog
-
 from .utils import active_data_privacy_cache_key
 
 
@@ -66,7 +66,7 @@ def has_readonly_fields(original_class):
 WAIVER_TERMS = """
 I hereby declare that I have read and understood all the rules of the Pole Performance categories and agree to represent the competition in a professional manner during and prior to the event.
 
-I agree that I am available all day on March 11th 2018.
+I agree that I am available all day on {}.
 
 I understand that my entry will not be accepted until I have paid the appropriate entry fee and that all judges’ decisions are final.
 
@@ -81,7 +81,7 @@ I am deemed physically fit to participate in exercise and have no health or hear
 I give permission for my photo to be taken and used for advertisement and promotional purposes for Pole Performance.
 
 I agree to the above T & C’s and release of liability. I have fully read and understood all information given to me by Pole Performance and free and  voluntarily sign without any inducement.
-"""
+""".format(datetime.strptime(settings.FINAL_DATE, "%d/%m/%Y").strftime("%d %B %Y"))
 
 
 @has_readonly_fields
