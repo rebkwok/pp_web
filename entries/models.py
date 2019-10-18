@@ -35,13 +35,13 @@ LATE_ENTRY_CATEGORY_CHOICES = (
 INVALID_CATEGORIES = ['MEN']
 
 VIDEO_ENTRY_FEES = {
-    'BEG': 15,
-    'INT': 15,
-    'ADV': 15,
-    'DOU': 15,
-    'SMP': 15,
-    'PRO': 15,
-    'MEN': 15,
+    'BEG': 20,
+    'INT': 20,
+    'ADV': 20,
+    'DOU': 20,
+    'SMP': 20,
+    'PRO': 20,
+    'MEN': 20,
 }
 
 SELECTED_ENTRY_FEES = {
