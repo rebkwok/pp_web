@@ -21,6 +21,8 @@ env: >
   ENTRIES_CLOSE_DATE=30/10/2016
   LATE_CATEGORIES_ENTRIES_CLOSE_DATE=30/10/2016
   CURRENT_ENTRY_YEAR=2017
+  FINAL_DATE=20/3/2018
+  FINAL_TIMES=2pm - 7pm
 
 install:
   - pip install -r requirements.txt
