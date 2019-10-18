@@ -102,7 +102,7 @@
 		<!-- ==== SECTION DIVIDER1 -->
 		<section class="section-divider textdivider divider1">
 			<div class="container">
-				<h1>ENTRIES OPENING SOON</h1>
+				<h1>ENTRIES OPEN ON {{ entries_open_date|date:"d M Y"|upper }}</h1>
 				<hr>
 				<div class="centered"><a href="{% url 'entries:entries_home' %}" class="btn btn-large btn-purple">Further Information</a></div>
 			</div><!-- container -->
