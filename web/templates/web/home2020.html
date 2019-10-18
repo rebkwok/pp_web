@@ -122,8 +122,7 @@
 						<!--({{ early_categories }}).-->
 						<!--and {{ late_entries_close_date|date:"d M Y" }} ({{ late_categories }}).-->
 						Videos must not exceed 3 minutes and must not be edited. 6 applicants from each category
-						with the highest scores will perform live at the finals at Carnegie Hall, Dunfermline on {{ final_date|date:"jS M Y" }}.
-						Unsuccessful applicants will receive a free spectator ticket to the competition finals</p>
+						with the highest scores will perform live at the finals at Carnegie Hall, Dunfermline on {{ final_date|date:"jS M Y" }}.</p>
 					<p>More details can be found in the <a href="{% url 'entries:entries_home' %}">Competitors' section</a>. </p>
 					{% if entries_open %}<div class="centered"><a href="{% url 'entries:entries_home' %}" class="btn btn-large btn-purple">Enter</a></div>{% endif %}
 				</div><!-- col-lg -->

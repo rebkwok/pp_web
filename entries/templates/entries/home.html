@@ -2,8 +2,8 @@
 
 {% load accounttags entriestags %}
 
-    {% block content %}
-
+{% block content %}
+<div class="container-fluid">
     <div class="extra-top-margin row">
         {% if not user.is_authenticated and entries_open %}
         <div class="col-xs-12">
@@ -75,8 +75,7 @@
 
             <p>£15 video entry fee must be made via PayPal before entry will be accepted. If your
                 application is successful and you make it through to the final, a further fee of £15 per
-                solo and £20 per double will be required.  Unsuccessful applicants will receive a free spectator ticket to the
-                competition finals on {{ final_date|date:"jS F" }}.</p>
+                solo and £20 per double will be required.</p>
 
             <p>Doubles partners must both register and complete waivers.  One member of the doubles should submit
                 an entry form specifying their partner's name and email.  The partner's email address will be used
@@ -181,6 +180,7 @@
                  Facebook. Please note you will be required to provide further entry information should you
                  make it through to the final.</p>
     </div>
+</div>
     {% endblock content %}
 
 
