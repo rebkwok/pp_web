@@ -11,16 +11,29 @@
         <div class=row>
             <div class="col-sm-12">
             <form action="" method="get">
-                {{ filter_form }}
+                {% for field in filter_form  %}
+                  <div>
+                    <span class="filter-label">{{ field.label_tag }}</span> {{ field }}
+                  </div>
+                {% endfor %}
+                <div class="vspace-below-sm">
                 <input class="btn btn-purple table-btn" type="submit" name='reset' value="Reset" />
+                </div>
             </form>
-            <a class="btn btn-export-xls" href="{% url 'ppadmin:export_entries' %}">
-                Export to spreadsheet <span class="fa fa-file-excel-o"></span>
-            </a> <div class="vspace"></div>
         </div>
 
 
-
+        <div class="row">
+            <div class="col-sm-12">
+                <span class="pull-left">
+                    <a href="{% url 'ppadmin:entries_selection' %}">Submitted entries for selection/rejection</a>
+                </span>
+                <span class="pull-right">
+                    <a class="btn btn-export-xls" href="{% url 'ppadmin:export_entries' %}">
+                        Export to spreadsheet <span class="fa fa-file-excel-o"></span>
+                    </a>
+                </span>
+            </div>
         </div>
 
         <div class="row">

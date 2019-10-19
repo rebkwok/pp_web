@@ -6,6 +6,10 @@
 
     <div class="container-fluid row">
 
+        <div class="row pull-right">
+            <div class="col-sm-12"><a href="{% url 'ppadmin:entries' %}">View all entries</a></div>
+        </div>
+
         <h2>Submitted Entries: {% if category != 'all' %}{{ category|format_category }}{% else %}All categories{% endif %}</h2>
 
         <h4>Note: after an entry has been selected/rejected and the user notified, it is no longer possible to update its
@@ -15,13 +19,16 @@
         <div class=row>
             <div class="col-xs-12">
                 <form action="" method="get">
-                    {{ filter_form }}
-                    <div class="pull-right"><label>Notify:</label>
-                    <a href="{% url 'ppadmin:notify_selected_users' %}" class="btn table-btn btn-purple notify-btn">Selected</a>
-                    <a href="{% url 'ppadmin:notify_rejected_users' %}" class="btn table-btn btn-purple notify-btn">Rejected</a>
-                    <a href="{% url 'ppadmin:notify_users' %}" class="btn table-btn btn-purple notify-btn">All</a>
-                    </div>
+                    {% for field in filter_form  %}
+                          <div class="col-sm-12">
+                            <span {% if field.name != 'hide_rejected' %}class="filter-label"{% endif %}>{{ field.label_tag }}</span> {{ field }}
+                          </div>
+                    {% endfor %}
                 </form>
+                <div class="col-sm-12 vspace-sm"><label>Notify:</label>
+                <a href="{% url 'ppadmin:notify_selected_users' %}" class="btn table-btn btn-purple notify-btn">Selected</a>
+                <a href="{% url 'ppadmin:notify_rejected_users' %}" class="btn table-btn btn-purple notify-btn">Rejected</a>
+                <a href="{% url 'ppadmin:notify_users' %}" class="btn table-btn btn-purple notify-btn">All</a>
             </div>
             </div>
         </div>

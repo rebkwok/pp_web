@@ -51,7 +51,7 @@ class SignupForm(AccountFormMixin, forms.Form):
     )
     dob = forms.DateField(
         widget=forms.DateInput(
-                attrs={'class': "form-control", 'id': 'dobdatepicker'},
+                attrs={'class': "form-control", 'id': 'dobdatepicker', "autocomplete": "off"},
                 format='%d %b %Y'
             )
     )

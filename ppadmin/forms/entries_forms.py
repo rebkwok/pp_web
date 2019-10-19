@@ -12,7 +12,7 @@ class CategoryFilterForm(forms.Form):
     cat_filter = forms.CharField(
         widget=forms.Select(
             choices=tuple(category_choices),
-            attrs={'onchange': 'form.submit()'}
+            attrs={'onchange': 'form.submit()', 'class': 'filter-dropdown'}
         ),
         label="Category"
     )
@@ -28,7 +28,7 @@ class EntryFilterForm(CategoryFilterForm):
     status_filter = forms.CharField(
         widget=forms.Select(
             choices=tuple(status_choices),
-            attrs={'onchange': 'form.submit()'}
+            attrs={'onchange': 'form.submit()', 'class': 'filter-dropdown'}
         ),
         label="Status"
     )
@@ -53,7 +53,7 @@ class ExportEntriesForm(forms.Form):
     category = forms.CharField(
         widget=forms.Select(
             choices=tuple(category_choices),
-            attrs={'onchange': 'form.submit()'}
+            attrs={'onchange': 'form.submit()', 'class': 'filter-dropdown'}
         ),
         initial="all"
 
@@ -62,7 +62,7 @@ class ExportEntriesForm(forms.Form):
     status = forms.CharField(
         widget=forms.Select(
             choices=tuple(status_choices),
-            attrs={'onchange': 'form.submit()'}
+            attrs={'onchange': 'form.submit()', 'class': 'filter-dropdown'}
         ),
         initial='selected_confirmed'
     )

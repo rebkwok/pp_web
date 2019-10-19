@@ -84,7 +84,7 @@ tr > td.selection_status_td {
 
 .table-btn.notify-btn {
     width: 5em;
-    font-size: 75%;
+    font-size: 85%;
     margin: 0;
 }
 
@@ -100,6 +100,7 @@ span.unnotified {
 .btn-export-xls {
     background-color: darkgreen;
     color: white;
+    margin-bottom: 10px;
     padding-top: 2px;
     padding-bottom: 2px;
     padding-left: 4px;
@@ -108,4 +109,12 @@ span.unnotified {
 
 a.btn-export-xls > span {
     color: white;
+}
+
+.filter-label > label {
+    width: 80px;
+}
+.filter-dropdown {
+    font-size: medium;
+    width: 300px;
 }

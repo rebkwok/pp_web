@@ -84,8 +84,16 @@ p {
     padding-top: 20px;
 }
 
+.vspace-sm {
+    padding-top: 20px;
+}
+
 .vspace-below {
     padding-bottom: 20px;
+}
+
+.vspace-below-sm {
+    padding-bottom: 10px;
 }
 
 .error-info > input, .error-info > .regular-checkbox + label {

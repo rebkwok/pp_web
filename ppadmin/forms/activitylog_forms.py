@@ -17,7 +17,8 @@ class ActivityLogSearchForm(forms.Form):
             attrs={
                 'id': "logdatepicker",
                 'placeholder': "Search by log date",
-                'style': 'text-align: center'
+                'style': 'text-align: center',
+                "autocomplete": "off"
             },
             format='%d-%m-%y',
         ),

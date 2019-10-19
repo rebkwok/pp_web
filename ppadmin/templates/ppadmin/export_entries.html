@@ -4,26 +4,27 @@
 
 {% block content %}
 
-<div class="container-fluid row">
+<div class="container container-fluid row">
 
     <h2>Export Competitor Info to Spreadsheet</h2>
 
     <div class=row>
-        <div class="col-sm-12">
-            <p>
+            <div class="col-sm-12">
+                <p>
                 Selecting "All categories" exports each category to a separate sheet.
                 If there are no entries for a category, no sheet will be generated for it.
             </p>
-        </div>
-        <div class="col-sm-12">
             <form action="" method="post">
                 {% csrf_token %}
-                {{ form.as_p }}
+                {% for field in form  %}
+                  <div class="col-sm-12">
+                    <span {% if field.name != 'include' %}class="filter-label"{% endif %}>{{ field.label_tag }}</span> {{ field }}
+                  </div>
+                {% endfor %}
                 <input class="btn btn-export-xls" type="submit" name='export' value="Export XLS" />
             </form>
-        </div>
+            </div>
 
     </div>
-
 </div>
 {% endblock content %}

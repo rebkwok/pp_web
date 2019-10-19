@@ -46,7 +46,7 @@
                                 <div class="col-xs-6 col-sm-7">
                                     {% if entry.instance.video_entry_paid %}<span class="complete">Paid</span>
                                     {% elif entry.paypal_video_form %}{% include 'payments/video_payment.html' %}
-                                    {% else %}<span class="incomplete">Not paid</span>{% endif %}
+                                    {% else %}<span class="{% if not entry.instance.withdrawn %}incomplete{% endif %}">Not paid {% if entry.instance.status == 'in_progress' %}(entry not yet submitted){% endif %}</span>{% endif %}
                                 </div>
                             </div>
                             <div class="col-xs-12">

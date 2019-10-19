@@ -15,14 +15,21 @@
         <div class=row>
             <div class="col-xs-12">
                 <form action="" method="get">
-                    {{ filter_form }}
-                    <div class="pull-right">
-                    <a href="{% url 'ppadmin:entries_selection' %}" class="btn table-btn btn-purple">Selection List</a>
-                    </div>
+                {% csrf_token %}
+                {% for field in filter_form  %}
+                  <div class="col-sm-12">
+                    <span {% if field.name != 'hide_rejected' %}class="filter-label"{% endif %}>{{ field.label_tag }}</span> {{ field }}
+                  </div>
+                {% endfor %}
+
                 </form>
             </div>
         </div>
-
+        <div class="row pull-right vspace-below-sm">
+            <div class="col-sm-12">
+                <a href="{% url 'ppadmin:entries_selection' %}" class="btn table-btn btn-purple">Selection List</a>
+            </div>
+        </div>
 
         <div class="row">
             <div class="col-sm-12">
