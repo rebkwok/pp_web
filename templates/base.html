@@ -1,7 +1,6 @@
 {% load static %}
 {% load cookielaw_tags %}
 
-<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="utf-8">
@@ -36,37 +35,33 @@
 
   </head>
 
-  {% block bodytag %}<body data-spy="scroll" data-offset="0" data-target="#navbar-main">{% endblock %}
+{% block bodytag %}<body data-spy="scroll" data-offset="0" data-target="#navbar-main">{% endblock %}
 
 
   <div id="container">
 
-      <div id="header"></div>
+  <div id="header"></div>
 
-      <div id="body">
+  <div id="body">
   
   	<div id="navbar-main">
-      <!-- Fixed navbar -->
-    <div class="navbar navbar-inverse navbar-fixed-top">
-      <div>
-        <div class="navbar-header">
-
-		  <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-		<span class="icon-bar"></span>
-		<span class="icon-bar"></span>
-		<span class="icon-bar"></span>
-		</button>
-        <a class="navbar-brand" href="/">
-            {% block navbrand %}<img src="{% static 'web/images/pplogo_black.png' %}" height="50px" style="margin-top: -15px;">{% endblock %}</a>
+        <!-- Fixed navbar -->
+        <div class="navbar navbar-inverse navbar-fixed-top">
+              <div>
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        </button>
+                        <a class="navbar-brand" href="/">
+                        {% block navbrand %}<img src="{% static 'web/images/pplogo_black.png' %}" height="50px" style="margin-top: -15px;">{% endblock %}</a>
+                    </div>
+                    <div class="navbar-collapse collapse">
+                        {% block nav_content %}{% endblock nav_content %}
+                    </div> <!--/.nav-collapse -->
+              </div>
         </div>
-        <div class="navbar-collapse collapse">
-
-            {% block nav_content %}{% endblock nav_content %}
-
-
-        </div>
-      </div>        <!--/.nav-collapse -->
-    </div>
     </div>
 
 {% cookielaw_banner %}
@@ -74,7 +69,7 @@
 {% block extra_base_content %}{% endblock %}
  {% block content %}{% endblock %}
 
-          </div>   <!--#body -->
+  </div>   <!--#body -->
 
   {% block footer_content %}
 		<div id="footerwrap">
