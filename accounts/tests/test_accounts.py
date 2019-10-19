@@ -237,8 +237,7 @@ class CustomSignUpViewTests(TestSetupMixin, TestCase):
         cls.form_data = {
             'first_name': 'Test',
              'last_name': 'User',
-             'dob': '01 Jan 1990', 'address': '1 test st',
-             'postcode': 'TEST1', 'phone': '123445',
+             'dob': '01 Jan 1990',
              'username': 'testuser', 'email': 'testuser@test.com',
              'password1': 'dj34nmadkl24', 'password2': 'dj34nmadkl24',
             'data_privacy_confirmation': True
@@ -260,8 +259,7 @@ class CustomSignUpViewTests(TestSetupMixin, TestCase):
         self.client.post(self.url, self.form_data)
         self.assertTrue(User.objects.filter(username='testuser').exists())
         user = User.objects.get(username='testuser')
-        self.assertEqual(user.profile.address, "1 test st")
-        self.assertEqual(user.profile.phone, "123445")
+        self.assertIsNotNone(user.profile.dob)
 
     def test_signup_form_with_invalid_name(self):
         # first_name must have 30 characters or fewer

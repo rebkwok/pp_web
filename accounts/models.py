@@ -127,9 +127,9 @@ class UserProfile(models.Model):
     )
     pole_school = models.CharField(max_length=255, null=True, blank=True)
     dob = models.DateField(verbose_name='date of birth')
-    address = models.CharField(max_length=512)
-    postcode = models.CharField(max_length=10)
-    phone = models.CharField(max_length=255)
+    address = models.CharField(max_length=512, null=True, blank=True)
+    postcode = models.CharField(max_length=10, null=True, blank=True)
+    phone = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
         return self.user.username

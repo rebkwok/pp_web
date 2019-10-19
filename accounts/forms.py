@@ -55,18 +55,6 @@ class SignupForm(AccountFormMixin, forms.Form):
                 format='%d %b %Y'
             )
     )
-    address = forms.CharField(
-        max_length=255,
-        widget=forms.TextInput(attrs={'class': "form-control"})
-    )
-    postcode = forms.CharField(
-        max_length=10,
-        widget=forms.TextInput(attrs={'class': "form-control"})
-    )
-    phone = forms.CharField(
-        max_length=255, label='phone number',
-        widget=forms.TextInput(attrs={'class': "form-control"})
-    )
     pole_school = forms.CharField(
         max_length=255, required=False,
         widget=forms.TextInput(attrs={'class': "form-control"})
