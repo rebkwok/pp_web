@@ -9,7 +9,7 @@ from accounts.models import OnlineDisclaimer
 
 from ..forms import EntryCreateUpdateForm, SelectedEntryUpdateForm
 from .helpers import TestSetupMixin
-from ..models import Entry, CATEGORY_CHOICES
+from ..models import Entry, VALID_CATEGORIES, CATEGORY_CHOICES_ORDER
 
 
 @override_settings(
@@ -114,9 +114,9 @@ class EntryCreateUpdateFormTests(TestSetupMixin, TestCase):
         form = EntryCreateUpdateForm(user=self.user, initial_data={})
         cat = form.fields['category']
 
-        cat_choices = list(CATEGORY_CHOICES)
+        cat_choices = list(VALID_CATEGORIES)
         cat_choices.remove(('BEG', 'Beginner'))
-        self.assertEqual(cat.widget.choices, cat_choices)
+        self.assertEqual(cat.widget.choices, tuple(sorted(cat_choices, key=lambda x: CATEGORY_CHOICES_ORDER[x[0]])))
 
     def test_category_choices_includes_already_entered_for_updates(self):
         entry = mommy.make(Entry, user=self.user)
@@ -125,7 +125,7 @@ class EntryCreateUpdateFormTests(TestSetupMixin, TestCase):
         )
         cat = form.fields['category']
 
-        self.assertEqual(cat.widget.choices, list(CATEGORY_CHOICES))
+        self.assertEqual(cat.widget.choices, tuple(sorted(VALID_CATEGORIES, key=lambda x: CATEGORY_CHOICES_ORDER[x[0]])))
 
     def test_category_hidden_for_submitted(self):
         entry = mommy.make(Entry, user=self.user, status='submitted')
@@ -297,7 +297,7 @@ class EntryCreateUpdateFormTests(TestSetupMixin, TestCase):
         mommy.make(Entry, user=user, category='INT')
         mommy.make(Entry, user=user, category='ADV')
         mommy.make(Entry, user=user, category='PRO')
-        mommy.make(Entry, user=user, category='MEN')
+        mommy.make(Entry, user=user, category='SMP')
 
         form = EntryCreateUpdateForm(user=user, initial_data={})
         self.assertTrue(form.show_doubles)
