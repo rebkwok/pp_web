@@ -1,12 +1,12 @@
 from django.conf import settings
 from django import forms
 
-from entries.models import CATEGORY_CHOICES, Entry, STATUS_CHOICES
+from entries.models import Entry, STATUS_CHOICES, VALID_CATEGORIES
 
 
 class CategoryFilterForm(forms.Form):
 
-    category_choices = list(CATEGORY_CHOICES)
+    category_choices = list(VALID_CATEGORIES)
     category_choices.insert(0, ('all', 'All'))
 
     cat_filter = forms.CharField(
@@ -47,7 +47,7 @@ class EntrySelectionFilterForm(CategoryFilterForm):
 class ExportEntriesForm(forms.Form):
     status_choices = list(STATUS_CHOICES)
     status_choices.insert(0, ('all', 'All'))
-    category_choices = list(CATEGORY_CHOICES)
+    category_choices = list(VALID_CATEGORIES)
     category_choices.insert(0, ('all', 'All (categories on separate sheets)'))
 
     category = forms.CharField(
