@@ -30,12 +30,10 @@ def has_disclaimer(user):
     if cached_disclaimer is not None:
         cached_disclaimer = bool(cached_disclaimer)
     else:
-        cached_disclaimer = bool(
-            OnlineDisclaimer.objects.select_related('user').filter(user=user)
-        )
-        # set cache; never expires (will only be invalidated if disclaimer is
-        # deleted - see post_delete signal)
-        cache.set(cache_key, cached_disclaimer, None)
+        cached_disclaimer = OnlineDisclaimer.objects.select_related('user').filter(
+            user=user, entry_year=settings.CURRENT_ENTRY_YEAR).exists()
+        # cache for 30 days
+        cache.set(cache_key, cached_disclaimer, timeout=2592000)
     return cached_disclaimer
 
 
@@ -88,7 +86,7 @@ I agree to the above T & C’s and release of liability. I have fully read and u
 class OnlineDisclaimer(models.Model):
     read_only_fields = ('waiver_terms', )
 
-    user = models.OneToOneField(
+    user = models.ForeignKey(
         User, related_name='online_disclaimer', on_delete=models.CASCADE
     )
     date = models.DateTimeField(default=timezone.now)
@@ -100,6 +98,10 @@ class OnlineDisclaimer(models.Model):
         max_length=2048, default=WAIVER_TERMS
     )
     terms_accepted = models.BooleanField()
+    entry_year = models.CharField(default=settings.CURRENT_ENTRY_YEAR, max_length=4)
+
+    class Meta:
+        unique_together = ('user', 'entry_year')
 
     def __str__(self):
         return '{} - {}'.format(self.user.username, self.date.astimezone(
@@ -113,10 +115,8 @@ class OnlineDisclaimer(models.Model):
             ActivityLog.objects.create(
                 log="Waiver created: {}".format(self.__str__())
             )
-
-            # set cache; never expires (will only be invalidated if disclaimer
-            # is deleted - see post_delete signal)
-            cache.set(disclaimer_cache_key(self.user), True, 0)
+            # cache for 30 days; this will need to expire for the next entry year
+            cache.set(disclaimer_cache_key(self.user), True, timeout=2592000)
 
         super(OnlineDisclaimer, self).save()
 

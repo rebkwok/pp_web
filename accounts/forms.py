@@ -12,7 +12,7 @@ from .models import DataPrivacyPolicy, SignedDataPrivacy, \
     OnlineDisclaimer, WAIVER_TERMS, UserProfile
 
 
-class AccountFormMixin(object):
+class AccountFormMixin:
 
     def clean(self):
         dob = self.data.get('dob', None)
@@ -24,16 +24,13 @@ class AccountFormMixin(object):
                 self.cleaned_data['dob'] = dob
             except ValueError:
                 self.add_error(
-                    'dob', 'Invalid date format.  Select from '
-                                        'the date picker or enter date in the '
-                                        'format e.g. 08 Jun 1990')
+                    'dob', 'Invalid date format.  Select from the date picker '
+                           'or enter date in the format e.g. 08 Jun 1990')
 
             if not self.errors.get('dob'):
                 yearsago = datetime.today().date() - relativedelta(years=18)
                 if dob > yearsago:
-                    self.add_error(
-                        'dob', 'You must be 18 or over to register'
-                    )
+                    self.add_error('dob', 'You must be 18 or over to register')
 
 
 class SignupForm(AccountFormMixin, forms.Form):
@@ -76,7 +73,7 @@ class SignupForm(AccountFormMixin, forms.Form):
     )
 
     def __init__(self, *args, **kwargs):
-        super(SignupForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         # get the current version here to make sure we always display and save
         # with the same version, even if it changed while the form was being
         # completed
