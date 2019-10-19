@@ -41,7 +41,7 @@ urlpatterns = [
         toggle_selection, {'decision': 'selected'}, name='toggle_selected'
     ),
     path(
-        'entries/<int:entry_id>)/toggle_selection/rejected/',
+        'entries/<int:entry_id>/toggle_selection/rejected/',
         toggle_selection, {'decision': 'rejected'}, name='toggle_rejected'
     ),
     path(
