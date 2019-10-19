@@ -106,7 +106,7 @@ class EntryCreateUpdateForm(EntryFormMixin, forms.ModelForm):
         else:
             is_open = late_open
 
-        if not is_open:
+        if not is_open and not self.user.is_superuser:
             # disallow editing of video url after entries closed
             self.fields['video_url'].widget.attrs.update({'class': 'hide'})
         self.show_doubles = False

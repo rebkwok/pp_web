@@ -242,7 +242,7 @@ class EntryCreateView(
     success_message = 'Your entry has been {}'
 
     def dispatch(self, request, *args, **kwargs):
-        is_open = entries_open()
+        is_open = entries_open() or request.user.is_superuser
         if not is_open:
             return HttpResponseRedirect(reverse('permission_denied'))
         return super(EntryMixin, self).dispatch(request, *args, **kwargs)
@@ -356,7 +356,7 @@ class EntryWithdrawView(LoginRequiredMixin, generic.UpdateView):
         # redirect if already withdrawn
         if not request.user.is_anonymous:
             entry = self.get_object()
-            if entry.withdrawn :
+            if entry.withdrawn:
                 return HttpResponseRedirect(reverse('permission_denied'))
         return super(EntryWithdrawView, self).dispatch(
             request, *args, **kwargs

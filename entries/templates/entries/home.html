@@ -14,12 +14,15 @@
         </div>
         {% endif %}
 
-            {% if entries_open %}
+            {% if entries_open or user.is_superuser %}
             <div class="col-xs-12">
                 <div class="pull-right" {% if not user.is_authenticated %} data-toggle="tooltip" data-placement="left" title="Log in to enter"{% endif %}>
                 <a {% if not user.is_authenticated %}class="btn btn-purple disabled"
-                   {% else %}class="btn btn-purple"{% endif %} href="{% url 'entries:user_entries' %}">ENTER NOW</a></div>
+                   {% else %}class="btn btn-purple"{% endif %} href="{% url 'entries:user_entries' %}">ENTER NOW</a>
+                </div>
             </div>
+            {% if user.is_superuser%}<div class="col-xs-12 helptext"><span class="pull-right">(you are seeing this button because you are a superuser)</span></div>{% endif %}
+
             {% else %}
                 <div class="col-xs-12">
                     <div class="pull-right">

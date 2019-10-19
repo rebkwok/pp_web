@@ -6,9 +6,10 @@
 
 
 <div class="container-fluid row extra-top-margin">
-    <div class="pull-right col-xs-12"><a class="btn btn-purple pull-right {% if not user|has_disclaimer or not entries_open %}disabled{% endif %}" href="{% url 'entries:create_entry' %}">Start new entry</a></br></br>
+    <div class="pull-right col-xs-12"><a class="btn btn-purple pull-right {% if not user|has_disclaimer or not entries_open and not user.is_superuser %}disabled{% endif %}" href="{% url 'entries:create_entry' %}">Start new entry</a></br></br>
         <span class="helptext pull-right">{% if not entries_open %}Entries are not open{% endif %}</span>
     </div>
+    {% if not entries_open and user.is_superuser%}<div class="col-xs-12 helptext"><span class="pull-right">(this button is enabled because you are a superuser)</span></div>{% endif %}
     <div class="col-xs-12">
     <h1>Entries</h1>
     </div>
