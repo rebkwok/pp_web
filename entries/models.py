@@ -26,13 +26,26 @@ CATEGORY_CHOICES = (
     ('DOU', 'Doubles'),
 )
 CATEGORY_CHOICES_DICT = dict(CATEGORY_CHOICES)
+CATEGORY_CHOICES_ORDER = {
+    'BEG': 1,
+    'INT': 2,
+    'ADV': 3,
+    'DOU': 4,
+    'SMP': 5,
+    'PRO': 6,
+    'MEN': 7,
 
-LATE_ENTRY_CATEGORY_CHOICES = (
+}
+LATE_ENTRY_CATEGORY_CHOICES = [
     ('DOU', 'Doubles'),
-)
+]
 
 # This is so we can keep/view old entries for old categories, but choose not to display invalid ones on a new entry form
-INVALID_CATEGORIES = ['MEN']
+INVALID_CATEGORIES = [
+    ('MEN', 'Mens')
+]
+
+VALID_CATEGORIES = set(CATEGORY_CHOICES) - set(INVALID_CATEGORIES)
 
 VIDEO_ENTRY_FEES = {
     'BEG': 20,

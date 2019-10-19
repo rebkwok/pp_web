@@ -3,7 +3,7 @@ from django.conf import settings
 
 from allauth.account.models import EmailAddress
 
-from .models import Entry, CATEGORY_CHOICES, LATE_ENTRY_CATEGORY_CHOICES
+from .models import Entry, CATEGORY_CHOICES_DICT, CATEGORY_CHOICES_ORDER, LATE_ENTRY_CATEGORY_CHOICES, VALID_CATEGORIES
 from .utils import (
     check_partner_email, all_entries_open, late_categories_entries_open
 )
@@ -71,32 +71,27 @@ class EntryCreateUpdateForm(EntryFormMixin, forms.ModelForm):
             required=False,
         )
 
+        all_open, _, _ = all_entries_open()
+        late_open, _, _ = late_categories_entries_open()
+
         # only list the current category (for editing saved entries) and
         # categories not yet entered
-        user_cats = Entry.objects.filter(
+        entered_categories = Entry.objects.filter(
             user=self.user, entry_year=settings.CURRENT_ENTRY_YEAR
         ).values_list('category', flat=True)
-        cat_choices = [
-            choice for choice in CATEGORY_CHOICES if choice[0] not in
-            user_cats or
-            (self.instance.id and choice[0] == self.instance.category)
-        ]
+        entered_categories = {(category, CATEGORY_CHOICES_DICT[category]) for category in entered_categories}
+        current_category = {(self.instance.category, CATEGORY_CHOICES_DICT[self.instance.category])} if self.instance.id else set()
+        category_choices = tuple((VALID_CATEGORIES - entered_categories) | current_category)
 
-        # remove all categories except mens and doubles after first close date
-        if late_categories_entries_open()[0] and not all_entries_open()[0]:
-            cat_choices = [
-                choice for choice in LATE_ENTRY_CATEGORY_CHOICES if choice[0]
-                not in user_cats or
-                (self.instance.id and choice[0] == self.instance.category)
-            ]
+        # remove all categories except late entry categories after first close date
+        if late_open and not all_open:
+            category_choices = tuple(set(category_choices) - set(LATE_ENTRY_CATEGORY_CHOICES))
 
-        self.fields['category'].widget.choices = cat_choices
+        self.fields['category'].widget.choices = tuple(sorted(category_choices, key=lambda x: CATEGORY_CHOICES_ORDER[x[0]]))
 
-        if user_cats:
-            self.fields['category']\
-                .help_text = "Only one entry per category; if you want to " \
-                             "edit an existing entry, go to My Entries to " \
-                             "select it"
+        if not current_category:
+            self.fields['category'].help_text = "Only one entry per category (you have already entered {}); " \
+                                                "go to My Entries to edit an existing entry,".format(', '.join([cat[1] for cat in entered_categories]))
 
         if self.instance.id and self.instance.status != 'in_progress':
             # disallow editing of category after entry submitted
@@ -107,9 +102,9 @@ class EntryCreateUpdateForm(EntryFormMixin, forms.ModelForm):
 
         late_categories = [cat[0] for cat in LATE_ENTRY_CATEGORY_CHOICES]
         if self.instance.id and (self.instance.category not in late_categories):
-            is_open, _, _ = all_entries_open()
+            is_open = all_open
         else:
-            is_open, _, _ = late_categories_entries_open()
+            is_open = late_open
 
         if not is_open:
             # disallow editing of video url after entries closed
@@ -120,7 +115,7 @@ class EntryCreateUpdateForm(EntryFormMixin, forms.ModelForm):
         elif self.data.get('category') == 'DOU':
             self.show_doubles = True
         elif not self.instance.id and (
-                        cat_choices[0][0] == 'DOU' or
+                        category_choices[0][0] == 'DOU' or
                         self.initial.get('category') == 'DOU'
         ):
             self.show_doubles = True
