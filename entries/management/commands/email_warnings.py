@@ -1,5 +1,5 @@
 """
-Email warnings for unsubmitted and submitted/video enry unpaid entries 3 days
+Email warnings for unsubmitted and submitted/video entry unpaid entries 3 days
 before closing date
 RUNS ONCE ONLY ON A SPECIFIED DATE (THE CLOSING DATE) - SET AS AT IN CRON
 """

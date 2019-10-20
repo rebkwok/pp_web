@@ -64,7 +64,7 @@ def entries_home(request):
 
 def judging_criteria(request):
     curr_dir = os.path.dirname(os.path.realpath(__file__))
-    file = 'files/Judges2017.pdf'
+    file = 'files/judging-critieria-2020.pdf'
     return pdf_view(os.path.join(curr_dir, file))
 
 
@@ -72,6 +72,7 @@ def pdf_view(filepath):
     try:
         return FileResponse(
             open(filepath, 'rb'),
+            filename="pole-performance-judging-criteria.pdf",
             content_type='application/pdf'
         )
     except FileNotFoundError:
