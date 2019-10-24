@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from model_mommy import mommy
+from model_bakery import baker
 from unittest.mock import Mock, patch
 
 from django.conf import settings
@@ -164,7 +164,7 @@ class PaypalSignalsTests(TestCase):
     @patch('paypal.standard.ipn.models.PayPalIPN._postback')
     def test_paypal_notify_url_with_complete_status(self, mock_postback):
         mock_postback.return_value = b"VERIFIED"
-        entry = mommy.make(Entry, user__email='test@test.com')
+        entry = baker.make(Entry, user__email='test@test.com')
         pptrans = create_entry_paypal_transaction(entry.user, entry, 'video')
 
         self.assertFalse(PayPalIPN.objects.exists())
@@ -231,7 +231,7 @@ class PaypalSignalsTests(TestCase):
     @patch('paypal.standard.ipn.models.PayPalIPN._postback')
     def test_successful_paypal_payment_sends_emails(self, mock_postback):
         mock_postback.return_value = b"VERIFIED"
-        entry = mommy.make(Entry, user__email='testuser@test.com')
+        entry = baker.make(Entry, user__email='testuser@test.com')
         invoice_id = create_entry_paypal_transaction(
             entry.user, entry, 'video'
         ).invoice_id
@@ -255,7 +255,7 @@ class PaypalSignalsTests(TestCase):
     @patch('paypal.standard.ipn.models.PayPalIPN._postback')
     def test_successful_paypal_payment_updates_entry(self, mock_postback):
         mock_postback.return_value = b"VERIFIED"
-        entry = mommy.make(Entry)
+        entry = baker.make(Entry)
         invoice_id = create_entry_paypal_transaction(
             entry.user, entry, 'video'
         ).invoice_id
@@ -275,7 +275,7 @@ class PaypalSignalsTests(TestCase):
     @patch('paypal.standard.ipn.models.PayPalIPN._postback')
     def test_successful_paypal_withdrawal_payment(self, mock_postback):
         mock_postback.return_value = b"VERIFIED"
-        entry = mommy.make(
+        entry = baker.make(
             Entry, status='selected_confirmed', withdrawal_fee_paid=False,
             selected_entry_paid=True
         )
@@ -298,11 +298,11 @@ class PaypalSignalsTests(TestCase):
     @patch('paypal.standard.ipn.models.PayPalIPN._postback')
     def test_paypal_notify_only_updates_relevant_entry(self, mock_postback):
         mock_postback.return_value = b"VERIFIED"
-        entry = mommy.make(Entry, user__email='test@test.com')
+        entry = baker.make(Entry, user__email='test@test.com')
         invoice_id = create_entry_paypal_transaction(
             entry.user, entry, 'video'
         ).invoice_id
-        mommy.make(Entry, _quantity=5)
+        baker.make(Entry, _quantity=5)
 
         self.assertFalse(PayPalIPN.objects.exists())
         params = dict(IPN_POST_PARAMS)
@@ -332,7 +332,7 @@ class PaypalSignalsTests(TestCase):
             self, mock_postback
     ):
         mock_postback.return_value = b"VERIFIED"
-        entry = mommy.make(Entry, user__email='test@test.com')
+        entry = baker.make(Entry, user__email='test@test.com')
 
         self.assertFalse(PayPalIPN.objects.exists())
         params = dict(IPN_POST_PARAMS)
@@ -365,7 +365,7 @@ class PaypalSignalsTests(TestCase):
         we create one when processing the payment
         """
         mock_postback.return_value = b"VERIFIED"
-        entry = mommy.make(Entry, user__email='test@test.com')
+        entry = baker.make(Entry, user__email='test@test.com')
 
         self.assertFalse(PayPalIPN.objects.exists())
         self.assertFalse(PaypalEntryTransaction.objects.exists())
@@ -393,8 +393,8 @@ class PaypalSignalsTests(TestCase):
     @patch('paypal.standard.ipn.models.PayPalIPN._postback')
     def test_paypal_notify_url_with_duplicate_trans_object(self, mock_postback):
         mock_postback.return_value = b"VERIFIED"
-        entry = mommy.make(Entry, category='BEG', user__email='test@test.com')
-        entry1 = mommy.make(Entry, category='INT', user__email='test1@test.com')
+        entry = baker.make(Entry, category='BEG', user__email='test@test.com')
+        entry1 = baker.make(Entry, category='INT', user__email='test1@test.com')
         # create 2 paypal trans objects and make they for the same object
         pptrans = create_entry_paypal_transaction(entry.user, entry, 'video')
         pptrans1 = create_entry_paypal_transaction(entry.user, entry1, 'video')
@@ -427,8 +427,8 @@ class PaypalSignalsTests(TestCase):
     @patch('paypal.standard.ipn.models.PayPalIPN._postback')
     def test_paypal_notify_url_duplicate_trans_not_invoice(self, mock_postback):
         mock_postback.return_value = b"VERIFIED"
-        entry = mommy.make(Entry, category='BEG', user__email='test@test.com')
-        entry1 = mommy.make(Entry, category='INT', user__email='test@test.com')
+        entry = baker.make(Entry, category='BEG', user__email='test@test.com')
+        entry1 = baker.make(Entry, category='INT', user__email='test@test.com')
         # create 2 paypal trans objects and make they for the same object
         pptrans = create_entry_paypal_transaction(entry.user, entry, 'video')
         pptrans1 = create_entry_paypal_transaction(entry.user, entry1, 'video')
@@ -466,7 +466,7 @@ class PaypalSignalsTests(TestCase):
         identify and process refunded payments.
         """
         mock_postback.return_value = b"VERIFIED"
-        entry = mommy.make(Entry)
+        entry = baker.make(Entry)
         pptrans = create_entry_paypal_transaction(entry.user, entry, 'video')
         pptrans.transaction_id = "test_trans_id"
         pptrans.save()
@@ -497,7 +497,7 @@ class PaypalSignalsTests(TestCase):
         identify and process refunded payments.
         """
         mock_postback.return_value = b"VERIFIED"
-        entry = mommy.make(Entry)
+        entry = baker.make(Entry)
         pptrans = create_entry_paypal_transaction(entry.user, entry, 'selected')
         pptrans.transaction_id = "test_trans_id"
         pptrans.save()
@@ -528,7 +528,7 @@ class PaypalSignalsTests(TestCase):
         identify and process refunded payments.
         """
         mock_postback.return_value = b"VERIFIED"
-        entry = mommy.make(Entry, status='selected_confirmed', withdrawn=True)
+        entry = baker.make(Entry, status='selected_confirmed', withdrawn=True)
         pptrans = create_entry_paypal_transaction(
             entry.user, entry, 'withdrawal'
         )
@@ -557,7 +557,7 @@ class PaypalSignalsTests(TestCase):
     @patch('paypal.standard.ipn.models.PayPalIPN._postback')
     def test_paypal_date_format_with_extra_spaces(self, mock_postback):
         mock_postback.return_value = b"VERIFIED"
-        entry = mommy.make(Entry)
+        entry = baker.make(Entry)
         pptrans = create_entry_paypal_transaction(entry.user, entry, 'video')
         pptrans.transaction_id = "test_trans_id"
         pptrans.save()
@@ -725,10 +725,10 @@ class PaypalSignalsTests(TestCase):
         likely to happen with a duplicate transaction id
         """
         mock_postback.return_value = b"VERIFIED"
-        entry = mommy.make(Entry)
+        entry = baker.make(Entry)
         pptrans = create_entry_paypal_transaction(entry.user, entry, 'video')
         # make an existing completed paypal ipn
-        mommy.make(PayPalIPN, txn_id='test_txn_id', payment_status='Completed')
+        baker.make(PayPalIPN, txn_id='test_txn_id', payment_status='Completed')
         self.assertEqual(PayPalIPN.objects.count(), 1)
 
         params = dict(IPN_POST_PARAMS)
@@ -769,7 +769,7 @@ class PaypalSignalsTests(TestCase):
         mock_send_emails.side_effect = Exception('Error sending mail')
         mock_postback.return_value = b"VERIFIED"
 
-        entry = mommy.make(Entry)
+        entry = baker.make(Entry)
         pptrans = create_entry_paypal_transaction(entry.user, entry, 'video')
 
         params = dict(IPN_POST_PARAMS)
@@ -814,7 +814,7 @@ class PaypalSignalsTests(TestCase):
         mock_send_emails.side_effect = Exception('Error sending mail')
         payment_models_logger.warning = Mock()
 
-        entry = mommy.make(Entry)
+        entry = baker.make(Entry)
         pptrans = create_entry_paypal_transaction(entry.user, entry, 'video')
 
         params = dict(IPN_POST_PARAMS)
@@ -848,7 +848,7 @@ class PaypalSignalsTests(TestCase):
         paypal_email. Warning mail sent to support.
         """
         mock_postback.return_value = b"VERIFIED"
-        entry = mommy.make(Entry)
+        entry = baker.make(Entry)
         pptrans = create_entry_paypal_transaction(entry.user, entry, 'video')
 
         self.assertFalse(PayPalIPN.objects.exists())
@@ -895,7 +895,7 @@ class PaypalSignalsTests(TestCase):
         payment status that is not Completed or Refunded.
         """
         mock_postback.return_value = b"VERIFIED"
-        entry = mommy.make(Entry)
+        entry = baker.make(Entry)
         pptrans = create_entry_paypal_transaction(entry.user, entry, 'video')
 
         self.assertFalse(PayPalIPN.objects.exists())
@@ -942,7 +942,7 @@ class PaypalSignalsTests(TestCase):
         payment status that is not Completed or Refunded.
         """
         mock_postback.return_value = b"VERIFIED"
-        entry = mommy.make(Entry)
+        entry = baker.make(Entry)
         pptrans = create_entry_paypal_transaction(entry.user, entry, 'video')
 
         self.assertFalse(PayPalIPN.objects.exists())

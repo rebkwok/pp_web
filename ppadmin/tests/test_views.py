@@ -1,7 +1,7 @@
 import os
 import xlrd
 from datetime import datetime
-from model_mommy import mommy
+from model_bakery import baker
 
 from django.contrib.auth.models import Group, User
 from django.core import management
@@ -32,15 +32,15 @@ class ActivityLogListViewTests(TestSetupStaffLoginRequiredMixin, TestCase):
         # 1 log when user's disclaimer created
         # 3 with log messages to test search text
         # 2 with fixed dates to test search date
-        mommy.make(ActivityLog, log='Test log message')
-        mommy.make(ActivityLog, log='Test log message1 One')
-        mommy.make(ActivityLog, log='Test log message2 Two')
-        mommy.make(
+        baker.make(ActivityLog, log='Test log message')
+        baker.make(ActivityLog, log='Test log message1 One')
+        baker.make(ActivityLog, log='Test log message2 Two')
+        baker.make(
             ActivityLog,
             timestamp=datetime(2015, 1, 1, 16, 0, tzinfo=timezone.utc),
             log='Log with test date'
         )
-        mommy.make(
+        baker.make(
             ActivityLog,
             timestamp=datetime(2015, 1, 1, 4, 0, tzinfo=timezone.utc),
             log='Log with test date for search'
@@ -139,7 +139,7 @@ class ActivityLogListViewTests(TestSetupStaffLoginRequiredMixin, TestCase):
 
     def test_empty_cron_job_logs_filtered_by_default(self):
         # Make an empty job log
-        mommy.make(
+        baker.make(
             ActivityLog,
             timestamp=datetime(2015, 1, 1, 4, 0, tzinfo=timezone.utc),
             log='CRON: Auto warn/withdraw selected unconfirmed/unpaid run: '
@@ -153,7 +153,7 @@ class ActivityLogListViewTests(TestSetupStaffLoginRequiredMixin, TestCase):
 
     def test_show_empty_cron_job_logs(self):
         # Make an empty job log
-        mommy.make(
+        baker.make(
             ActivityLog,
             timestamp=datetime(2015, 1, 1, 4, 0, tzinfo=timezone.utc),
             log='CRON: Auto warn/withdraw selected unconfirmed/unpaid run: '
@@ -174,7 +174,7 @@ class UserListViewTests(TestSetupStaffLoginRequiredMixin, TestCase):
         cls.url = reverse('ppadmin:users')
 
     def test_all_users_are_displayed(self):
-        mommy.make(User, _quantity=6)
+        baker.make(User, _quantity=6)
         # 8 users total, incl self.user, self.staff_user
         self.assertEqual(User.objects.count(), 8)
         self.client.login(username=self.staff_user.username, password='test')
@@ -188,7 +188,7 @@ class UserListViewTests(TestSetupStaffLoginRequiredMixin, TestCase):
         """
         Usernames > 15 characters are split to 2 lines
         """
-        mommy.make(User, username='test123456789101112')
+        baker.make(User, username='test123456789101112')
         self.client.login(username=self.staff_user.username, password='test')
         resp = self.client.get(self.url)
         self.assertIn('test12345678-</br>9101112', resp.rendered_content)
@@ -198,7 +198,7 @@ class UserListViewTests(TestSetupStaffLoginRequiredMixin, TestCase):
         Names > 18 characters are split to 2 lines; names with hyphens are
         split on the first hyphen
         """
-        mommy.make(
+        baker.make(
             User,
             first_name='namewithmorethan18characters',
             last_name='name-with-three-hyphens'
@@ -214,7 +214,7 @@ class UserListViewTests(TestSetupStaffLoginRequiredMixin, TestCase):
         """
         Email > 25 characters is truncated
         """
-        mommy.make(User, email='test12345678@longemail.com')
+        baker.make(User, email='test12345678@longemail.com')
         self.client.login(username=self.staff_user.username, password='test')
         resp = self.client.get(self.url)
         self.assertIn('test12345678@longemail...', resp.rendered_content)
@@ -222,13 +222,13 @@ class UserListViewTests(TestSetupStaffLoginRequiredMixin, TestCase):
     def test_user_search(self):
         self.client.login(username=self.staff_user.username, password='test')
 
-        mommy.make(
+        baker.make(
             User, username='FooBar', first_name='Foo', last_name='Bar'
         )
-        mommy.make(
+        baker.make(
             User, username='Testing1', first_name='Foo', last_name='Bar'
         )
-        mommy.make(
+        baker.make(
             User, username='Testing2', first_name='Boo', last_name='Bar'
         )
 
@@ -255,13 +255,13 @@ class UserListViewTests(TestSetupStaffLoginRequiredMixin, TestCase):
 
     def test_user_filter(self):
         self.client.login(username=self.staff_user.username, password='test')
-        mommy.make(
+        baker.make(
             User, username='FooBar', first_name='AUser', last_name='Bar'
         )
-        mommy.make(
+        baker.make(
             User, username='Testing1', first_name='aUser', last_name='Bar'
         )
-        mommy.make(
+        baker.make(
             User, username='Testing2', first_name='BUser', last_name='Bar'
         )
 
@@ -277,11 +277,11 @@ class UserListViewTests(TestSetupStaffLoginRequiredMixin, TestCase):
 
     def test_user_filter_and_search(self):
         self.client.login(username=self.staff_user.username, password='test')
-        mommy.make(User, username='FooBar', first_name='AUser', last_name='Bar')
-        mommy.make(
+        baker.make(User, username='FooBar', first_name='AUser', last_name='Bar')
+        baker.make(
             User, username='Testing1', first_name='aUser', last_name='Bar'
         )
-        mommy.make(
+        baker.make(
             User, username='Testing2', first_name='BUser', last_name='Bar'
         )
 
@@ -294,7 +294,7 @@ class UserListViewTests(TestSetupStaffLoginRequiredMixin, TestCase):
         self.client.login(username=self.staff_user.username, password='test')
         # make a user with first name starting with all options
         for option in NAME_FILTERS:
-            mommy.make(User, first_name='{}Usr'.format(option))
+            baker.make(User, first_name='{}Usr'.format(option))
         # delete any starting with Z
         User.objects.filter(first_name__istartswith='Z').delete()
         resp = self.client.get(self.url)
@@ -361,7 +361,7 @@ class DisclaimerUpdateViewTests(TestSetupStaffLoginRequiredMixin, TestCase):
         self.user.save()
         # remove existing disclaimer for self.user
         OnlineDisclaimer.objects.all().delete()
-        self.disclaimer = mommy.make(
+        self.disclaimer = baker.make(
             OnlineDisclaimer, user=self.user,
             terms_accepted=True
         )

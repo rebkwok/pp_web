@@ -1,4 +1,4 @@
-from model_mommy import  mommy
+from model_bakery import  baker
 
 from django.contrib.auth.models import User
 from django.test import TestCase, override_settings
@@ -110,7 +110,7 @@ class EntryCreateUpdateFormTests(TestSetupMixin, TestCase):
         self.assertEqual(form.initial, {'category': 'INT'})
 
     def test_category_choices_excludes_already_entered(self):
-        mommy.make(Entry, user=self.user, category='BEG')
+        baker.make(Entry, user=self.user, category='BEG')
         form = EntryCreateUpdateForm(user=self.user, initial_data={})
         cat = form.fields['category']
 
@@ -119,7 +119,7 @@ class EntryCreateUpdateFormTests(TestSetupMixin, TestCase):
         self.assertEqual(cat.widget.choices, tuple(sorted(cat_choices, key=lambda x: CATEGORY_CHOICES_ORDER[x[0]])))
 
     def test_category_choices_includes_already_entered_for_updates(self):
-        entry = mommy.make(Entry, user=self.user)
+        entry = baker.make(Entry, user=self.user)
         form = EntryCreateUpdateForm(
             instance=entry, user=self.user, initial_data={}
         )
@@ -128,7 +128,7 @@ class EntryCreateUpdateFormTests(TestSetupMixin, TestCase):
         self.assertEqual(cat.widget.choices, tuple(sorted(VALID_CATEGORIES, key=lambda x: CATEGORY_CHOICES_ORDER[x[0]])))
 
     def test_category_hidden_for_submitted(self):
-        entry = mommy.make(Entry, user=self.user, status='submitted')
+        entry = baker.make(Entry, user=self.user, status='submitted')
         form = EntryCreateUpdateForm(
             instance=entry, user=self.user, initial_data={}
         )
@@ -138,7 +138,7 @@ class EntryCreateUpdateFormTests(TestSetupMixin, TestCase):
 
     @override_settings(ENTRIES_CLOSE_DATE="01/01/2016")
     def test_video_url_hidden_if_entries_closed(self):
-        entry = mommy.make(Entry, user=self.user, status='submitted')
+        entry = baker.make(Entry, user=self.user, status='submitted')
         form = EntryCreateUpdateForm(
             instance=entry, user=self.user, initial_data={}
         )
@@ -166,7 +166,7 @@ class EntryCreateUpdateFormTests(TestSetupMixin, TestCase):
         )
 
     def test_doubles_partner_email_same_as_user_additional_email(self):
-        mommy.make(EmailAddress, user=self.user, email='other@test.com')
+        baker.make(EmailAddress, user=self.user, email='other@test.com')
         data = {
             'category': 'DOU',
             'video_url': 'http://foo.com',
@@ -205,7 +205,7 @@ class EntryCreateUpdateFormTests(TestSetupMixin, TestCase):
         )
 
     def test_submit_doubles_partner_no_waiver(self):
-        partner = mommy.make(
+        partner = baker.make(
             User, username='partner', email='partner@test.com'
         )
         data = {
@@ -227,11 +227,11 @@ class EntryCreateUpdateFormTests(TestSetupMixin, TestCase):
         )
 
     def test_submit_doubles_partner_already_entered(self):
-        partner = mommy.make(
+        partner = baker.make(
             User, username='partner', email='partner@test.com'
         )
-        mommy.make(OnlineDisclaimer, user=partner)
-        mommy.make(Entry, category='DOU', user=partner)
+        baker.make(OnlineDisclaimer, user=partner)
+        baker.make(Entry, category='DOU', user=partner)
 
         data = {
             'category': 'DOU',
@@ -253,10 +253,10 @@ class EntryCreateUpdateFormTests(TestSetupMixin, TestCase):
         )
 
     def test_submit_doubles(self):
-        partner = mommy.make(
+        partner = baker.make(
             User, username='partner', email='partner@test.com'
         )
-        mommy.make(OnlineDisclaimer, user=partner)
+        baker.make(OnlineDisclaimer, user=partner)
 
         data = {
             'category': 'DOU',
@@ -274,7 +274,7 @@ class EntryCreateUpdateFormTests(TestSetupMixin, TestCase):
         initial data or new entry with doubles as first in choices (b/c entries
         already created for other categories)
         """
-        entry = mommy.make(Entry, user=self.user, category='DOU')
+        entry = baker.make(Entry, user=self.user, category='DOU')
         form = EntryCreateUpdateForm(
             instance=entry, user=self.user, initial_data={}
         )
@@ -286,18 +286,18 @@ class EntryCreateUpdateFormTests(TestSetupMixin, TestCase):
         )
         self.assertFalse(form.show_doubles)
 
-        user = mommy.make(User)
+        user = baker.make(User)
         form = EntryCreateUpdateForm(
             user=user, initial_data={'category': 'DOU'}
         )
         self.assertTrue(form.show_doubles)
 
         # make entries for all preceding categories in the choices list
-        mommy.make(Entry, user=user, category='BEG')
-        mommy.make(Entry, user=user, category='INT')
-        mommy.make(Entry, user=user, category='ADV')
-        mommy.make(Entry, user=user, category='PRO')
-        mommy.make(Entry, user=user, category='SMP')
+        baker.make(Entry, user=user, category='BEG')
+        baker.make(Entry, user=user, category='INT')
+        baker.make(Entry, user=user, category='ADV')
+        baker.make(Entry, user=user, category='PRO')
+        baker.make(Entry, user=user, category='SMP')
 
         form = EntryCreateUpdateForm(user=user, initial_data={})
         self.assertTrue(form.show_doubles)
@@ -306,7 +306,7 @@ class EntryCreateUpdateFormTests(TestSetupMixin, TestCase):
 class SelectedEntryUpdateFormTests(TestSetupMixin, TestCase):
 
     def setUp(self):
-        self.entry = mommy.make(Entry, user=self.user, status='selected')
+        self.entry = baker.make(Entry, user=self.user, status='selected')
 
     def test_submit_form_valid(self):
         data = {
@@ -364,7 +364,7 @@ class SelectedEntryUpdateFormTests(TestSetupMixin, TestCase):
     def test_doubles_partner_email_same_as_user_additional_email(self):
         self.entry.category = 'DOU'
         self.entry.save()
-        mommy.make(EmailAddress, user=self.user, email='other@test.com')
+        baker.make(EmailAddress, user=self.user, email='other@test.com')
         data = {
 
             'song': 'Song title',
@@ -408,7 +408,7 @@ class SelectedEntryUpdateFormTests(TestSetupMixin, TestCase):
     def test_submit_doubles_partner_no_waiver(self):
         self.entry.category = 'DOU'
         self.entry.save()
-        partner = mommy.make(
+        partner = baker.make(
             User, username='partner', email='partner@test.com'
         )
         data = {
@@ -432,11 +432,11 @@ class SelectedEntryUpdateFormTests(TestSetupMixin, TestCase):
     def test_submit_doubles_partner_already_entered(self):
         self.entry.category = 'DOU'
         self.entry.save()
-        partner = mommy.make(
+        partner = baker.make(
             User, username='partner', email='partner@test.com'
         )
-        mommy.make(OnlineDisclaimer, user=partner)
-        mommy.make(Entry, category='DOU', user=partner)
+        baker.make(OnlineDisclaimer, user=partner)
+        baker.make(Entry, category='DOU', user=partner)
 
         data = {
             'song': 'Song title',
@@ -460,10 +460,10 @@ class SelectedEntryUpdateFormTests(TestSetupMixin, TestCase):
     def test_submit_doubles(self):
         self.entry.category = 'DOU'
         self.entry.save()
-        partner = mommy.make(
+        partner = baker.make(
             User, username='partner', email='partner@test.com'
         )
-        mommy.make(OnlineDisclaimer, user=partner)
+        baker.make(OnlineDisclaimer, user=partner)
 
         data = {
             'song': 'Song title',

@@ -1,5 +1,5 @@
 from unittest.mock import patch
-from model_mommy import mommy
+from model_bakery import baker
 
 from django.contrib.auth.models import User
 from django.core import mail
@@ -21,13 +21,13 @@ class EntryListViewTests(TestSetupStaffLoginRequiredMixin, TestCase):
         """
         Default view shows current year only; excludes in progress and withdrawn
         """
-        old_entry = mommy.make(Entry, entry_year=2014, status='submitted')
-        in_progress = mommy.make(Entry, status='in_progress')
-        withdrawn = mommy.make(Entry, status='submitted', withdrawn=True)
-        mommy.make(Entry, status='submitted')
-        mommy.make(Entry, status='selected')
-        mommy.make(Entry, status='selected_confirmed')
-        mommy.make(Entry, status='rejected')
+        old_entry = baker.make(Entry, entry_year=2014, status='submitted')
+        in_progress = baker.make(Entry, status='in_progress')
+        withdrawn = baker.make(Entry, status='submitted', withdrawn=True)
+        baker.make(Entry, status='submitted')
+        baker.make(Entry, status='selected')
+        baker.make(Entry, status='selected_confirmed')
+        baker.make(Entry, status='rejected')
 
         # 7 entries total
         self.assertEqual(Entry.objects.count(), 7)
@@ -41,7 +41,7 @@ class EntryListViewTests(TestSetupStaffLoginRequiredMixin, TestCase):
         """
         URLs have http:// stripped and > 20 characters are abbreviated
         """
-        entry = mommy.make(
+        entry = baker.make(
             Entry, status='submitted', video_url='http://foo.com'
         )
         self.client.login(username=self.staff_user.username, password='test')
@@ -66,19 +66,19 @@ class EntryListViewTests(TestSetupStaffLoginRequiredMixin, TestCase):
         With category filter, also exclude old, in_progress and withdrawn;
         return the selected category
         """
-        old_entry = mommy.make(
+        old_entry = baker.make(
             Entry, entry_year=2014, status='submitted', category='BEG'
         )
-        in_progress = mommy.make(
+        in_progress = baker.make(
             Entry, status='in_progress', category='BEG'
         )
-        withdrawn = mommy.make(
+        withdrawn = baker.make(
             Entry, status='submitted', withdrawn=True, category='INT'
         )
-        beg1 = mommy.make(Entry, status='submitted', category='BEG')
-        int1 = mommy.make(Entry, status='selected', category='INT')
-        beg2 = mommy.make(Entry, status='rejected', category='BEG')
-        int2 = mommy.make(Entry, status='selected_confirmed', category='INT')
+        beg1 = baker.make(Entry, status='submitted', category='BEG')
+        int1 = baker.make(Entry, status='selected', category='INT')
+        beg2 = baker.make(Entry, status='rejected', category='BEG')
+        int2 = baker.make(Entry, status='selected_confirmed', category='INT')
 
         # 7 entries total
         self.assertEqual(Entry.objects.count(), 7)
@@ -98,19 +98,19 @@ class EntryListViewTests(TestSetupStaffLoginRequiredMixin, TestCase):
         With category filter, also exclude old, in_progress and withdrawn;
         return the selected category
         """
-        old_entry = mommy.make(
+        old_entry = baker.make(
             Entry, entry_year=2014, status='submitted', category='BEG'
         )
-        in_progress = mommy.make(
+        in_progress = baker.make(
             Entry, status='in_progress', category='BEG'
         )
-        withdrawn = mommy.make(
+        withdrawn = baker.make(
             Entry, status='submitted', withdrawn=True, category='INT'
         )
-        submitted = mommy.make(Entry, status='submitted', category='BEG')
-        selected = mommy.make(Entry, status='selected', category='INT')
-        rejected = mommy.make(Entry, status='rejected', category='BEG')
-        selected_confirmed = mommy.make(
+        submitted = baker.make(Entry, status='submitted', category='BEG')
+        selected = baker.make(Entry, status='selected', category='INT')
+        rejected = baker.make(Entry, status='rejected', category='BEG')
+        selected_confirmed = baker.make(
             Entry, status='selected_confirmed', category='INT'
         )
 
@@ -132,19 +132,19 @@ class EntryListViewTests(TestSetupStaffLoginRequiredMixin, TestCase):
         self.assertIn(withdrawn, resp.context_data['entries'])
 
     def test_category_and_status_filters(self):
-        old_entry = mommy.make(
+        old_entry = baker.make(
             Entry, entry_year=2014, status='submitted', category='BEG'
         )
-        in_progress = mommy.make(
+        in_progress = baker.make(
             Entry, status='in_progress', category='BEG'
         )
-        withdrawn = mommy.make(
+        withdrawn = baker.make(
             Entry, status='submitted', withdrawn=True, category='INT'
         )
-        submitted = mommy.make(Entry, status='submitted', category='BEG')
-        selected = mommy.make(Entry, status='selected', category='INT')
-        rejected = mommy.make(Entry, status='rejected', category='BEG')
-        selected_confirmed = mommy.make(
+        submitted = baker.make(Entry, status='submitted', category='BEG')
+        selected = baker.make(Entry, status='selected', category='INT')
+        rejected = baker.make(Entry, status='rejected', category='BEG')
+        selected_confirmed = baker.make(
             Entry, status='selected_confirmed', category='INT'
         )
 
@@ -167,18 +167,18 @@ class EntryListViewTests(TestSetupStaffLoginRequiredMixin, TestCase):
         User id can be passed from the UserList as query param.  Shows all
         user's entries except old ones
         """
-        user = mommy.make(User)
-        old_entry = mommy.make(
+        user = baker.make(User)
+        old_entry = baker.make(
             Entry, entry_year=2014, user=user, status='submitted',
             category='BEG'
         )
-        in_progress = mommy.make(
+        in_progress = baker.make(
             Entry, status='in_progress', user=user, category='BEG'
         )
-        withdrawn = mommy.make(
+        withdrawn = baker.make(
             Entry, status='submitted', withdrawn=True, category='INT', user=user
         )
-        submitted = mommy.make(
+        submitted = baker.make(
             Entry, status='submitted', category='PRO', user=user
         )
         # 4 entries total
@@ -198,19 +198,19 @@ class EntryListViewTests(TestSetupStaffLoginRequiredMixin, TestCase):
         Reset sets filters back to default - exclude in progress, withdrawn
         and old
         """
-        old_entry = mommy.make(
+        old_entry = baker.make(
             Entry, entry_year=2014, status='submitted', category='BEG'
         )
-        in_progress = mommy.make(
+        in_progress = baker.make(
             Entry, status='in_progress', category='BEG'
         )
-        withdrawn = mommy.make(
+        withdrawn = baker.make(
             Entry, status='submitted', withdrawn=True, category='INT'
         )
-        submitted = mommy.make(Entry, status='submitted', category='BEG')
-        selected = mommy.make(Entry, status='selected', category='INT')
-        rejected = mommy.make(Entry, status='rejected', category='BEG')
-        selected_confirmed = mommy.make(
+        submitted = baker.make(Entry, status='submitted', category='BEG')
+        selected = baker.make(Entry, status='selected', category='INT')
+        rejected = baker.make(Entry, status='rejected', category='BEG')
+        selected_confirmed = baker.make(
             Entry, status='selected_confirmed', category='INT'
         )
 
@@ -231,7 +231,7 @@ class EntryListViewTests(TestSetupStaffLoginRequiredMixin, TestCase):
             self.assertNotIn(entry, resp.context_data['entries'])
 
     def test_status_display(self):
-        entry = mommy.make(
+        entry = baker.make(
             Entry, status='submitted', category='BEG', withdrawn=True
         )
         self.client.login(username=self.staff_user.username, password='test')
@@ -314,7 +314,7 @@ class EntryDetailViewTests(TestSetupStaffLoginRequiredMixin, TestCase):
     @classmethod
     def setUpTestData(cls):
         super(EntryDetailViewTests, cls).setUpTestData()
-        entry = mommy.make(Entry)
+        entry = baker.make(Entry)
         cls.url = reverse('ppadmin:entry', args=[entry.entry_ref])
 
 
@@ -328,13 +328,13 @@ class EntrySelectionListViewTests(TestSetupStaffLoginRequiredMixin, TestCase):
         """
         Default view shows current year only; excludes in progress and withdrawn
         """
-        old_entry = mommy.make(Entry, entry_year=2014, status='submitted')
-        in_progress = mommy.make(Entry, status='in_progress')
-        withdrawn = mommy.make(Entry, status='submitted', withdrawn=True)
-        mommy.make(Entry, status='submitted')
-        mommy.make(Entry, status='selected')
-        mommy.make(Entry, status='selected_confirmed')
-        mommy.make(Entry, status='rejected')
+        old_entry = baker.make(Entry, entry_year=2014, status='submitted')
+        in_progress = baker.make(Entry, status='in_progress')
+        withdrawn = baker.make(Entry, status='submitted', withdrawn=True)
+        baker.make(Entry, status='submitted')
+        baker.make(Entry, status='selected')
+        baker.make(Entry, status='selected_confirmed')
+        baker.make(Entry, status='rejected')
 
         # 7 entries total
         self.assertEqual(Entry.objects.count(), 7)
@@ -350,19 +350,19 @@ class EntrySelectionListViewTests(TestSetupStaffLoginRequiredMixin, TestCase):
         With category filter, also exclude old, in_progress and withdrawn;
         return the selected category
         """
-        old_entry = mommy.make(
+        old_entry = baker.make(
             Entry, entry_year=2014, status='submitted', category='BEG'
         )
-        in_progress = mommy.make(
+        in_progress = baker.make(
             Entry, status='in_progress', category='BEG'
         )
-        withdrawn = mommy.make(
+        withdrawn = baker.make(
             Entry, status='submitted', withdrawn=True, category='INT'
         )
-        beg1 = mommy.make(Entry, status='submitted', category='BEG')
-        int1 = mommy.make(Entry, status='selected', category='INT')
-        beg2 = mommy.make(Entry, status='rejected', category='BEG')
-        int2 = mommy.make(Entry, status='selected_confirmed', category='INT')
+        beg1 = baker.make(Entry, status='submitted', category='BEG')
+        int1 = baker.make(Entry, status='selected', category='INT')
+        beg2 = baker.make(Entry, status='rejected', category='BEG')
+        int2 = baker.make(Entry, status='selected_confirmed', category='INT')
 
         # 7 entries total
         self.assertEqual(Entry.objects.count(), 7)
@@ -377,13 +377,13 @@ class EntrySelectionListViewTests(TestSetupStaffLoginRequiredMixin, TestCase):
             self.assertIn(entry, resp.context_data['entries'])
 
     def test_hide_rejected(self):
-        old_entry = mommy.make(Entry, entry_year=2014, status='submitted')
-        in_progress = mommy.make(Entry, status='in_progress')
-        withdrawn = mommy.make(Entry, status='submitted', withdrawn=True)
-        mommy.make(Entry, status='submitted')
-        mommy.make(Entry, status='selected')
-        mommy.make(Entry, status='selected_confirmed')
-        rejected = mommy.make(Entry, status='rejected')
+        old_entry = baker.make(Entry, entry_year=2014, status='submitted')
+        in_progress = baker.make(Entry, status='in_progress')
+        withdrawn = baker.make(Entry, status='submitted', withdrawn=True)
+        baker.make(Entry, status='submitted')
+        baker.make(Entry, status='selected')
+        baker.make(Entry, status='selected_confirmed')
+        rejected = baker.make(Entry, status='rejected')
 
         # 7 entries total
         self.assertEqual(Entry.objects.count(), 7)
@@ -394,10 +394,10 @@ class EntrySelectionListViewTests(TestSetupStaffLoginRequiredMixin, TestCase):
             self.assertNotIn(entry, resp.context_data['entries'])
 
     def test_doubles_filter_shows_extra_doubles_fields(self):
-        mommy.make(Entry, status='submitted', category='BEG')
-        mommy.make(Entry, status='selected', category='DOU')
-        mommy.make(Entry, status='selected_confirmed', category='BEG')
-        mommy.make(Entry, status='rejected', category='DOU')
+        baker.make(Entry, status='submitted', category='BEG')
+        baker.make(Entry, status='selected', category='DOU')
+        baker.make(Entry, status='selected_confirmed', category='BEG')
+        baker.make(Entry, status='rejected', category='DOU')
 
         self.assertEqual(Entry.objects.count(), 4)
 
@@ -425,13 +425,13 @@ class EntryNotifiedListViewTests(TestSetupStaffLoginRequiredMixin, TestCase):
         """
         Default view shows current year only; excludes in progress and withdrawn
         """
-        old_entry = mommy.make(Entry, entry_year=2014, status='submitted')
-        in_progress = mommy.make(Entry, status='in_progress')
-        withdrawn = mommy.make(Entry, status='submitted', withdrawn=True)
-        mommy.make(Entry, status='submitted')
-        notified = mommy.make(Entry, status='selected', notified=True)
-        mommy.make(Entry, status='selected_confirmed')
-        mommy.make(Entry, status='rejected')
+        old_entry = baker.make(Entry, entry_year=2014, status='submitted')
+        in_progress = baker.make(Entry, status='in_progress')
+        withdrawn = baker.make(Entry, status='submitted', withdrawn=True)
+        baker.make(Entry, status='submitted')
+        notified = baker.make(Entry, status='selected', notified=True)
+        baker.make(Entry, status='selected_confirmed')
+        baker.make(Entry, status='rejected')
 
         # 7 entries total
         self.assertEqual(Entry.objects.count(), 7)
@@ -446,14 +446,14 @@ class ToggleSelectionTests(TestSetupStaffLoginRequiredMixin, TestCase):
     @classmethod
     def setUpTestData(cls):
         super(ToggleSelectionTests, cls).setUpTestData()
-        cls.entry = mommy.make(Entry, status='submitted')
+        cls.entry = baker.make(Entry, status='submitted')
         cls.url = reverse('ppadmin:toggle_selected', args=[cls.entry.id])
 
     def setUp(self):
-        self.submitted_entry = mommy.make(Entry, status='submitted')
-        self.selected_entry = mommy.make(Entry, status='selected')
-        self.rejected_entry = mommy.make(Entry, status='rejected')
-        self.selected_confirmed = mommy.make(Entry, status='selected_confirmed')
+        self.submitted_entry = baker.make(Entry, status='submitted')
+        self.selected_entry = baker.make(Entry, status='selected')
+        self.rejected_entry = baker.make(Entry, status='rejected')
+        self.selected_confirmed = baker.make(Entry, status='selected_confirmed')
 
     def select_url(self, entry):
         return reverse('ppadmin:toggle_selected', args=[entry.id])
@@ -529,7 +529,7 @@ class NotifiedSelectionResetTests(TestSetupStaffLoginRequiredMixin, TestCase):
     @classmethod
     def setUpTestData(cls):
         super(NotifiedSelectionResetTests, cls).setUpTestData()
-        cls.entry = mommy.make(Entry, status='selected', notified=True)
+        cls.entry = baker.make(Entry, status='selected', notified=True)
         cls.url = reverse('ppadmin:notified_selection_reset', args=[cls.entry.id])
 
     def test_reset_notified_selection(self):
@@ -555,12 +555,12 @@ class NotifyUsersTests(TestSetupStaffLoginRequiredMixin, TestCase):
         cls.url = reverse('ppadmin:notify_users')
 
     def setUp(self):
-        mommy.make(
+        baker.make(
             Entry, status='selected', user__email='selected@test.com')
-        mommy.make(Entry, status='selected', notified=True)
-        mommy.make(Entry, status='submitted')
-        mommy.make(Entry, status='rejected', user__email='rejected@test.com')
-        mommy.make(Entry, status='rejected', notified=True)
+        baker.make(Entry, status='selected', notified=True)
+        baker.make(Entry, status='submitted')
+        baker.make(Entry, status='rejected', user__email='rejected@test.com')
+        baker.make(Entry, status='rejected', notified=True)
 
     def test_notify_selected_entries(self):
         self.client.login(username=self.staff_user.username, password='test')

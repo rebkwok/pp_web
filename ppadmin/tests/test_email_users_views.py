@@ -1,5 +1,5 @@
 from unittest.mock import patch
-from model_mommy import mommy
+from model_bakery import baker
 
 from django.urls import reverse
 from django.core import mail
@@ -19,7 +19,7 @@ class EmailUsersTests(TestSetupStaffLoginRequiredMixin, TestCase):
 
         # 12 users total; 10 created here, staff user and non-staff user
         for i in range(10):
-            mommy.make(
+            baker.make(
                 User, first_name='Test{}'.format(i),
                 last_name='User{}'.format(i),
                 email='Test{}@testuser.com'.format(i)

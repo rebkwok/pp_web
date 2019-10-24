@@ -1,4 +1,4 @@
-from model_mommy import mommy
+from model_bakery import baker
 
 from django.urls import reverse
 from django.test import TestCase
@@ -15,7 +15,7 @@ class TestViews(TestCase):
         cls.url = reverse('payments:paypal_confirm')
 
     def test_confirm_return(self):
-        entry = mommy.make(Entry)
+        entry = baker.make(Entry)
         resp = self.client.post(
             self.url,
             {

@@ -1,4 +1,4 @@
-from model_mommy import mommy
+from model_bakery import baker
 from django.test import TestCase
 
 from entries.models import Entry
@@ -11,7 +11,7 @@ from ..models import create_entry_paypal_transaction
 class PayPalFormTests(TestCase):
 
     def test_PayPalPaymentsListForm_renders_buy_it_now_button(self):
-        entry = mommy.make(Entry)
+        entry = baker.make(Entry)
         pptrans = create_entry_paypal_transaction(entry.user, entry, 'video')
         form = PayPalPaymentsListForm(
             initial=get_paypal_dict(

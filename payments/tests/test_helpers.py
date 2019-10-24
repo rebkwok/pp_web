@@ -1,5 +1,5 @@
 from datetime import datetime
-from model_mommy import mommy
+from model_bakery import baker
 
 from django.contrib.auth.models import User
 from django.test import TestCase, Client
@@ -12,8 +12,8 @@ from ..models import create_entry_paypal_transaction, PaypalEntryTransaction
 class TestHelpers(TestCase):
 
     def test_create_entry_transaction(self):
-        user = mommy.make(User)
-        entry = mommy.make(Entry)
+        user = baker.make(User)
+        entry = baker.make(Entry)
         ppt = create_entry_paypal_transaction(user, entry, 'video')
         self.assertEqual(ppt.entry, entry)
         self.assertEqual(ppt.invoice_id,'{}-video-inv#001'.format(entry.entry_ref))
@@ -21,8 +21,8 @@ class TestHelpers(TestCase):
         self.assertEqual(str(ppt), ppt.invoice_id)
 
     def test_try_to_create_existing_entry_transaction(self):
-        user = mommy.make(User)
-        entry = mommy.make(Entry)
+        user = baker.make(User)
+        entry = baker.make(Entry)
         ppt = create_entry_paypal_transaction(user, entry, 'video')
         self.assertEqual(ppt.entry, entry)
         self.assertEqual(ppt.invoice_id, '{}-video-inv#001'.format(entry.entry_ref))
@@ -38,8 +38,8 @@ class TestHelpers(TestCase):
         transaction_id, we do need to create a new transaction, with new
         invoice number with incremented counter
         """
-        user = mommy.make(User)
-        entry = mommy.make(Entry)
+        user = baker.make(User)
+        entry = baker.make(Entry)
         ppt = create_entry_paypal_transaction(user, entry, 'video')
         self.assertEqual(ppt.entry, entry)
         self.assertEqual(ppt.invoice_id, '{}-video-inv#001'.format(entry.entry_ref))

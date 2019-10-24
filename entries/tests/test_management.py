@@ -4,7 +4,7 @@ import os
 from datetime import datetime, timedelta
 from io import StringIO
 from unittest.mock import patch
-from model_mommy import mommy
+from model_bakery import baker
 
 from django.test import TestCase, override_settings
 from django.conf import settings
@@ -31,7 +31,7 @@ class ManagementCommandsTests(TestCase):
         sys.stdout = self.saved_stdout
 
     def test_email_warnings(self):
-        mommy.make(Entry, _quantity=5)
+        baker.make(Entry, _quantity=5)
         for i, entry in enumerate(Entry.objects.all()):
             entry.user.email = 'testuser{}@test.com'.format(i)
             entry.user.save()
@@ -42,14 +42,14 @@ class ManagementCommandsTests(TestCase):
 
     def test_email_warnings_sent_for_correct_entries(self):
 
-        in_progress = mommy.make(
+        in_progress = baker.make(
             Entry, status='in_progress', user__email='test_in_progress@test.com'
         )
-        submitted_unpaid = mommy.make(
+        submitted_unpaid = baker.make(
             Entry, status='submitted', video_entry_paid=False,
             user__email='test_unpaid@test.com'
         )
-        submitted_paid = mommy.make(
+        submitted_paid = baker.make(
             Entry, status='submitted', video_entry_paid=True,
             user__email='test_paid@test.com'
         )
@@ -74,10 +74,10 @@ class ManagementCommandsTests(TestCase):
         )
 
     def test_no_warnings_to_send(self):
-        mommy.make(
+        baker.make(
             Entry, status='selected', user__email='test_in_progress@test.com'
         )
-        mommy.make(
+        baker.make(
             Entry, status='submitted', video_entry_paid=True,
             user__email='test_unpaid@test.com'
         )
@@ -93,18 +93,18 @@ class ManagementCommandsTests(TestCase):
         )
 
     def test_withdraw_submitted_unpaid(self):
-        in_progress = mommy.make(
+        in_progress = baker.make(
             Entry, status='in_progress', user__email='test_in_progress@test.com'
         )
-        submitted_unpaid = mommy.make(
+        submitted_unpaid = baker.make(
             Entry, status='submitted', video_entry_paid=False,
             user__email='test_unpaid@test.com'
         )
-        submitted_unpaid1 = mommy.make(
+        submitted_unpaid1 = baker.make(
             Entry, status='submitted', video_entry_paid=False,
             user__email='test_unpaid1@test.com'
         )
-        submitted_paid = mommy.make(
+        submitted_paid = baker.make(
             Entry, status='submitted', video_entry_paid=True,
             user__email='test_paid@test.com'
         )
@@ -132,10 +132,10 @@ class ManagementCommandsTests(TestCase):
             self.assertTrue(entry.withdrawn)
 
     def test_no_submitted_entries_to_withdraw(self):
-        mommy.make(
+        baker.make(
             Entry, status='selected', user__email='test_in_progress@test.com'
         )
-        mommy.make(
+        baker.make(
             Entry, status='submitted', video_entry_paid=True,
             user__email='test_unpaid@test.com'
         )
@@ -161,18 +161,18 @@ class ManagementCommandsTests(TestCase):
         )
 
         # notified 4 days ago
-        unconfirmed = mommy.make(
+        unconfirmed = baker.make(
             Entry, status='selected', notified=True,
             notified_date=datetime(2016, 2, 16, 19, 0, tzinfo=timezone.utc),
             reminder_sent=False, user__email='unconfirmed@test.com'
         )
-        confirmed_unpaid = mommy.make(
+        confirmed_unpaid = baker.make(
             Entry, status='selected_confirmed', notified=True,
             selected_entry_paid=False,
             notified_date=datetime(2016, 2, 16, 19, 0, tzinfo=timezone.utc),
             reminder_sent=False, user__email='confirmed_unpaid@test.com'
         )
-        confirmed_paid = mommy.make(
+        confirmed_paid = baker.make(
             Entry, status='selected_confirmed', notified=True,
             selected_entry_paid=True,
             notified_date=datetime(2016, 2, 16, 19, 0, tzinfo=timezone.utc),
@@ -180,24 +180,24 @@ class ManagementCommandsTests(TestCase):
         )
 
         # notified 5 days 1 hr ago
-        unconfirmed1 = mommy.make(
+        unconfirmed1 = baker.make(
             Entry, status='selected', notified=True,
             notified_date=datetime(2016, 2, 15, 18, 0, tzinfo=timezone.utc),
             reminder_sent=False, user__email='unconfirmed1@test.com'
         )
-        confirmed_unpaid1 = mommy.make(
+        confirmed_unpaid1 = baker.make(
             Entry, status='selected_confirmed', notified=True,
             selected_entry_paid=False,
             notified_date=datetime(2016, 2, 15, 18, 0, tzinfo=timezone.utc),
             reminder_sent=False, user__email='confirmed_unpaid1@test.com'
         )
-        confirmed_paid1 = mommy.make(
+        confirmed_paid1 = baker.make(
             Entry, status='selected_confirmed', notified=True,
             selected_entry_paid=True,
             notified_date=datetime(2016, 2, 15, 18, 0, tzinfo=timezone.utc),
             reminder_sent=False, user__email='confirmed_paid1@test.com'
         )
-        reminder_already_sent = mommy.make(
+        reminder_already_sent = baker.make(
             Entry, status='selected', notified=True,
             notified_date=datetime(2016, 2, 15, 18, 0, tzinfo=timezone.utc),
             reminder_sent=True, user__email='already_sent@test.com'
@@ -231,18 +231,18 @@ class ManagementCommandsTests(TestCase):
         )
 
         # notified 6 days ago, reminders already sent
-        unconfirmed = mommy.make(
+        unconfirmed = baker.make(
             Entry, status='selected', notified=True,
             notified_date=datetime(2016, 2, 14, 19, 0, tzinfo=timezone.utc),
             reminder_sent=True, user__email='unconfirmed@test.com'
         )
-        confirmed_unpaid = mommy.make(
+        confirmed_unpaid = baker.make(
             Entry, status='selected_confirmed', notified=True,
             selected_entry_paid=False,
             notified_date=datetime(2016, 2, 14, 19, 0, tzinfo=timezone.utc),
             reminder_sent=True, user__email='confirmed_unpaid@test.com'
         )
-        confirmed_paid = mommy.make(
+        confirmed_paid = baker.make(
             Entry, status='selected_confirmed', notified=True,
             selected_entry_paid=True,
             notified_date=datetime(2016, 2, 14, 19, 0, tzinfo=timezone.utc),
@@ -250,18 +250,18 @@ class ManagementCommandsTests(TestCase):
         )
 
         # notified 7 days 1 hr ago, reminders already sent
-        unconfirmed1 = mommy.make(
+        unconfirmed1 = baker.make(
             Entry, status='selected', notified=True,
             notified_date=datetime(2016, 2, 13, 18, 0, tzinfo=timezone.utc),
             reminder_sent=True, user__email='unconfirmed1@test.com'
         )
-        confirmed_unpaid1 = mommy.make(
+        confirmed_unpaid1 = baker.make(
             Entry, status='selected_confirmed', notified=True,
             selected_entry_paid=False,
             notified_date=datetime(2016, 2, 13, 18, 0, tzinfo=timezone.utc),
             reminder_sent=True, user__email='confirmed_unpaid1@test.com'
         )
-        confirmed_paid1 = mommy.make(
+        confirmed_paid1 = baker.make(
             Entry, status='selected_confirmed', notified=True,
             selected_entry_paid=True,
             notified_date=datetime(2016, 2, 13, 18, 0, tzinfo=timezone.utc),
@@ -310,13 +310,13 @@ class ManagementCommandsTests(TestCase):
         )
 
         # notified 6 days ago, reminders already sent
-        mommy.make(
+        baker.make(
             Entry, status='selected', notified=True,
             notified_date=datetime(2016, 2, 14, 19, 0, tzinfo=timezone.utc),
             reminder_sent=True, user__email='unconfirmed@test.com'
         )
         # reminded > 7 days ago, paid, never reminded
-        mommy.make(
+        baker.make(
             Entry, status='selected_confirmed', notified=True,
             selected_entry_paid=True,
             notified_date=datetime(2016, 2, 10, 18, 0, tzinfo=timezone.utc),
@@ -403,21 +403,21 @@ class ManagementCommandsTests(TestCase):
         management.call_command('email_entry_info_reminder')
 
         # 2 without song or bio
-        no_song_or_bio = mommy.make(
+        no_song_or_bio = baker.make(
             Entry, status='selected_confirmed', song="song", _quantity=2
         )
         # 2 with song but not bio
-        no_bio = mommy.make(
+        no_bio = baker.make(
             Entry, status='selected_confirmed', song="song", _quantity=2
         )
         # 2 with bio but not song
-        no_song = mommy.make(
+        no_song = baker.make(
             Entry, status='selected_confirmed', biography="bio", _quantity=2
         )
         # no song/bio, not selected_confirmed or withdrawn
-        mommy.make(Entry, status='selected')
-        mommy.make(Entry, status='selected_confirmed', withdrawn=True)
-        mommy.make(Entry, status='submitted')
+        baker.make(Entry, status='selected')
+        baker.make(Entry, status='selected_confirmed', withdrawn=True)
+        baker.make(Entry, status='submitted')
 
         # make sure users have valid emails
         for i, entry in enumerate(Entry.objects.all()):

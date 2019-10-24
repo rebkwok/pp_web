@@ -1,6 +1,6 @@
 import os
 
-from model_mommy import mommy
+from model_bakery import baker
 
 from django.conf import settings
 from django.test import TestCase, override_settings
@@ -57,17 +57,17 @@ class EntryListViewTests(TestSetupLoginRequiredMixin, TestCase):
         cls.url = reverse('entries:user_entries')
 
     def test_shows_all_users_entries(self):
-        mommy.make(Entry, user=self.user, category='BEG')
-        mommy.make(Entry, user=self.user, category='INT')
-        mommy.make(Entry, category='BEG')
-        mommy.make(Entry, category='INT')
+        baker.make(Entry, user=self.user, category='BEG')
+        baker.make(Entry, user=self.user, category='INT')
+        baker.make(Entry, category='BEG')
+        baker.make(Entry, category='INT')
         self.client.login(username=self.user.username, password='test')
         resp = self.client.get(self.url)
         self.assertEqual(len(resp.context_data['entries']), 2)
 
     def test_entry_in_progress(self):
         # shows correct status, no paypal buttons, edit and delete button
-        entry = mommy.make(Entry, user=self.user)
+        entry = baker.make(Entry, user=self.user)
         self.client.login(username=self.user.username, password='test')
         resp = self.client.get(self.url)
         entries = resp.context_data['entries']
@@ -82,7 +82,7 @@ class EntryListViewTests(TestSetupLoginRequiredMixin, TestCase):
 
     def test_entry_submitted(self):
         # shows correct status, paypal button for video, edit and withdraw btns
-        entry = mommy.make(Entry, user=self.user, status='submitted')
+        entry = baker.make(Entry, user=self.user, status='submitted')
         self.client.login(username=self.user.username, password='test')
         resp = self.client.get(self.url)
         entries = resp.context_data['entries']
@@ -110,7 +110,7 @@ class EntryListViewTests(TestSetupLoginRequiredMixin, TestCase):
     def test_entry_selected(self):
         # shows correct status, no paypal button for payments,
         # edit and withdraw btns
-        entry = mommy.make(Entry, user=self.user, status='selected')
+        entry = baker.make(Entry, user=self.user, status='selected')
         self.client.login(username=self.user.username, password='test')
         resp = self.client.get(self.url)
         entries = resp.context_data['entries']
@@ -129,7 +129,7 @@ class EntryListViewTests(TestSetupLoginRequiredMixin, TestCase):
     def test_entry_selected_confirmed(self):
         # shows correct status, paypal button for selected payments,
         # edit and withdraw btns
-        entry = mommy.make(Entry, user=self.user, status='selected_confirmed')
+        entry = baker.make(Entry, user=self.user, status='selected_confirmed')
         self.client.login(username=self.user.username, password='test')
         resp = self.client.get(self.url)
         entries = resp.context_data['entries']
@@ -161,7 +161,7 @@ class EntryListViewTests(TestSetupLoginRequiredMixin, TestCase):
 
     def test_entry_rejected(self):
         # shows correct status, paypal button for entry, edit and withdraw btns
-        entry = mommy.make(Entry, user=self.user, status='rejected')
+        entry = baker.make(Entry, user=self.user, status='rejected')
         self.client.login(username=self.user.username, password='test')
         resp = self.client.get(self.url)
         entries = resp.context_data['entries']
@@ -177,7 +177,7 @@ class EntryListViewTests(TestSetupLoginRequiredMixin, TestCase):
     def test_entry_withdrawn(self):
         # shows withdrawn as status, no paypal buttons,
         # no edit/delete/withdraw btns
-        entry = mommy.make(
+        entry = baker.make(
             Entry, user=self.user, status='submitted', withdrawn=True
         )
         self.client.login(username=self.user.username, password='test')
@@ -357,7 +357,7 @@ class EntryUpdateViewTests(TestSetupLoginRequiredMixin, TestCase):
     @classmethod
     def setUpTestData(cls):
         super(EntryUpdateViewTests, cls).setUpTestData()
-        cls.entry = mommy.make(Entry, user=cls.user)
+        cls.entry = baker.make(Entry, user=cls.user)
         cls.url = reverse('entries:edit_entry', args=(cls.entry.entry_ref,))
 
     def setUp(self):
@@ -421,7 +421,7 @@ class EntryUpdateViewTests(TestSetupLoginRequiredMixin, TestCase):
         self.assertEqual(self.entry.video_url, 'http://foo.com')
 
     def test_first_submission_redirects_to_payment_and_emails_user(self):
-        entry = mommy.make(
+        entry = baker.make(
             Entry, user=self.user, category='ADV', status='in_progress'
         )
         url = reverse('entries:edit_entry', args=(entry.entry_ref,))
@@ -455,7 +455,7 @@ class SelectedEntryUpdateViewTests(TestSetupLoginRequiredMixin, TestCase):
     @classmethod
     def setUpTestData(cls):
         super(SelectedEntryUpdateViewTests, cls).setUpTestData()
-        cls.entry = mommy.make(Entry, user=cls.user, status='selected')
+        cls.entry = baker.make(Entry, user=cls.user, status='selected')
         cls.url = reverse(
             'entries:edit_selected_entry', args=(cls.entry.entry_ref,)
         )
@@ -468,7 +468,7 @@ class SelectedEntryUpdateViewTests(TestSetupLoginRequiredMixin, TestCase):
         }
 
     def test_redirect_if_not_selected(self):
-        entry = mommy.make(
+        entry = baker.make(
             Entry, user=self.user, category='INT', status='submitted'
         )
         url = reverse(
@@ -516,14 +516,14 @@ class EntryDeleteViewTests(TestSetupLoginRequiredMixin, TestCase):
     @classmethod
     def setUpTestData(cls):
         super(EntryDeleteViewTests, cls).setUpTestData()
-        cls.entry = mommy.make(Entry, user=cls.user)
+        cls.entry = baker.make(Entry, user=cls.user)
         cls.url = reverse('entries:delete_entry', args=(cls.entry.entry_ref,))
 
     def test_redirect_if_not_in_progress(self):
         """
         Entry can only be deleted if status is "in_progress"
         """
-        entry = mommy.make(
+        entry = baker.make(
             Entry, user=self.user, category='INT', status='submitted'
         )
         self.client.login(username=self.user.username, password='test')
@@ -559,13 +559,13 @@ class EntryWithdrawViewTests(TestSetupLoginRequiredMixin, TestCase):
     @classmethod
     def setUpTestData(cls):
         super(EntryWithdrawViewTests, cls).setUpTestData()
-        cls.entry = mommy.make(Entry, user=cls.user, status='submitted')
+        cls.entry = baker.make(Entry, user=cls.user, status='submitted')
         cls.url = reverse(
             'entries:withdraw_entry', args=(cls.entry.entry_ref,)
         )
 
     def test_redirect_if_already_withdrawn(self):
-        entry = mommy.make(
+        entry = baker.make(
             Entry, user=self.user, category='INT', status='submitted',
             withdrawn=True
         )
@@ -596,7 +596,7 @@ class EntryWithdrawViewTests(TestSetupLoginRequiredMixin, TestCase):
 
     def test_redirects_to_payment_if_selected_confirmed(self):
         self.client.login(username=self.user.username, password='test')
-        entry = mommy.make(
+        entry = baker.make(
             Entry, user=self.user, category='ADV', status='selected_confirmed',
         )
         self.assertEqual(entry.status, 'selected_confirmed')
@@ -621,7 +621,7 @@ class EntryWithdrawViewTests(TestSetupLoginRequiredMixin, TestCase):
         PP only if selected
         """
         self.client.login(username=self.user.username, password='test')
-        entry = mommy.make(
+        entry = baker.make(
             Entry, user=self.user, category='ADV', status='submitted',
         )
         self.client.post(
@@ -677,13 +677,13 @@ class VideoPaymentViewTests(TestSetupLoginRequiredMixin, TestCase):
     @classmethod
     def setUpTestData(cls):
         super(VideoPaymentViewTests, cls).setUpTestData()
-        cls.entry = mommy.make(Entry, user=cls.user, status='submitted')
+        cls.entry = baker.make(Entry, user=cls.user, status='submitted')
         cls.url = reverse(
             'entries:video_payment', args=(cls.entry.entry_ref,)
         )
 
     def setUp(self):
-        self.entry1 =  mommy.make(
+        self.entry1 =  baker.make(
             Entry, user=self.user, category='INT', status='in_progress'
         )
         self.url1 = reverse(
@@ -766,20 +766,20 @@ class DoublePartnerCheckTests(TestSetupMixin, TestCase):
     @classmethod
     def setUpTestData(cls):
         super(DoublePartnerCheckTests, cls).setUpTestData()
-        cls.user_with_disclaimer = mommy.make(User, email='testA@test.com')
-        mommy.make(OnlineDisclaimer, user=cls.user_with_disclaimer)
+        cls.user_with_disclaimer = baker.make(User, email='testA@test.com')
+        baker.make(OnlineDisclaimer, user=cls.user_with_disclaimer)
 
-        cls.user_already_doubles = mommy.make(
+        cls.user_already_doubles = baker.make(
             User, email='testB@test.com'
         )
-        mommy.make(OnlineDisclaimer, user=cls.user_already_doubles)
-        mommy.make(Entry, user=cls.user_already_doubles, category='DOU')
+        baker.make(OnlineDisclaimer, user=cls.user_already_doubles)
+        baker.make(Entry, user=cls.user_already_doubles, category='DOU')
 
-        cls.user_already_other = mommy.make(
+        cls.user_already_other = baker.make(
             User, email='testC@test.com'
         )
-        mommy.make(OnlineDisclaimer, user=cls.user_already_other)
-        mommy.make(Entry, user=cls.user_already_other, category='BEG')
+        baker.make(OnlineDisclaimer, user=cls.user_already_other)
+        baker.make(Entry, user=cls.user_already_other, category='BEG')
 
     def setUp(self):
         self.client.login(username=self.user.username, password='test')
@@ -854,11 +854,11 @@ class EntryConfirmViewTests(TestSetupLoginRequiredMixin, TestCase):
     @classmethod
     def setUpTestData(cls):
         super(EntryConfirmViewTests, cls).setUpTestData()
-        cls.entry = mommy.make(Entry, user=cls.user, status='selected')
+        cls.entry = baker.make(Entry, user=cls.user, status='selected')
         cls.url = reverse('entries:confirm_entry', args=(cls.entry.entry_ref,))
 
     def test_redirect_if_status_not_selected_or_withdrawn(self):
-        entry = mommy.make(Entry, user=self.user, category='INT')
+        entry = baker.make(Entry, user=self.user, category='INT')
         self.client.login(username=self.user.username, password='test')
         url = reverse('entries:confirm_entry', args=(entry.entry_ref,))
 
@@ -900,7 +900,7 @@ class SelectedPaymentViewTests(TestSetupLoginRequiredMixin, TestCase):
     @classmethod
     def setUpTestData(cls):
         super(SelectedPaymentViewTests, cls).setUpTestData()
-        cls.entry = mommy.make(
+        cls.entry = baker.make(
             Entry, user=cls.user, status='selected_confirmed'
         )
         cls.url = reverse(
@@ -908,7 +908,7 @@ class SelectedPaymentViewTests(TestSetupLoginRequiredMixin, TestCase):
         )
 
     def setUp(self):
-        self.entry1 = mommy.make(
+        self.entry1 = baker.make(
             Entry, user=self.user, category='INT', status='submitted'
         )
         self.url1 = reverse(
@@ -930,7 +930,7 @@ class SelectedPaymentViewTests(TestSetupLoginRequiredMixin, TestCase):
         )
 
     def test_entry_withdrawn(self):
-        entry = mommy.make(
+        entry = baker.make(
             Entry, user=self.user, status='selected_confirmed', category='ADV',
             withdrawn=True
         )
@@ -993,7 +993,7 @@ class WithdrawalPaymentViewTests(TestSetupLoginRequiredMixin, TestCase):
     @classmethod
     def setUpTestData(cls):
         super(WithdrawalPaymentViewTests, cls).setUpTestData()
-        cls.entry = mommy.make(
+        cls.entry = baker.make(
             Entry, user=cls.user, status='selected_confirmed',
             withdrawn=True
         )
@@ -1007,7 +1007,7 @@ class WithdrawalPaymentViewTests(TestSetupLoginRequiredMixin, TestCase):
     def test_entry_not_selected_confirmed_and_withdrawn(self):
         self.login()
 
-        entry_not_wd = mommy.make(
+        entry_not_wd = baker.make(
             Entry, user=self.user, category='INT', status='selected_confirmed'
         )
         url = reverse(
@@ -1017,7 +1017,7 @@ class WithdrawalPaymentViewTests(TestSetupLoginRequiredMixin, TestCase):
         self.assertEqual(resp.status_code, 302)
         self.assertIn(resp.url, reverse('permission_denied'))
 
-        entry_not_selected_confirmed = mommy.make(
+        entry_not_selected_confirmed = baker.make(
             Entry, user=self.user, category='ADV', status='submitted',
             withdrawn=True
         )
@@ -1031,7 +1031,7 @@ class WithdrawalPaymentViewTests(TestSetupLoginRequiredMixin, TestCase):
 
     def test_entry_already_paid(self):
         self.login()
-        entry_already_paid = mommy.make(
+        entry_already_paid = baker.make(
             Entry, user=self.user, category='INT', status='selected_confirmed',
             withdrawn=True, withdrawal_fee_paid=True
         )

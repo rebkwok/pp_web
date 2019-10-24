@@ -1,6 +1,6 @@
 from datetime import datetime
 from unittest.mock import patch
-from model_mommy import mommy
+from model_bakery import baker
 
 from django.conf import settings
 from django.test import TestCase
@@ -13,7 +13,7 @@ from ..models import Entry
 class EntryModelTests(TestSetupMixin, TestCase):
 
     def test_str(self):
-        entry = mommy.make(Entry, user=self.user, category='INT')
+        entry = baker.make(Entry, user=self.user, category='INT')
         entry.entry_ref = 'ref'
         self.assertEqual(
             str(entry),
@@ -23,7 +23,7 @@ class EntryModelTests(TestSetupMixin, TestCase):
         )
 
     def test_entry_ref_set_on_save(self):
-        entry = mommy.make(Entry, user=self.user, category='INT')
+        entry = baker.make(Entry, user=self.user, category='INT')
         entry.save()
         self.assertIsNotNone(entry.entry_ref)
         self.assertEqual(len(entry.entry_ref), 22)
@@ -32,7 +32,7 @@ class EntryModelTests(TestSetupMixin, TestCase):
     def test_submitted_date(self, mock_tz):
         mock_now = datetime(2016, 1, 3, tzinfo=timezone.utc)
         mock_tz.now.return_value = mock_now
-        entry = mommy.make(Entry, user=self.user, category='INT')
+        entry = baker.make(Entry, user=self.user, category='INT')
         self.assertEqual(entry.status, 'in_progress')
         self.assertIsNone(entry.date_submitted)
 

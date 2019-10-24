@@ -1,4 +1,4 @@
-from model_mommy import mommy
+from model_bakery import baker
 
 from django.contrib.auth.models import User
 from django.urls import reverse
@@ -18,7 +18,7 @@ class TestSetupMixin(object):
             first_name='Test', last_name='User',
             username='test', email='test@test.com', password='test'
         )
-        mommy.make(OnlineDisclaimer, user=cls.user)
+        baker.make(OnlineDisclaimer, user=cls.user)
         make_data_privacy_agreement(cls.user)
 
         cls.user_no_disclaimer = User.objects.create_user(

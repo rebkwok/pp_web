@@ -5,7 +5,7 @@ import pytz
 from datetime import date, datetime, timedelta
 from decimal import Decimal
 from unittest.mock import Mock, patch
-from model_mommy import mommy
+from model_bakery import baker
 
 from django.conf import settings
 from django.core import management, mail
@@ -68,7 +68,7 @@ class ProfileUpdateViewTests(TestSetupMixin, TestCase):
         """
         Test custom view to allow users to update their details
         """
-        user = mommy.make(User, username="test_user",
+        user = baker.make(User, username="test_user",
                           first_name="Test",
                           last_name="User",
                           )
@@ -106,7 +106,7 @@ class ProfileTests(TestSetupMixin, TestCase):
             username='test_disc', password='test'
         )
         make_data_privacy_agreement(cls.user_with_online_disclaimer)
-        mommy.make(OnlineDisclaimer, user=cls.user_with_online_disclaimer)
+        baker.make(OnlineDisclaimer, user=cls.user_with_online_disclaimer)
         cls.user_no_disclaimer = User.objects.create_user(
             username='test_no_disc', password='test'
         )
@@ -172,7 +172,7 @@ class ProfileTests(TestSetupMixin, TestCase):
 
     def test_profile_requires_signed_data_privacy(self):
         self.client.login(username=self.user, password='test')
-        mommy.make(DataPrivacyPolicy)
+        baker.make(DataPrivacyPolicy)
         resp = self.client.get(self.url)
 
         # request = self.factory.get(self.url)
@@ -317,7 +317,7 @@ class CustomSignUpViewTests(TestSetupMixin, TestCase):
         )
 
     def test_signup_dataprotection_confirmation_required(self):
-        mommy.make(DataPrivacyPolicy)
+        baker.make(DataPrivacyPolicy)
         form_data = self.form_data.copy()
         form_data.update({'data_privacy_confirmation': False})
 
@@ -334,7 +334,7 @@ class CustomSignUpViewTests(TestSetupMixin, TestCase):
         )
 
     def test_sign_up_with_data_protection(self):
-        dp = mommy.make(DataPrivacyPolicy)
+        dp = baker.make(DataPrivacyPolicy)
         SignedDataPrivacy.objects.all().delete()
         form_data = self.form_data.copy()
         form_data.update({'data_privacy_confirmation': True})
@@ -349,8 +349,8 @@ class CustomSignUpViewTests(TestSetupMixin, TestCase):
 
 class DisclaimerModelTests(TestCase):
     def test_online_disclaimer_str(self):
-        user = mommy.make(User, username='testuser')
-        disclaimer = mommy.make(OnlineDisclaimer, user=user)
+        user = baker.make(User, username='testuser')
+        disclaimer = baker.make(OnlineDisclaimer, user=user)
         self.assertEqual(str(disclaimer), 'testuser - {}'.format(
             disclaimer.date.astimezone(
                 pytz.timezone('Europe/London')
@@ -358,13 +358,13 @@ class DisclaimerModelTests(TestCase):
         ))
 
     def test_default_terms_set_on_new_online_disclaimer(self):
-        disclaimer = mommy.make(
+        disclaimer = baker.make(
             OnlineDisclaimer, waiver_terms="foo"
         )
         self.assertEqual(disclaimer.waiver_terms, WAIVER_TERMS)
 
     def test_cannot_update_terms_after_first_save(self):
-        disclaimer = mommy.make(OnlineDisclaimer)
+        disclaimer = baker.make(OnlineDisclaimer)
         self.assertEqual(disclaimer.waiver_terms, WAIVER_TERMS)
 
         with self.assertRaises(ValueError):
@@ -481,7 +481,7 @@ class DisclaimerCreateViewTests(TestSetupMixin, TestCase):
         self.assertEqual(OnlineDisclaimer.objects.count(), 2)
 
     def test_message_shown_if_no_usable_password(self):
-        user = mommy.make(User)
+        user = baker.make(User)
         user.set_unusable_password()
         user.save()
 
@@ -494,7 +494,7 @@ class DisclaimerCreateViewTests(TestSetupMixin, TestCase):
 
     def test_cannot_complete_disclaimer_without_usable_password(self):
         self.assertEqual(OnlineDisclaimer.objects.count(), 1)
-        user = mommy.make(User)
+        user = baker.make(User)
         user.set_unusable_password()
         user.save()
 
@@ -523,7 +523,7 @@ class DataProtectionViewTests(TestSetupMixin, TestCase):
 class ExportDisclaimersTests(TestCase):
 
     def setUp(self):
-        mommy.make(OnlineDisclaimer, _quantity=10)
+        baker.make(OnlineDisclaimer, _quantity=10)
 
     def test_export_disclaimers_creates_default_bu_file(self):
         bu_file = os.path.join(settings.LOG_FOLDER, 'waivers_bu.csv')
@@ -554,7 +554,7 @@ class ExportDisclaimersTests(TestCase):
 class ExportEncryptedDisclaimersTests(TestCase):
 
     def setUp(self):
-        mommy.make(OnlineDisclaimer, _quantity=10)
+        baker.make(OnlineDisclaimer, _quantity=10)
 
     def test_export_disclaimers_creates_default_bu_file(self):
         bu_file = os.path.join(settings.LOG_FOLDER, 'waivers.bu')
@@ -623,7 +623,7 @@ class ImportDisclaimersTests(TestCase):
 
     def test_import_disclaimers(self):
         for username in ['test_1', 'test_2', 'test_3']:
-            mommy.make(User, username=username)
+            baker.make(User, username=username)
         self.assertFalse(OnlineDisclaimer.objects.exists())
         management.call_command('import_disclaimer_data', file=self.bu_file)
         self.assertEqual(OnlineDisclaimer.objects.count(), 3)
@@ -634,9 +634,9 @@ class ImportDisclaimersTests(TestCase):
 
         # if disclaimer already exists for a user, it isn't imported
         for username in ['test_1', 'test_2']:
-            mommy.make(User, username=username)
-        test_3 = mommy.make(User, username='test_3')
-        mommy.make(OnlineDisclaimer, user=test_3, emergency_contact_name="Don")
+            baker.make(User, username=username)
+        test_3 = baker.make(User, username='test_3')
+        baker.make(OnlineDisclaimer, user=test_3, emergency_contact_name="Don")
 
         self.assertEqual(OnlineDisclaimer.objects.count(), 1)
         management.call_command('import_disclaimer_data', file=self.bu_file)
@@ -668,17 +668,17 @@ class ImportDisclaimersTests(TestCase):
         import_disclaimer_data_logger.warning = Mock()
         import_disclaimer_data_logger.info = Mock()
 
-        test_1 = mommy.make(User, username='test_1')
-        test_2 = mommy.make(User, username='test_2')
-        test_3 = mommy.make(User, username='test_3')
-        mommy.make(
+        test_1 = baker.make(User, username='test_1')
+        test_2 = baker.make(User, username='test_2')
+        test_3 = baker.make(User, username='test_3')
+        baker.make(
             OnlineDisclaimer, user=test_2,
             date=datetime(2015, 1, 15, 15, 43, 19, 747445, tzinfo=timezone.utc),
             date_updated=datetime(
                 2016, 1, 6, 15, 9, 16, 920219, tzinfo=timezone.utc
             )
         ),
-        mommy.make(
+        baker.make(
             OnlineDisclaimer, user=test_3,
             date=datetime(2016, 2, 18, 16, 9, 16, 920219, tzinfo=timezone.utc),
         )
@@ -708,7 +708,7 @@ class ImportDisclaimersTests(TestCase):
         )
 
     def test_imported_data_is_correct(self):
-        test_1 = mommy.make(User, username='test_1')
+        test_1 = baker.make(User, username='test_1')
         management.call_command('import_disclaimer_data', file=self.bu_file)
         test_1_disclaimer = OnlineDisclaimer.objects.get(user=test_1)
 
@@ -795,7 +795,7 @@ class SignedDataPrivacyModelTests(TestCase):
         DataPrivacyPolicy.objects.create(content='Foo')
 
     def setUp(self):
-        self.user = mommy.make(User)
+        self.user = baker.make(User)
 
     def test_cached_on_save(self):
         make_data_privacy_agreement(self.user)
@@ -847,14 +847,14 @@ class SignedDataPrivacyCreateViewTests(TestSetupMixin, TestCase):
         self.assertEqual(resp.url, reverse('entries:entries_home'))
 
         # make new policy
-        mommy.make(DataPrivacyPolicy)
+        baker.make(DataPrivacyPolicy)
         self.assertFalse(has_active_data_privacy_agreement(self.user))
         resp = self.client.get(self.url)
         self.assertEqual(resp.status_code, 200)
 
     def test_create_new_agreement(self):
         # make new policy
-        mommy.make(DataPrivacyPolicy)
+        baker.make(DataPrivacyPolicy)
         self.assertFalse(has_active_data_privacy_agreement(self.user))
 
         self.client.post(self.url, data={'confirm': True})
@@ -865,8 +865,8 @@ class DataPrivacyAgreementFormTests(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        cls.user = mommy.make(User)
-        mommy.make(DataPrivacyPolicy)
+        cls.user = baker.make(User)
+        baker.make(DataPrivacyPolicy)
 
     def test_confirm_required(self):
         form = DataPrivacyAgreementForm(next_url='/', data={})
@@ -886,7 +886,7 @@ class CookiePolicyAdminFormTests(TestCase):
         self.assertEqual(form.fields['version'].help_text, '')
         self.assertEqual(form.fields['version'].initial, 1.0)
 
-        mommy.make(CookiePolicy, version=1.0)
+        baker.make(CookiePolicy, version=1.0)
         # help text added if updating
         form = CookiePolicyAdminForm()
         self.assertEqual(
@@ -896,7 +896,7 @@ class CookiePolicyAdminFormTests(TestCase):
         self.assertIsNone(form.fields['version'].initial)
 
     def test_validation_error_if_no_changes(self):
-        policy = mommy.make(CookiePolicy, version=1.0, content='Foo')
+        policy = baker.make(CookiePolicy, version=1.0, content='Foo')
         form = CookiePolicyAdminForm(
             data={
                 'content': 'Foo',
@@ -922,7 +922,7 @@ class DataPrivacyPolicyAdminFormTests(TestCase):
         self.assertEqual(form.fields['version'].help_text, '')
         self.assertEqual(form.fields['version'].initial, 1.0)
 
-        mommy.make(DataPrivacyPolicy, version=1.0)
+        baker.make(DataPrivacyPolicy, version=1.0)
         # help text added if updating
         form = DataPrivacyPolicyAdminForm()
         self.assertEqual(
@@ -932,7 +932,7 @@ class DataPrivacyPolicyAdminFormTests(TestCase):
         self.assertIsNone(form.fields['version'].initial)
 
     def test_validation_error_if_no_changes(self):
-        policy = mommy.make(DataPrivacyPolicy, version=1.0, content='Foo')
+        policy = baker.make(DataPrivacyPolicy, version=1.0, content='Foo')
         form = DataPrivacyPolicyAdminForm(
             data={
                 'content': 'Foo',

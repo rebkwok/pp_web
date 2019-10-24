@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from model_mommy import mommy
+from model_bakery import baker
 
 from django.contrib.auth.models import User
 from django.contrib.admin.sites import AdminSite
@@ -17,9 +17,9 @@ from ..models import PaypalEntryTransaction, create_entry_paypal_transaction
 class PaymentsAdminTests(TestCase):
 
     def test_paypal_admin_display(self):
-        user = mommy.make(
+        user = baker.make(
             User, first_name='Test', last_name='User')
-        entry = mommy.make(Entry, user=user)
+        entry = baker.make(Entry, user=user)
         pptrans = create_entry_paypal_transaction(user, entry, 'video')
 
         ppentry_admin = admin.PaypalEntryTransactionAdmin(
@@ -34,7 +34,7 @@ class PaymentsAdminTests(TestCase):
             ppentry_admin.get_user(ppentry_query), 'Test User')
 
     def test_paypaladmin_display(self):
-        mommy.make(PayPalIPN, first_name='Mickey', last_name='Mouse')
+        baker.make(PayPalIPN, first_name='Mickey', last_name='Mouse')
         paypal_admin = admin.PayPalAdmin(PayPalIPN, AdminSite())
         query = paypal_admin.get_queryset(None)[0]
         self.assertEqual(paypal_admin.buyer(query), 'Mickey Mouse')
@@ -44,14 +44,14 @@ class PaymentsAdminFiltersTests(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        cls.user = mommy.make(
+        cls.user = baker.make(
             User, first_name="Foo", last_name="Bar", username="foob"
         )
-        cls.user1 = mommy.make(
+        cls.user1 = baker.make(
             User, first_name="Donald", last_name="Duck", username="dd"
         )
         for user in User.objects.all():
-            mommy.make(PaypalEntryTransaction, entry__user=user)
+            baker.make(PaypalEntryTransaction, entry__user=user)
 
     def test_payments_user_filter_choices(self):
         # test that user filter shows formatted choices ordered by first name
