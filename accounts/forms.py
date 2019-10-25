@@ -124,18 +124,6 @@ class ProfileForm(AccountFormMixin, forms.ModelForm):
                 format='%d %b %Y'
             )
     )
-    address = forms.CharField(
-        max_length=255,
-        widget=forms.TextInput(attrs={'class': "form-control"})
-    )
-    postcode = forms.CharField(
-        max_length=10,
-        widget=forms.TextInput(attrs={'class': "form-control"})
-    )
-    phone = forms.CharField(
-        max_length=255, label='phone number',
-        widget=forms.TextInput(attrs={'class': "form-control"})
-    )
 
     def __init__(self, *args, **kwargs):
         super(ProfileForm, self).__init__(*args, **kwargs)

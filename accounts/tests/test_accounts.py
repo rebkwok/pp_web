@@ -77,7 +77,6 @@ class ProfileUpdateViewTests(TestSetupMixin, TestCase):
             url, {
                 'username': user.username,
                 'first_name': 'Fred', 'last_name': user.last_name,
-                'address': '1 test street', 'postcode': 'FOO', 'phone': '1224',
                 'dob': '01 Jan 1990'
             }
         )
