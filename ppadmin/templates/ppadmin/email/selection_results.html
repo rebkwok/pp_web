@@ -22,8 +22,8 @@
         automatically withdrawn and your place offered to another applicant.
     </p>
 
-    <p>Confirm entry: <a href="{{ host }}{% url 'entries:confirm_entry' entry.entry_ref %}">{{ host }}{% url 'entries:confirm_entry' entry.entry_ref %}</a></br>
-       Provide additional entry information: <a href="{{ host }}{% url 'entries:edit_selected_entry' entry.entry_ref %}">{{ host }}{% url 'entries:edit_selected_entry' entry.entry_ref %}</a>
+    <p>Confirm entry: <a href="{{ host }}{% url 'entries:confirm_entry' entry.entry_ref %}">{{ host }}{% url 'entries:confirm_entry' entry.entry_ref %}</a></p>
+    <p>Provide additional entry information: <a href="{{ host }}{% url 'entries:edit_selected_entry' entry.entry_ref %}">{{ host }}{% url 'entries:edit_selected_entry' entry.entry_ref %}</a>
     </p>
 {% else %}
     <p>Thank you for your application to Pole Performance {{ entry.entry_year }}.
