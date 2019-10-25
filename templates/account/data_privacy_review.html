@@ -2,7 +2,8 @@
 {% load static %}
 
 {% block content %}
-    <div class="row container">
+    <div class="container">
+        <div class="extra-top-margin row">
     <h1>Data Privacy Policy</h1>
 
         <p>Please review our {% if update_needed %}updated {% endif %}data privacy policy before proceeding.</p>
@@ -29,4 +30,7 @@
             <input class="btn btn-success topspace" type="submit" value="Submit" />
         </form>
     </div>
+    </div>
 {% endblock content %}
+
+{% block footer_class %}{% endblock %}
