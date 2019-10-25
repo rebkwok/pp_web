@@ -66,7 +66,7 @@ class EntryCreateUpdateForm(EntryFormMixin, forms.ModelForm):
 
         self.fields['video_url'] = forms.CharField(
             max_length=255,  help_text="URL for your video entry",
-            initial="http://",
+            initial="http://",  # don't force user submission to be https, just in case
             widget=forms.TextInput(attrs={'class': "form-control"}),
             required=False,
         )
@@ -127,7 +127,7 @@ class EntryCreateUpdateForm(EntryFormMixin, forms.ModelForm):
 
     def clean_video_url(self):
         video_url = self.cleaned_data['video_url']
-        if video_url == 'http://' and 'submitted' not in self.data:
+        if video_url in ['http://', 'https://'] and 'submitted' not in self.data:
             return ''
         return video_url
 

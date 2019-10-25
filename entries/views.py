@@ -98,7 +98,7 @@ class EntryListView(LoginRequiredMixin, generic.ListView):
             paypal_video_form = None
             paypal_selected_form = None
             if not entry.withdrawn:
-                host = 'http://{}'.format(self.request.META.get('HTTP_HOST'))
+                host = 'https://{}'.format(self.request.META.get('HTTP_HOST'))
                 if entry.status == 'submitted' and not entry.video_entry_paid:
                     # ONLY DO THIS IF PAYPAL BUTTON NEEDED
                     invoice_id = create_entry_paypal_transaction(
@@ -438,7 +438,7 @@ def entry_video_payment(request, ref):
 
     if not entry.video_entry_paid and not \
             entry.status == 'in_progress' and not entry.withdrawn:
-        host = 'http://{}'.format(request.META.get('HTTP_HOST'))
+        host = 'https://{}'.format(request.META.get('HTTP_HOST'))
         invoice_id = create_entry_paypal_transaction(
             request.user, entry, 'video').invoice_id
         paypalform = PayPalPaymentsEntryForm(
@@ -539,7 +539,7 @@ def entry_selected_payment(request, ref):
 
     if entry.status == 'selected_confirmed' and not \
             entry.withdrawn and not entry.selected_entry_paid:
-        host = 'http://{}'.format(request.META.get('HTTP_HOST'))
+        host = 'https://{}'.format(request.META.get('HTTP_HOST'))
         invoice_id = create_entry_paypal_transaction(
             request.user, entry, 'selected').invoice_id
         paypalform = PayPalPaymentsEntryForm(
@@ -573,7 +573,7 @@ def entry_withdrawal_payment(request, ref):
             or entry.withdrawal_fee_paid:
         return HttpResponseRedirect(reverse('permission_denied'))
     else:
-        host = 'http://{}'.format(request.META.get('HTTP_HOST'))
+        host = 'https://{}'.format(request.META.get('HTTP_HOST'))
         invoice_id = create_entry_paypal_transaction(
             request.user, entry, 'withdrawal').invoice_id
         paypalform = PayPalPaymentsEntryForm(

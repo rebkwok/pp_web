@@ -39,7 +39,7 @@ class EntryListViewTests(TestSetupStaffLoginRequiredMixin, TestCase):
 
     def test_abbreviations_for_long_url(self):
         """
-        URLs have http:// stripped and > 20 characters are abbreviated
+        URLs have http:// or https:// stripped and > 20 characters are abbreviated
         """
         entry = baker.make(
             Entry, status='submitted', video_url='http://foo.com'
@@ -55,10 +55,11 @@ class EntryListViewTests(TestSetupStaffLoginRequiredMixin, TestCase):
         self.assertIn('>foo1234567890123.com<', resp.rendered_content)
         self.assertNotIn('>http://foo1234567890123.com<', resp.rendered_content)
 
-        entry.video_url = 'http://foo1234567890123456789.com'
+        entry.video_url = 'https://foo1234567890123456789.com'
         entry.save()
         resp = self.client.get(self.url)
         self.assertIn('>foo12345678901234...<', resp.rendered_content)
+        self.assertNotIn('>https://foo123', resp.rendered_content)
 
     def test_category_filter(self):
         """

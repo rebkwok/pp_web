@@ -53,7 +53,7 @@ def abbr_email(email):
 
 @register.filter
 def abbr_url(url):
-    url = url.replace("http://", '')
+    url = url.replace("http://", '').replace("https://", '')
     if len(url) > 20:
         return "{}...".format(url[:17])
     return url
