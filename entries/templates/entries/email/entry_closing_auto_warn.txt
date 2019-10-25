@@ -1,4 +1,4 @@
-Pole Performance 2017 Entries Close On {{ entry_close_date }}
+Pole Performance Entries Close On {{ entry_close_date }}
 ---------------------------------------------------------------------
 {% if entry.status == 'in_progress' %}You have an entry still in progress and not submitted for the following category:
 {% else %}You have submitted an entry for the following category but payment for the video entry fee has not been received:

@@ -1,4 +1,4 @@
-Pole Performance 2017
+Pole Performance {{ entry.entry_year }}
 -------------------------------
 This is a reminder that you have not yet completed your entry information for the Pole Performance finals (biography and song choice).
 

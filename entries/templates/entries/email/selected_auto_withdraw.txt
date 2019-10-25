@@ -1,6 +1,6 @@
-Pole Performance 2017 Entry Withdrawn
+Pole Performance {{ entry.entry_year }} Entry Withdrawn
 -----------------------------------------------------
-{% if entry.status == 'selected' %}You have not confirmed your place in the Pole Performance 2017 Finals for the following category within 7 days of notfication, and your entry has now been withdrawn:
+{% if entry.status == 'selected' %}You have not confirmed your place in the Pole Performance {{ entry.entry_year }} Finals for the following category within 7 days of notfication, and your entry has now been withdrawn:
 {% else %}The entry fee payment for your entry for the following category has not been received within 7 days of notfication, and your entry has now been withdrawn:{% endif %}
 - {{ category }}
 

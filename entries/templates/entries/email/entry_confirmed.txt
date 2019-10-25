@@ -1,4 +1,4 @@
-Pole Performance 2017 Finals Entry Confirmation
+Pole Performance {{ entry.entry_year }} Finals Entry Confirmation
 ---------------------------------------------------------------------
 Thank you for confirming acceptance of your entry to the Pole Performance {{ entry.entry_year }} FINALS for the following category:
 - {{ category }}

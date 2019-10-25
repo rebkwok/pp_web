@@ -1,4 +1,4 @@
-Pole Performance 2017 Entries Are Now Closed
+Pole Performance Entries Are Now Closed
 -------------------------------------------------------------
 Payment for the video entry fee for your entry for the following category has not been received and your entry has now been withdrawn
 - {{ category }}

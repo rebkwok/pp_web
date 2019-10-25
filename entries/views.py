@@ -64,7 +64,7 @@ def entries_home(request):
 
 def judging_criteria(request):
     curr_dir = os.path.dirname(os.path.realpath(__file__))
-    file = 'files/judging-critieria-2020.pdf'
+    file = 'files/judging-criteria-2020.pdf'
     return pdf_view(os.path.join(curr_dir, file))
 
 

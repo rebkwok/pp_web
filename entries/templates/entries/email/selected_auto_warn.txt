@@ -1,4 +1,4 @@
-Pole Performance 2017 FINALS
+Pole Performance {{ entry.entry_year }} FINALS
 ----------------------------------------
 {% if entry.status == 'selected' %}You have not yet confirmed your place in the Pole Performance finals for category:
 {% else %}You have not yet paid your entry fee for the Pole Performance finals for category:{% endif %}

@@ -1090,6 +1090,6 @@ class PDFViewTests(TestSetupMixin, TestCase):
         with self.assertRaises(Http404):
             pdf_view(file_path)
 
-        file_path = os.path.join(curr_dir, '..', 'files/pole-performance-judging-criteria.pdf')
+        file_path = os.path.join(curr_dir, '..', 'files/judging-criteria-2020.pdf')
         resp = pdf_view(file_path)
         self.assertEqual(resp.status_code, 200)

@@ -1,8 +1,7 @@
 """
 Email reminders for selected/confirmed entries without completed bio and song
 info
-RUNS ONCE ONLY ON A SPECIFIED DATE (End Feb 2017) - SET AS AT IN CRON OR
-JUST RUN MANUALLY
+RUNS ONCE ONLY ON A SPECIFIED DATE - SET AS AT IN CRON OR JUST RUN MANUALLY
 """
 from django.conf import settings
 from django.core.mail import send_mail

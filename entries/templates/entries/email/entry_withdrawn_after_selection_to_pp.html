@@ -2,7 +2,7 @@
 
 {% load static %}
 {% block messagecontent %}
-<h2>Pole Performance 2017 Finals: ENTRY WITHDRAWN</h2>
+<h2>Pole Performance {{ entry.entry_year }} Finals: ENTRY WITHDRAWN</h2>
 
     <p>The following entry has been withdrawn AFTER {{ status_at_withdrawal|upper }}:</p>
     <p><strong>{{ entry.user.first_name }} {{  entry.user.last_name }} - {{ category }}</strong></p>

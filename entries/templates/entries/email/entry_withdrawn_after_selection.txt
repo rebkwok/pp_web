@@ -1,4 +1,4 @@
-Pole Performance 2017 Finals: ENTRY WITHDRAWN
+Pole Performance {{ entry.entry_year }} Finals: ENTRY WITHDRAWN
 ---------------------------------------------------------------------
 You have withdrawn your entry to the Pole Performance {{ entry.entry_year }} FINALS for the following category:
 - {{ category }}
