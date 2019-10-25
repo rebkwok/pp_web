@@ -38,13 +38,15 @@ class PaypalEntryTransactionAdmin(admin.ModelAdmin):
     list_select_related = ('entry',)
 
     def get_entry_id(self, obj):
-        return obj.entry.id
+        if obj.entry:
+            return obj.entry.id
     get_entry_id.short_description = "Entry id"
 
     def get_user(self, obj):
-        return "{} {}".format(
-            obj.entry.user.first_name, obj.entry.user.last_name
-        )
+        if obj.entry:
+            return "{} {}".format(
+                obj.entry.user.first_name, obj.entry.user.last_name
+            )
     get_user.short_description = "User"
 
 
