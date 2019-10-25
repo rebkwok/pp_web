@@ -140,7 +140,9 @@ class EntryListView(LoginRequiredMixin, generic.ListView):
             entrydict = {
                 'instance': entry,
                 'paypal_video_form': paypal_video_form,
+                'video_fee': VIDEO_ENTRY_FEES[entry.category],
                 'paypal_selected_form': paypal_selected_form,
+                'selected_fee': SELECTED_ENTRY_FEES[entry.category],
                 'can_delete': can_delete,
             }
             entries.append(entrydict)
@@ -148,7 +150,7 @@ class EntryListView(LoginRequiredMixin, generic.ListView):
         return context
 
 
-class EntryMixin(object):
+class EntryMixin:
 
     def form_valid(self, form):
         entry = form.save(commit=False)
