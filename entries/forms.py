@@ -86,9 +86,9 @@ class EntryCreateUpdateForm(EntryFormMixin, forms.ModelForm):
         # remove all categories except late entry categories after first close date
         if late_open and not all_open:
             category_choices = tuple(set(category_choices) - set(LATE_ENTRY_CATEGORY_CHOICES))
+        category_choices = tuple(sorted(category_choices, key=lambda x: CATEGORY_CHOICES_ORDER[x[0]]))
 
-        self.fields['category'].widget.choices = tuple(sorted(category_choices, key=lambda x: CATEGORY_CHOICES_ORDER[x[0]]))
-
+        self.fields['category'].widget.choices = category_choices
         if not current_category:
             self.fields['category'].help_text = "Only one entry per category (you have already entered {}); " \
                                                 "go to My Entries to edit an existing entry,".format(', '.join([cat[1] for cat in entered_categories]))
