@@ -4,10 +4,9 @@ import operator
 from datetime import datetime
 from functools import reduce
 
+from django.conf import settings
 from django.contrib import messages
-from django.urls import reverse
 from django.db.models import Q
-from django.shortcuts import HttpResponseRedirect
 from django.views.generic import ListView
 
 from braces.views import LoginRequiredMixin
@@ -20,12 +19,6 @@ from activitylog.models import ActivityLog
 logger = logging.getLogger(__name__)
 
 
-EMPTY_JOB_TEXT = [
-    'CRON: Auto warn/withdraw selected unconfirmed/unpaid run: no action required',
-
-]
-
-
 class ActivityLogListView(LoginRequiredMixin, StaffUserMixin, ListView):
 
     model = ActivityLog
@@ -35,7 +28,7 @@ class ActivityLogListView(LoginRequiredMixin, StaffUserMixin, ListView):
 
     def get_queryset(self):
         queryset = ActivityLog.objects.exclude(
-            log__in=EMPTY_JOB_TEXT
+            log__in=settings.EMPTY_JOB_TEXT
         ).order_by('-timestamp')
         reset = self.request.GET.get('reset')
         search_submitted = self.request.GET.get('search_submitted')

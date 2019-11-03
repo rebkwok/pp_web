@@ -357,3 +357,10 @@ if env('SHOW_DEBUG_TOOLBAR') and 'test' not in sys.argv:  # pragma: no cover
     DEBUG_TOOLBAR_CONFIG = {
         "SHOW_TOOLBAR_CALLBACK": show_toolbar,
     }
+
+
+# Activitylogs
+EMPTY_JOB_TEXT = ['CRON: Auto warn/withdraw selected unconfirmed/unpaid run: no action required']
+
+S3_LOG_BACKUP_PATH = "s3://backups.polefitstarlet.co.uk/poleperformance_activitylogs"
+S3_LOG_BACKUP_ROOT_FILENAME = "poleperformance_activity_logs_backup"
