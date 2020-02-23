@@ -28,7 +28,7 @@ def view_that_asks_for_money(request):
     # Create the instance.
     form = PayPalPaymentsForm(initial=paypal_dict)
     context = {"form": form}
-    return render_to_response("payment.html", context)
+    return render("payment.html", context)
 """
 
 @csrf_exempt

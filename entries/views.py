@@ -5,8 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.urls import reverse
 from django.http import FileResponse, Http404
-from django.shortcuts import get_object_or_404, HttpResponse, \
-    HttpResponseRedirect, render, render_to_response
+from django.shortcuts import get_object_or_404, HttpResponse, HttpResponseRedirect, render
 from django.template.response import TemplateResponse
 from django.views import generic
 
@@ -470,8 +469,8 @@ def check_partner(request):
         partner_check_dict, _ = check_partner_email(email)
         context.update(**partner_check_dict)
 
-    return render_to_response(
-        'entries/includes/partner_check.txt', context
+    return render(
+        request, 'entries/includes/partner_check.txt', context
     )
 
 
