@@ -9,7 +9,7 @@ from django.contrib import messages
 
 from django.urls import reverse
 from django.shortcuts import get_object_or_404, HttpResponse, \
-    HttpResponseRedirect, render_to_response
+    HttpResponseRedirect, render
 from django.template.response import TemplateResponse
 from django.views.generic import DetailView, FormView, ListView
 
@@ -178,7 +178,7 @@ def toggle_selection(request, entry_id, decision=None):
                         )
                 )
 
-    return render_to_response(template, {'entry': entry})
+    return render(request, template, context={'entry': entry})
 
 
 @login_required
@@ -298,7 +298,7 @@ def notified_selection_reset(request, entry_id, decision=None):
                 )
         )
 
-    return render_to_response(template, {'entry': entry})
+    return render(request, template, context={'entry': entry})
 
 
 class ExportFormView(LoginRequiredMixin,  StaffUserMixin, FormView):

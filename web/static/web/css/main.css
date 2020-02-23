@@ -688,6 +688,7 @@ a.sponsor-lnk {
 img.sponsor-img {
     width: 200px;
     height: auto;
+    padding-bottom: 25px;
 }
 
 /*@media (max-width: 767px) {*/

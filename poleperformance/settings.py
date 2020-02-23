@@ -292,7 +292,7 @@ LOGGING = {
     },
 }
 
-ADMINS = [SUPPORT_EMAIL]
+ADMINS = [("Becky Smith", SUPPORT_EMAIL)]
 
 import sys
 if DEBUG or 'test' in sys.argv:   # pragma: no cover

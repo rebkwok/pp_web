@@ -1,19 +1,13 @@
 import logging
 
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import Group, User
-from django.contrib import messages
-from django.core.cache import cache
-from django.urls import reverse
 from django.db.models import Q
-from django.shortcuts import HttpResponseRedirect, render_to_response
 from django.views.generic import ListView
 
 from braces.views import LoginRequiredMixin
 
 from ppadmin.forms import UserListSearchForm
-from ppadmin.views.helpers import staff_required, StaffUserMixin
-from activitylog.models import ActivityLog
+from ppadmin.views.helpers import StaffUserMixin
 
 
 logger = logging.getLogger(__name__)
