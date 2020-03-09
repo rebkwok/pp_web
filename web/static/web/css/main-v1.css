@@ -686,7 +686,7 @@ a.sponsor-lnk {
     }
 
 img.sponsor-img {
-    width: 200px;
+    width: 400px;
     height: auto;
     padding-bottom: 25px;
 }
@@ -701,7 +701,7 @@ img.sponsor-img {
 
 @media (max-width: 480px) {
     img.sponsor-img {
-        width: 100px;
+        width: 250px;
         height: auto;
     }
 }
