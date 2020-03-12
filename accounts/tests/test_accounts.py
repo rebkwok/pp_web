@@ -68,23 +68,39 @@ class ProfileUpdateViewTests(TestSetupMixin, TestCase):
         """
         Test custom view to allow users to update their details
         """
-        user = baker.make(User, username="test_user",
+        url = reverse('accounts:update_profile')
+        data = {
+            'username': self.user.username,
+            'first_name': 'Fred',
+            'last_name': self.user.last_name,
+            'dob': '01 Jan 1990'
+        }
+        self.client.login(username=self.user.username, password="test")
+        self.client.post(url, data)
+        self.user.refresh_from_db()
+        self.assertEquals(self.user.first_name, "Fred")
+
+    def test_cannot_change_to_an_existing_username(self):
+        user1 = baker.make(User, username="test_user1",
                           first_name="Test",
                           last_name="User",
                           )
         url = reverse('accounts:update_profile')
-        request = self.factory.post(
-            url, {
-                'username': user.username,
-                'first_name': 'Fred', 'last_name': user.last_name,
-                'dob': '01 Jan 1990'
-            }
+
+        # Try to change self.user's username to user1's
+        data = {
+            'username': user1.username,
+            'first_name':  self.user.first_name,
+            'last_name': self.user.last_name,
+            'dob': '01 Jan 1990'
+        }
+        self.client.login(username=self.user.username, password="test")
+        response = self.client.post(url, data)
+        form = response.context_data["form"]
+        self.assertEqual(
+            form.errors,
+            {'username': ['A user already exists with this username']}
         )
-        request.user = user
-        view = ProfileUpdateView.as_view()
-        view(request)
-        updated_user = User.objects.get(username="test_user")
-        self.assertEquals(updated_user.first_name, "Fred")
 
 
 class UserProfileTests(TestCase):
@@ -113,6 +129,7 @@ class ProfileTests(TestSetupMixin, TestCase):
         cls.url = reverse('accounts:profile')
 
     def setUp(self):
+        super().setUp()
         cache.clear()
 
     def test_profile_view(self):
@@ -186,10 +203,10 @@ class CustomLoginViewTests(TestSetupMixin, TestCase):
     @classmethod
     def setUpTestData(cls):
         super(CustomLoginViewTests, cls).setUpTestData()
-        cls.user = User.objects.create(username='test_user', is_active=True)
-        cls.user.set_password('password')
-        cls.user.save()
-        EmailAddress.objects.create(user=cls.user,
+        cls.user1 = User.objects.create(username='test_user', is_active=True)
+        cls.user1.set_password('password')
+        cls.user1.save()
+        EmailAddress.objects.create(user=cls.user1,
                                     email='test@gmail.com',
                                     primary=True,
                                     verified=True)
@@ -201,7 +218,7 @@ class CustomLoginViewTests(TestSetupMixin, TestCase):
     def test_post_login(self):
         resp = self.client.post(
             reverse('login'),
-            {'login': self.user.username, 'password': 'password'}
+            {'login': self.user1.username, 'password': 'password'}
         )
         self.assertEqual(resp.status_code, 302)
         self.assertIn(reverse('accounts:profile'), resp.url)
@@ -211,7 +228,7 @@ class CustomLoginViewTests(TestSetupMixin, TestCase):
         # params to return to profile
         resp = self.client.post(
             reverse('login') + '?next=/accounts/password/change/',
-            {'login': self.user.username, 'password': 'password'}
+            {'login': self.user1.username, 'password': 'password'}
         )
 
         self.assertEqual(resp.status_code, 302)
@@ -219,7 +236,7 @@ class CustomLoginViewTests(TestSetupMixin, TestCase):
 
         resp = self.client.post(
             reverse('login') + '?next=/accounts/password/set/',
-            {'login': self.user.username, 'password': 'password'}
+            {'login': self.user1.username, 'password': 'password'}
         )
 
         self.assertEqual(resp.status_code, 302)
@@ -379,6 +396,7 @@ class DisclaimerCreateViewTests(TestSetupMixin, TestCase):
         cls.url = reverse('accounts:disclaimer_form')
 
     def setUp(self):
+        super().setUp()
         self.user_no_disclaimer = User.objects.create_user(
             username='user_no_disc', password='password'
         )
@@ -794,6 +812,7 @@ class SignedDataPrivacyModelTests(TestCase):
         DataPrivacyPolicy.objects.create(content='Foo')
 
     def setUp(self):
+        super().setUp()
         self.user = baker.make(User)
 
     def test_cached_on_save(self):
@@ -835,7 +854,7 @@ class SignedDataPrivacyCreateViewTests(TestSetupMixin, TestCase):
         cls.url = reverse('accounts:data_privacy_review')
 
     def setUp(self):
-        super(SignedDataPrivacyCreateViewTests, self).setUp()
+        super().setUp()
         self.client.login(username=self.user.username, password='test')
 
     def test_user_already_has_active_signed_agreement(self):

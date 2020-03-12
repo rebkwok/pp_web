@@ -80,13 +80,14 @@ class SignupForm(AccountFormMixin, forms.Form):
             )
 
     def clean_data_privacy_confirmation(self):
-       dp = self.cleaned_data.get('data_privacy_confirmation')
-       if not dp:
-           self.add_error(
+        dp = self.cleaned_data.get('data_privacy_confirmation')
+        if not dp:
+            self.add_error(
                'data_privacy_confirmation',
                'You must check this box to continue'
-           )
-       return
+            )
+        else:
+            return dp
 
     def signup(self, request, user):
         user.first_name = self.cleaned_data['first_name']
@@ -129,6 +130,19 @@ class ProfileForm(AccountFormMixin, forms.ModelForm):
         super(ProfileForm, self).__init__(*args, **kwargs)
         self.fields['first_name'].required = True
         self.fields['last_name'].required = True
+        if self.instance.id and hasattr(self.instance, "profile"):
+            self.fields['dob'].initial = self.instance.profile.dob.strftime('%d %b %Y')
+
+    def clean_username(self):
+        username = self.cleaned_data.get('username')
+        existing_users = User.objects.filter(username=username).exclude(id=self.instance.id)
+        if existing_users.exists():
+            self.add_error(
+               'username',
+               'A user already exists with this username'
+            )
+        else:
+            return username
 
     class Meta:
         model = User

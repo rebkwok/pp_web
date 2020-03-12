@@ -47,11 +47,14 @@ class TestSetupMixin(object):
     @classmethod
     def setUpTestData(cls):
         cls.factory = RequestFactory()
-        cls.user = User.objects.create_user(
-            username='test', email='test@test.com', password='test'
+
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username='test', email='test@test.com', password='test',
+            first_name="Test", last_name="User"
         )
-        baker.make(OnlineDisclaimer, user=cls.user)
-        make_data_privacy_agreement(cls.user)
+        baker.make(OnlineDisclaimer, user=self.user)
+        make_data_privacy_agreement(self.user)
 
 
 def format_content(content):
