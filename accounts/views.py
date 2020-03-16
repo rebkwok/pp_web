@@ -45,9 +45,7 @@ class ProfileUpdateView(LoginRequiredMixin, UpdateView):
         del profile_data['first_name']
         del profile_data['last_name']
         del profile_data['username']
-        UserProfile.objects.update_or_create(
-            user=user, **profile_data
-        )
+        UserProfile.objects.update_or_create(user=user, defaults=profile_data)
         return HttpResponseRedirect(self.get_success_url())
 
     def get_success_url(self):
