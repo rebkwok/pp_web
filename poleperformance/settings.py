@@ -20,7 +20,8 @@ env = environ.Env(DEBUG=(bool, False),
                   TRAVIS=(bool, False),
                   HEROKU=(bool, False),
                   ENTRIES_OPEN=(bool, False),
-                  SHOW_DEBUG_TOOLBAR=(bool, False)
+                  SHOW_DEBUG_TOOLBAR=(bool, False),
+                  LOCAL=(bool, False)
                   )
 environ.Env.read_env(root('poleperformance/.env'))  # reading .env file
 
@@ -44,8 +45,9 @@ if str(DEBUG).lower() in ['true', 'on']:  # pragma: no cover
 else:   # pragma: no cover
     DEBUG = False
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ['.poleperformancecomp.co.uk']
+if env('LOCAL'):  # pragma: no cover
+    ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -309,9 +311,6 @@ HEROKU = env('HEROKU')
 
 # Honor the 'X-Forwarded-Proto' header for request.is_secure()
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-
-# Allow all host headers
-ALLOWED_HOSTS = ['*']
 
 
 INTERNAL_IPS = ('127.0.0.1',)
